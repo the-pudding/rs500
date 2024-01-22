@@ -20,8 +20,8 @@
 	--border-radius: 2px;
 	--font-body: var(--serif);
 	--font-form: var(--sans);
-	--color-bg: var(--color-white);
-	--color-fg: var(--color-gray-900);
+	--color-bg: var(--color-gray-900);
+	--color-fg: var(--color-white);
 	--color-primary: var(--color-black);
 	--color-link: var(--color-black);
 	--color-focus: var(--color-red);
