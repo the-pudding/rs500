@@ -17,11 +17,12 @@ let text = {
     "third":"This certitude wasn’t to last, though. When Rolling Stone revised the list in 2020, the two decade consensus was no more. Except for Pet Sounds remaining at number two, the entire top 10 was different.",
     "fourth":"And not just a little different. Very different. Let’s look at what changed. Here we see where today’s top 10 ranked in 2003.",
     "fourth2":"In 2003, The Miseducation of Lauryn Hill was only 6 years-old and already ranked at #321 on the all-time list. Twenty years later, judges voted it into the #10 slot.",
-    "fifth":"174 albums in the 2003 ranking don’t appear at all in the 2020 ranking. This includes albums such as Creedence Clearwater Revival’s Green River, which appeared canonical at #95 in 2003.",
-    "sixth":"Many of the albums that replaced those 174 in the 2020 ranking were recent releases.",
+    "fifth":"174 albums in the 2003 ranking don’t appear at all in the 2020 ranking. This includes albums such as Creedence Clearwater Revival’s Green River, which appeared canonical at #95 in 2003. Let’s look at what replaced them in the 2020 data.",
+    "sixth":"Naturally, many of the albums that replaced those 174 in the 2020 ranking were recent releases.",
     "sixth2":"Such as Beyonce's Lemonade (#73)",
     "sixth3":"But others had been out for decades. Released in 1985, Kate Bush’s Hounds of Love wasn’t on the list in 2003 or 2012 but was declared the 68th greatest album of all-time in 2020. Joy Division’s Unknown Pleasures, released just a few years before Bush’s masterpiece, saw a similar shift.",
-    "sixth4":"And it wasn’t just the last few decades that saw a reevaluation. Billie Holiday’s Lady in Satin was suddenly one of the greatest albums of all-time despite being unranked in 2003, 45 years after its release."
+    "sixth4":"And it wasn’t just the last few decades that saw a reevaluation. Billie Holiday’s Lady in Satin was suddenly one of the greatest albums of all-time despite being unranked in 2003, 45 years after its release.",
+    "sixth5":"You’d think we’d have a grasp on what was good and what was bad after all that time. These changes left us wondering …"
 
 }
 
@@ -219,6 +220,12 @@ function setScene(sceneCount){
         sceneSetToSub = "4"
         toAnnotate = ["7dK54iZuOxXFarGhXwEXfF","5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s","4LrLP7DM1KBj8r2Sc098JA"]
     }
+    if(sceneCount == "sixth5"){
+        cols = sixthScene;
+        sceneSetTo = "sixth";
+        sceneSetToSub = "5"
+        toAnnotate = []
+    }
 }
 
 function getColOffset(col,count){
@@ -273,6 +280,9 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
         }
     }
     if(sceneSetTo == "sixth" && +col.year == 2003){
+        if(sceneSetToSub == "5"){
+            return 1;
+        }
         if(+album["2003 Rank"] == ""){
             return 0
         }
@@ -304,6 +314,7 @@ onMount(() => {
 <button on:click={() => setScene("sixth2")}>sixth-2</button>
 <button on:click={() => setScene("sixth3")}>sixth-3</button>
 <button on:click={() => setScene("sixth4")}>sixth-4</button>
+<button on:click={() => setScene("sixth5")}>sixth-5</button>
 
 
 <p>{sceneSetTo}</p>

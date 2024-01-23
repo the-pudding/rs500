@@ -3,6 +3,8 @@
 	import Demo from "$components/demo/Demo.svelte";
 	import WIP from "$components/helpers/WIP.svelte";
 	import Intro from "$components/Intro.svelte"
+	import Title from "$components/Title.svelte"
+
 	// import Footer from "$components/Footer.svelte";
 
 	// const copy = getContext("copy");
@@ -10,3 +12,4 @@
 </script>
 
 <Intro />
+<Title />
