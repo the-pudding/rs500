@@ -236,10 +236,11 @@ function getColOffset(col,count){
     return 340*count
 }
 
-function getVisibility(col,album){
+function getVisibility(col,album,sceneSetTo,sceneSetToSub){
+    // console.log(sceneSetTo,sceneSetToSub)
     if(sceneSetTo == "fourth"){
         if(col.year == 2003){
-            if(sceneSetToSub = "2"){
+            if(sceneSetToSub == "2"){
                 if(album["Album ID"]=="1BZoqf8Zje5nGdwZhOjAtD"){
                     return 1;
                 }
@@ -253,12 +254,13 @@ function getVisibility(col,album){
             }
         }
         else {
-            if(sceneSetToSub = "2"){
+            if(sceneSetToSub == "2"){
                 if(album["Album ID"]=="1BZoqf8Zje5nGdwZhOjAtD"){
                     return 1;
                 }
                 return .2;
             }
+            return 1;
         }
         
     }
@@ -312,7 +314,7 @@ onMount(() => {
             <p class="year-label">{sceneSetTo == "sixth" ? "2020" : col.year}</p>
             <div class="img-grid">
                 {#each filterData(col.year,col.layout,sceneSetTo) as album (album["Album ID"])}
-                    {@const visibility = getVisibility(col,album)}
+                    {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                     <div
                         class="{album["2020 Rank"]} img-wrapper"
                         style="--delay: {album.rank}; opacity:{visibility}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;">
@@ -347,9 +349,9 @@ onMount(() => {
 
 <style>
 
-.fourth .year-2003 .img-wrapper:not(.fade) {
+/* .fourth .year-2003 .img-wrapper:not(.fade) {
     opacity: .2;
-}
+} */
 
 .year-label {
     font-size: 24px;
