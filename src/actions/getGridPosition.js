@@ -21,7 +21,7 @@ export const getGridPosition = (gridType,rank) => {
     }
     if(gridType == "col"){
         if(rank < 11){
-            let top = mid*(rank-1) + gapTwo*rank
+            let top = mid*(rank-1) + gapTwo*(rank-1)
             return [0,top,mid]
         }
     }
