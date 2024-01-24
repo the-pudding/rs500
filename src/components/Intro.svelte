@@ -9,7 +9,7 @@ import {fade, scale} from 'svelte/transition';
 import { cubicOut } from 'svelte/easing';
 import { onMount } from "svelte";
 import { setResponse } from "@sveltejs/kit/node";
-	import { index } from "d3";
+import { index } from "d3";
 
 let text = {
     "first":"in 2003 RS released its top 500, with sgt peppers at #1",
@@ -34,7 +34,8 @@ let toAnnotate = [];
 let counterTextFull = {
     1:"#1 Greatest Album",
     2:"The Remaining Top 10",
-    11:"#11 - #500"
+    11:"#11 - #249",
+    251:"#251 - 500"
 }
 
 let counterTextCol = {
@@ -44,7 +45,7 @@ let counterTextCol = {
 }
 
 let layoutCounts = {
-    "full":[1,2,11],
+    "full":[1,2,11,251],
     "col":[1,5,10]
 }
 
@@ -155,7 +156,7 @@ function filterData(year,layout,sceneSetTo){
             }
             
             d.year = year;
-            d.pos = getGridPosition(layout,d.rank);
+            d.pos = getGridPosition(layout,d.rank,d);
         });
 
     return temp;
@@ -316,7 +317,6 @@ onMount(() => {
 <button on:click={() => setScene("sixth4")}>sixth-4</button>
 <button on:click={() => setScene("sixth5")}>sixth-5</button>
 
-
 <p>{sceneSetTo}</p>
 
 <div class="year-wrapper {sceneSetTo}">
@@ -328,7 +328,7 @@ onMount(() => {
                     {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                     <div
                         class="{album["2020 Rank"]} img-wrapper"
-                        style="--delay: {album.rank}; opacity:{visibility}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;">
+                        style="--delay: {album.rank}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;">
                         {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
                         <div class="counter"
                             style=""
@@ -336,7 +336,7 @@ onMount(() => {
                             {col.layout == "full" ? counterTextFull[album.rank] : counterTextCol[album.rank]}
                         </div>
                         {/if}
-                        <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                        <img style="opacity:{visibility};" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                     </div>
                 {/each}
                 {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}

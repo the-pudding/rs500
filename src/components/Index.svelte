@@ -4,6 +4,7 @@
 	import WIP from "$components/helpers/WIP.svelte";
 	import Intro from "$components/Intro.svelte"
 	import Title from "$components/Title.svelte"
+	import HipHop from "$components/HipHop.svelte"
 
 	// import Footer from "$components/Footer.svelte";
 
@@ -13,3 +14,4 @@
 
 <Intro />
 <Title />
+<HipHop />
