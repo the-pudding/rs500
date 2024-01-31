@@ -18,10 +18,10 @@
 
 	/* presets (used in reset.css) */
 	--border-radius: 2px;
-	--font-body: var(--serif);
+	--font-body: var(--sans);
 	--font-form: var(--sans);
-	--color-bg: var(--color-gray-900);
-	--color-fg: var(--color-white);
+	--color-bg: #feefd7;
+	--color-fg: #FF0000;
 	--color-primary: var(--color-black);
 	--color-link: var(--color-black);
 	--color-focus: var(--color-red);
@@ -61,6 +61,75 @@
 		--color-text-outline: var(--color-bg);
 	}
 } */
+.year-label {
+    font-size: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    transform: translate(0,-100%);
+}
+
+.chart-hed {
+	font-size: 36px;
+	width: 600px;
+	margin: 0 auto;
+	margin-top: 10px;
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+.center {
+	width: 600px;
+	margin: 0 auto;
+	margin-bottom: 2em;
+	font-size: 24px;
+}
+
+.counter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:150px;
+    font-size: 12px;
+    transform: translate(0,-100%);
+}
+
+.counter-big {
+    font-size: 16px;
+    width: 200px;
+}
+
+
+.subhead {
+	font-size: 36px;
+}
+
+.year {
+    position: absolute;
+    transition: transform 1s;
+    width: 100%;
+}
+.year-wrapper {
+	position: sticky;
+	top: 0;
+	z-index: 0;
+	margin: 0 auto;
+}
+.steps {
+    position: relative;
+    z-index: 1000;
+}
+.step {
+    min-height: 100px;
+    padding-top: 500px;
+    padding-bottom: 300px;
+    max-width: 300px;
+}
+.step p {
+    margin: 0;
+}
 
 @media screen and (prefers-reduced-motion: no-preference) {
 	:root {

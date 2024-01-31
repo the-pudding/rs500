@@ -1,17 +1,29 @@
 <script>
 import data from "$data/albums.csv"
-import Voters from "$data/voters.csv"
 
 import { getGridPosition } from '$actions/getGridPosition.js';
-import { tweened } from 'svelte/motion';
-import {fade, scale} from 'svelte/transition';
+// import { tweened } from 'svelte/motion';
+import {fade, fly, scale} from 'svelte/transition';
+// import { flip } from 'svelte/animate';
 
 import { cubicOut } from 'svelte/easing';
 import { onMount } from "svelte";
 import { setResponse } from "@sveltejs/kit/node";
 import { index } from "d3";
+import Scrolly from "$components/helpers/Scrolly.svelte";
 
-let text = {
+export let vw;
+export let vh;
+
+
+let stepValue = "fill";
+let value;
+$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "fill" ;
+$: stepValue, setScene(stepValue);
+
+
+let textStep = {
+    "fill":"title",
     "first":"in 2003 RS released its top 500, with sgt peppers at #1",
     "second":"When the publication updated the list in 2012 to include the first decade of the new millennium, not only did The Beatles’ classic remain at number one but the entire top 10 was unchanged.",
     "third":"This certitude wasn’t to last, though. When Rolling Stone revised the list in 2020, the two decade consensus was no more. Except for Pet Sounds remaining at number two, the entire top 10 was different.",
@@ -23,10 +35,11 @@ let text = {
     "sixth3":"But others had been out for decades. Released in 1985, Kate Bush’s Hounds of Love wasn’t on the list in 2003 or 2012 but was declared the 68th greatest album of all-time in 2020. Joy Division’s Unknown Pleasures, released just a few years before Bush’s masterpiece, saw a similar shift.",
     "sixth4":"And it wasn’t just the last few decades that saw a reevaluation. Billie Holiday’s Lady in Satin was suddenly one of the greatest albums of all-time despite being unranked in 2003, 45 years after its release.",
     "sixth5":"You’d think we’d have a grasp on what was good and what was bad after all that time. These changes left us wondering …"
-
 }
 
-let sceneSetTo = "first"
+let scenes = Object.keys(textStep);
+
+let sceneSetTo = "fill"
 let sceneSetToSub = ""
 let toAnnotate = [];
 
@@ -34,7 +47,7 @@ let toAnnotate = [];
 let counterTextFull = {
     1:"#1 Greatest Album",
     2:"The Remaining Top 10",
-    11:"#11 - #249",
+    11:"#11 - #250",
     251:"#251 - 500"
 }
 
@@ -46,8 +59,16 @@ let counterTextCol = {
 
 let layoutCounts = {
     "full":[1,2,11,251],
-    "col":[1,5,10]
+    "col":[1,5,10],
+    "fill":[]
 }
+
+let fillScene = [
+    {
+        year:2003,
+        layout: "fill"
+    }
+]
 
 let firstScene = [
     {
@@ -110,32 +131,76 @@ let sixthScene = [
 let cols = [
 ]
 
-function changePos(column){
-    
-    if(cols[column].layout == "full"){
-        cols[column].layout = "col";
-        cols.push({year:2020,layout:"col"})
-    }
-    else {
-        cols[column].layout = "full"
-    }
-}
-
-function changeYear(column){
-    if(cols[column].year == 2020){
-        cols[column].year = 2003;
-    }
-    else {
-        cols[column].year = 2020
+let sizing = {
+    "fill":{
+        size:80,
+        padding:10
+    },
+    "first":{
+        size:40,
+        padding:0
+    },
+    "second":{
+        size:40,
+        padding:0
+    },
+    "third":{
+        size:40,
+        padding:0
+    },
+    "fourth":{
+        size:40,
+        padding:0
+    },
+    "fourth2":{
+        size:40,
+        padding:0
+    },
+    "fifth":{
+        size:40,
+        padding:0
+    },
+    "sixth":{
+        size:40,
+        padding:0
+    },
+    "sixth2":{
+        size:40,
+        padding:0
+    },
+    "sixth3":{
+        size:40,
+        padding:0
+    },
+    "sixth4":{
+        size:40,
+        padding:0
+    },
+    "sixth5":{
+        size:40,
+        padding:0
     }
 }
 
 function filterData(year,layout,sceneSetTo){
+    
+    let size = sizing[sceneSetTo].size;
+    let padding = sizing[sceneSetTo].padding;
+    let rowSize;
+
     let temp = JSON.parse(JSON.stringify(data));
     
     if(sceneSetTo == "sixth"){
         temp = temp
             .filter(d => d[`2020 Rank`] !== "")
+    }
+    else if (sceneSetTo == "fill"){
+
+        rowSize = Math.ceil(vw / size);
+
+        temp = temp.sort((a,b) => {
+            return +a[`${year} Rank`] - b[`${year} Rank`];
+        })
     }
     else {
         temp = temp
@@ -145,7 +210,7 @@ function filterData(year,layout,sceneSetTo){
     if(layout == "col"){
         temp = temp.filter(d => d[`${year} Rank`] < 11)
     }
-    
+
     temp
         .forEach((d) => {
             if(sceneSetTo == "sixth"){
@@ -156,7 +221,7 @@ function filterData(year,layout,sceneSetTo){
             }
             
             d.year = year;
-            d.pos = getGridPosition(layout,d.rank,d);
+            d.pos = getGridPosition(layout,d.rank,d,vw,vh,size,padding,rowSize);
         });
 
     return temp;
@@ -164,6 +229,12 @@ function filterData(year,layout,sceneSetTo){
 
 function setScene(sceneCount){
     toAnnotate = [];
+
+    if(sceneCount == "fill"){
+        cols = fillScene;
+        sceneSetTo = sceneCount;
+        sceneSetToSub = ""
+    }
 
     if(sceneCount == "first"){
         cols = firstScene;
@@ -229,19 +300,30 @@ function setScene(sceneCount){
     }
 }
 
-function getColOffset(col,count){
+function getColOffset(col,count,vw){
     if(count == 0){
+        if(cols.length > 1 && cols[count].layout == "full"){
+            if(cols[count+1].layout == "col"){
+                return -50;
+            }
+        }
         return 0
-    }
-    if(count == 2){
-        return 200;
     }
     else {
         if(cols[count-1].layout == "col"){
+            if(vw > 600){
+                return 150*count;
+            }
             return 100*count;
         }
+        else if(cols[count-1].layout == "full"){
+            if(vw > 600){
+                return 600;
+            }
+            return 100*count;
+        }
+        return 0;
     }
-    return 340*count
 }
 
 function getVisibility(col,album,sceneSetTo,sceneSetToSub){
@@ -280,6 +362,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
             1;
         }
     }
+
     if(sceneSetTo == "sixth" && +col.year == 2003){
         if(sceneSetToSub == "5"){
             return 1;
@@ -295,122 +378,151 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
 }
 
 onMount(() => {
-    cols = firstScene;
+    cols = fillScene;
 })
 
 </script>
-<!-- <div class="voter-grid">
-{#each Voters.sort((a,b) => a.Gender.localeCompare(b.Gender)).filter(d => d["Year"] == "2020") as voter}
-    <div class="voter" style="background-color:{voter.Gender == "man" ? "black" : "green"};background-image:url(assets/rolling_images_resized/256/{voter.ID}.jpg);" alt=""></div>
-{/each}
-</div> -->
 
-<button on:click={() => setScene("first")}>first</button>
-<button on:click={() => setScene("second")}>second</button>
-<button on:click={() => setScene("third")}>third</button>
-<button on:click={() => setScene("fourth")}>fourth</button>
-<button on:click={() => setScene("fourth2")}>fourth-2</button>
-<button on:click={() => setScene("fifth")}>fifth</button>
-<button on:click={() => setScene("sixth")}>sixth</button>
-<button on:click={() => setScene("sixth2")}>sixth-2</button>
-<button on:click={() => setScene("sixth3")}>sixth-3</button>
-<button on:click={() => setScene("sixth4")}>sixth-4</button>
-<button on:click={() => setScene("sixth5")}>sixth-5</button>
+<section>
+    <div
+        class="year-wrapper {sceneSetTo}"
+        style="height:{vh}px; overflow:hidden;"
+    >
 
-<p>{sceneSetTo}</p>
-
-<div class="year-wrapper {sceneSetTo}">
-    {#each cols as col, i (col.year)}
-        <div in:fade={{delay:1000}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i)}px,0px);">
-            <p class="year-label">{sceneSetTo == "sixth" ? "2020" : col.year}</p>
-            <div class="img-grid">
-                {#each filterData(col.year,col.layout,sceneSetTo) as album (album["Album ID"])}
-                    {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
-                    <div
-                        class="{album["2020 Rank"]} img-wrapper"
-                        style="--delay: {album.rank}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;">
-                        {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
-                        <div class="counter"
-                            style=""
-                        >
-                            {col.layout == "full" ? counterTextFull[album.rank] : counterTextCol[album.rank]}
-                        </div>
-                        {/if}
-                        <img style="opacity:{visibility};" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
-                    </div>
-                {/each}
-                {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
-                    <!-- {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"} -->
-                        <div
-                            in:scale
-                            class="{album["2020 Rank"]} img-wrapper img-annotation"
-                            style="transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);"
-                        >
-                            <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
-                        </div>
-                    <!-- {/if} -->
-                {/each}
-            </div>
+        <div class="buttons">
+            <button on:click={() => setScene("fill")}>fill</button>
+            <button on:click={() => setScene("first")}>first</button>
+            <button on:click={() => setScene("second")}>second</button>
+            <button on:click={() => setScene("third")}>third</button>
+            <button on:click={() => setScene("fourth")}>fourth</button>
+            <button on:click={() => setScene("fourth2")}>fourth-2</button>
+            <button on:click={() => setScene("fifth")}>fifth</button>
+            <button on:click={() => setScene("sixth")}>sixth</button>
+            <button on:click={() => setScene("sixth2")}>sixth-2</button>
+            <button on:click={() => setScene("sixth3")}>sixth-3</button>
+            <button on:click={() => setScene("sixth4")}>sixth-4</button>
+            <button on:click={() => setScene("sixth5")}>sixth-5</button>
         </div>
-    {/each}
-</div>
+        
+        {#each cols as col, i (col.year)}
+            <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
+                <div class="img-grid">
+                    {#each filterData(col.year,col.layout,sceneSetTo) as album, i (album["Album ID"])}
+                        {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
+                        {@const filePath = album.pos[2] > 100 ? "full" : "256"}
 
-<p>{text[sceneSetTo.concat(sceneSetToSub)]}</p>
+                        <div
+                            class="{album["2020 Rank"]} img-wrapper {album[`${col.year} Rank`]}"
+                            style="--delay: {album.rank < 11 ? album.rank : (50)}; --duration: {album.rank < 11 ? ".5s" : ".5s"}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                        >
+                            {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
+                                <div class="counter {col.layout == "full" && +album.rank < 10 ? 'counter-big' : ''}"
+                                    style=""
+                                >
+                                    {col.layout == "full" ? counterTextFull[album.rank] : counterTextCol[album.rank]}
+                                </div>
+                            {/if}
 
+                            {#if ["col","full"].indexOf(col.layout) > -1 && album[`${col.year} Rank`] == 1}
+                                <p class="year-label">{col.year}</p>
+                            {/if}
+                            {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
+                                <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label">2020</p>
+                            {/if}
+
+                            <img style="opacity:{visibility};" year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt="" />
+                        </div>
+                    {/each}
+                    {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
+                            <div
+                                in:scale
+                                class="{album["2020 Rank"]} img-wrapper img-annotation"
+                                style="transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);"
+                            >
+                                <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                            </div>
+                        <!-- {/if} -->
+                    {/each}
+                </div>
+            </div>
+        {/each}
+    </div>
+    <div class="steps">
+        <Scrolly bind:value>    
+            {#each scenes as scene, i}
+                {@const active = value === i}
+                {@const size = sizing[sceneSetTo].size}
+                {@const padding = sizing[sceneSetTo].padding}
+
+
+                <div class="step"
+                     class:active
+                     style="
+                        margin-top: {i == 0 ? -vh : ''}px;
+                        padding-top: {i == 0 ? '0' : ''}px;
+                        min-height: {vh*.75}px;
+                    "
+
+                >
+                    {#if i == 0}
+                        <div class="title"
+                            style="
+                                margin-top:{(sizing["fill"].size+sizing["fill"].padding)*3}px;
+                                margin-left:{sizing["fill"].size + sizing["fill"]["padding"]/2}px;
+                                width:{(sizing["fill"].size+sizing["fill"]["padding"])*6}px;
+                                min-height:{(sizing["fill"].size+sizing["fill"]["padding"])*4}px;
+                            "
+                        >
+                            <h1>What defines greatness?</h1>
+                            <h3>Analyzing the Rolling Stone 500</h3>
+                            <p>by Chris Dalla Riva</p>
+                        </div>
+                    {:else}
+                        <p>{textStep[scene]}</p>
+                    {/if}
+                    
+                </div>
+            {/each}
+        </Scrolly>
+    </div>
+</section>
 
 <style>
 
-/* .fourth .year-2003 .img-wrapper:not(.fade) {
-    opacity: .2;
+.title {
+    background-color: var(--color-bg);
+    padding: 30px;
+}
+
+h1 {
+    margin: 0;
+    line-height: 1;
+    margin-bottom: 25px;
+}
+
+h3 {
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* .year-full {
+    left: 0;
+    right: 0;
+
 } */
 
-.year-label {
-    font-size: 24px;
-}
 
-.voter-grid {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 100%;
-}
 
-.voter {
-    background-size: contain;
-    width: 70px;
-    height: 70px;
-    background-color: black;
-    background-repeat: no-repeat;
-    background-position: center;
-}
 
-.year-wrapper {
-    height: 650px;
-    max-width: calc(100% - 100px);
-    margin: 0 auto;
-    /* display: flex; */
-}
 
-.year {
-    position: absolute;
-    transition: transform 1s;
-}
-
-.counter {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width:150px;
-    font-size: 12px;
-    color: white;
-    transform: translate(0,-100%);
-    font-family: Arial, Helvetica, sans-serif;
+.year-full .year-label {
+    transform: translate(0,calc(-100% - 18px));
 }
 
 .year-col .counter{
     transform: translate(calc(-100% - 10px),0%);
     width: 30px;
     text-align: right;
-
 }
 
 .img-grid {
@@ -419,10 +531,17 @@ onMount(() => {
     height: 600px;
 }
 
+.fill .img-wrapper {
+    opacity: .7;
+}
+
 .img-wrapper {
     position: absolute;
-    transition: all 1s,
-			transform 1s calc(var(--delay) * calc(var(--1s) * 0.01));
+    /* box-shadow: rgba(16, 26, 64, 0) 0px 0px 1px, rgba(16, 26, 64, 0.05) -1px 4px 3px, rgba(16, 26, 64, 0.05) -4px 11px 6px, rgba(16, 26, 64, 0.05) -7px 22px 10px, rgba(16, 26, 64, 0.05) -13px 38px 15px, rgba(16, 26, 64, 0.05) -19px 58px 21px; */
+}
+
+.year-full .img-wrapper, .year-col .img-wrapper {
+    transition: transform var(--duration) calc(var(--delay) * calc(var(--1s) * 0.005));
 }
 
 .img-annotation {
@@ -437,8 +556,12 @@ onMount(() => {
 }
 
 img {
-    
-    /* width: 32px;
-    height: 32px; */
+    transition: opacity 1s;
+    /* width: calc(100% - 10px); */
+    /* height: calc(100% - 10px); */
+}
+.buttons {
+    position: absolute;
+    z-index: 100000;
 }
 </style>

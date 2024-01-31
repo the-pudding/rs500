@@ -5,13 +5,20 @@
 	import Intro from "$components/Intro.svelte"
 	import Title from "$components/Title.svelte"
 	import HipHop from "$components/HipHop.svelte"
+	import Popularity from "$components/Popularity.svelte"
 
-	// import Footer from "$components/Footer.svelte";
+	import Spotify from "$components/Spotify.svelte"
+	import Voters from "$components/Voters.svelte"
+	import viewport from "$stores/viewport.js";
+	import scrollY from "$stores/scrollY.js";
 
-	// const copy = getContext("copy");
-	// const data = getContext("data");
 </script>
 
-<Intro />
+<Intro vw={$viewport.width} vh={$viewport.height} />
 <Title />
-<HipHop />
+<HipHop vw={$viewport.width} vh={$viewport.height}/>
+<Popularity vw={$viewport.width} vh={$viewport.height}/>
+
+<Spotify vw={$viewport.width} vh={$viewport.height}/>
+
+<Voters vw={$viewport.width} vh={$viewport.height} scrollY={$scrollY}/>

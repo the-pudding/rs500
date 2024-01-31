@@ -9,18 +9,23 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 export let vw;
 export let vh;
 
+let padding = 0;
+let size = 25;
+let rowSize = 10;
 
-let stepValue = "first";
+let stepValue = "second";
 let value;
 let textStep = {
-    "first":"In 2003, there were only 26 hip-hop albums on the list, the highest ranked of which was Public Enemy’s It Takes a Nation of Millions to Hold Us Back at 48, the only hip-hop album in the top 100. By 2020, hip-hop had cemented its cultural prominence. The updated list reflected that. 57 hip-hop albums made the cut, 17 of which were in the top 100.",
+    "second":"tk point",
+    "second2":"In fact, albums that peaked in the top 40 are more likely to be ranked in Rolling Stone’s top 100 than those that peaked at a lower position."
 }
 
 let scenes = Object.keys(textStep);
-let sceneSetTo = "first"
+let sceneSetTo = "second"
 let sceneSetToSub = ""
 
-$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
+$: stepValue = value ? scenes[value] : "second" ;
+// $: stepValue = scenes[value];
 $: stepValue, setScene(stepValue);
 
 $: console.log("value",value)
@@ -32,22 +37,12 @@ let layoutCounts = {
 }
 
 let counterTextGroup = {
-    0:"Charted at #1 on Billboard",
+    0:"Charted at #1",
     1:"Charted #2-40",
     2:"Charted #41-200",
     3:"Never charted"
 }
 
-let firstScene = [
-    {
-        year:2003,
-        layout:"waffle"
-    },
-    {
-        year:2020,
-        layout:"waffle"
-    }
-]
 let secondScene = [
     {
         year:2020,
@@ -60,17 +55,18 @@ function setScene(sceneCount){
     sceneSetTo = sceneCount;
     sceneSetToSub = ""
 
-    if(sceneCount == "first"){
-        cols = firstScene;
-    }
     if(sceneCount == "second"){
         cols = secondScene;
-        
     }
     if(sceneCount == "second2"){
         cols = secondScene;
         sceneSetTo = "second";
         sceneSetToSub = "2"
+    }
+    if(sceneCount == "second3"){
+        cols = secondScene;
+        sceneSetTo = "second";
+        sceneSetToSub = "3"
     }
 }
 
@@ -80,9 +76,8 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
     temp = temp
             .filter(d => d[`${year} Rank`] != "");
 
-    if(sceneSetTo == "first"){
+    if(sceneSetTo == "second"){
         temp = temp
-            .filter(d => d["Album Genre"] == "Hip-Hop/Rap")
             .sort((a,b) =>  {
                 let aRank = +a[`${year} Rank`]
                 let bRank = +b[`${year} Rank`]
@@ -140,16 +135,13 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
         temp = tempGroup 
     }
 
+
+
     temp
         .forEach((d,i) => {
             d.rank = d[`${year} Rank`];            
             d.year = year;
-            if(layout == "waffle"){
-                d.pos = getGridPosition(layout,i+1,d,vw,vh);
-            }
-            else {
-                d.pos = getGridPosition(layout,d.rank,d,vw,vh);
-            }
+            d.pos = getGridPosition(layout,d.rank,d,vw,vh,size,padding,rowSize);
         });
 
     return temp;
@@ -177,15 +169,27 @@ function getColOffset(col,count,vw){
 
 
 <section>
+    <p class="center">But beyond shifting tastes, we found four non-musical factors that also help shape this list: popularity, demographics, how we listen, and vote scoring.
+    </p>
+    <p class="subhead center">tk subhead</p>
+    <p class="center">
+        You can’t - or at least shouldn’t - vote for something you haven’t heard. Thus, part of the reason Marvin Gaye’s What’s Going On topped Rolling Stone’s 2020 list is that many of the voters had heard it. 
+    </p>
     <div 
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
     >
-        <!-- <p class="chart-hed">Hip Hop Albums in the Rolling Stone 500</p> -->
+        <!-- <p class="chart-hed">2023 Rankings</p> -->
 
+        <!-- <div class="buttons">
+            <button on:click={() => setScene("second")}>second</button>
+            <button on:click={() => setScene("second2")}>second-2</button>
+        </div>
+         -->
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0);">
-                {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, i (album["Album ID"])}
+
+                {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, albumCount (album["Album ID"])}
                     <div
                         class="img-wrapper {album[`${col.year} Rank`]} {+album["rank"] > 100 ? "low-rank": ''}"
                         in:fade={{delay:1000}}
@@ -200,17 +204,17 @@ function getColOffset(col,count,vw){
                         {/if}
                         {#if sceneSetTo == "second"}
                             {#if layoutCounts[col.layout].indexOf(+album.count) > -1}
-                                <div class="counter"
-                                    style=""
+                                <div class="counter counter-big"
+                                    style="width:{Math.min(10,+album.groupLength)*size}px"
                                 >
-                                    {counterTextGroup[+album.groupCount]}
+                                    {counterTextGroup[+album.groupCount]}: {Math.floor(album.groupLength/100*100)}% of albums
                                 </div>
+                                {#if +album.groupCount == 0}
+                                    <p style="width:{rowSize*size*4}px;" class="year-label">Rolling Stone #1-100</p>
+                                {/if}
                             {/if}
                         {/if}
 
-                        {#if ["waffle"].indexOf(col.layout) > -1 && i == 0}
-                            <p class="year-label" style="width:200px;">{col.year} Ranking</p>
-                        {/if}
 
                         <img class="{album["Album Genre"]}" style="filter:{sceneSetTo == "first" ? album["Album Genre"] == "Hip-Hop/Rap" ? '':'brightness(.1)' : ''};" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                     </div>
@@ -243,6 +247,11 @@ function getColOffset(col,count,vw){
 
 
 <style>
+
+    .year-label {
+        width: 100px;
+        top: -30px;
+    }
     .button {
         position: absolute;
     }
@@ -255,15 +264,6 @@ function getColOffset(col,count,vw){
     .second .low-rank {
         background-color: red;
     }
-    .counter {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: black;
-        color: white;
-    }
 
     .second .counter {
         transform: translate(0,-100%);
@@ -272,11 +272,6 @@ function getColOffset(col,count,vw){
     }
     .graphic {
         display: flex;
-    }
-
-    .counter {
-        transform: none;
-        width: auto;
     }
 
     .img-wrapper {
