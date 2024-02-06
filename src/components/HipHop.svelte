@@ -9,6 +9,9 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 export let vw;
 export let vh;
 
+let size = 60;
+let padding = 3;
+let rowSize = 5;
 
 let stepValue = "first";
 let value;
@@ -23,8 +26,8 @@ let sceneSetToSub = ""
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
 $: stepValue, setScene(stepValue);
 
-$: console.log("value",value)
-$: console.log("step",stepValue)
+// $: console.log("value",value)
+// $: console.log("step",stepValue)
 
 
 let layoutCounts = {
@@ -145,7 +148,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
             d.rank = d[`${year} Rank`];            
             d.year = year;
             if(layout == "waffle"){
-                d.pos = getGridPosition(layout,i+1,d,vw,vh);
+                d.pos = getGridPosition(layout,i+1,d,vw,vh,size,padding,rowSize);
             }
             else {
                 d.pos = getGridPosition(layout,d.rank,d,vw,vh);
@@ -195,11 +198,11 @@ function getColOffset(col,count,vw){
                             <div class="counter"
                                 style=""
                             >
-                                #{album.rank}
+                                {album.rank}
                             </div>
                         {/if}
                         {#if sceneSetTo == "second"}
-                            {#if layoutCounts[col.layout].indexOf(+album.count) > -1}
+                            {#if layoutCounts[col.layout].indexOf(+album5) > -1}
                                 <div class="counter"
                                     style=""
                                 >
@@ -255,15 +258,6 @@ function getColOffset(col,count,vw){
     .second .low-rank {
         background-color: red;
     }
-    .counter {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: black;
-        color: white;
-    }
 
     .second .counter {
         transform: translate(0,-100%);
@@ -272,11 +266,6 @@ function getColOffset(col,count,vw){
     }
     .graphic {
         display: flex;
-    }
-
-    .counter {
-        transform: none;
-        width: auto;
     }
 
     .img-wrapper {

@@ -9,7 +9,7 @@ let mid = 50-gapTwo+1;
 let gapBreak = 20;
 let groupedSize = 25;
 
-export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize) => {
+export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,direction) => {
 
     let leftPadding = 0;
     let topPadding = 0;
@@ -19,15 +19,85 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize) 
         topPadding = 100;
     }
 
+    if(gridType == "grouped"){
+
+        let orientation = direction;
+
+        let offSet = album.groupCounts.slice(0,album.groupCount);
+        let totalOffset = 0
+
+        leftPadding = 100;
+        topPadding = 100;
+
+        if(orientation == "horz"){
+            let top = (Math.floor((album.count)/rowSize))*size + topPadding;
+            let left = ((album.count) % rowSize)*size + rowSize*size*album.groupCount + album.groupCount*20 + leftPadding;
+            return [left,top,size]
+        }
+        else {
+            let top = ((album.count) % rowSize)*size + rowSize*size*album.groupCount + album.groupCount*20 + topPadding;
+            let left = (Math.floor((album.count)/rowSize))*size + leftPadding
+            return [left,top,size]
+        }
+        
+
+    }
+
+    if(gridType == "grouped-voter-gender"){
+
+        let orientation = direction;
+
+        let offSet = album.groupCounts.slice(0,album.groupCount);
+        let totalOffset = 0
+        let leftOffset = 0
+        let topOffset = 0;
+
+        if(orientation == "horz"){
+            leftPadding = 0;
+            topPadding = 0;
+
+            if(album.sceneSub !== "" && album.scene == "sixth"){
+                leftPadding = (rowSize*size*(7 - (+album.sceneSub)) + 20*5)*-1
+            }
+            // leftPadding = (vw - (rowSize*size*7 + 7*25))/2;
+            // if(album["scene"] == "fifth"){
+            //     leftPadding = 0;
+            // }
+        }
+
+        offSet.forEach(d => {
+            if(orientation == "horz") {
+                totalOffset = rowSize + totalOffset
+                leftOffset = (totalOffset*size) + album.groupCount*20;
+            }
+            else {
+                totalOffset = Math.ceil(d/rowSize) + totalOffset
+                topOffset = (totalOffset*size) + album.groupCount*25;
+            }
+        })
+        
+        let top = (Math.floor((album.count)/rowSize))*size + topPadding + topOffset;
+        let left = ((album.count) % rowSize)*size + leftPadding + leftOffset;
+
+        return [left,top,size];
+    }
+
+
     if(gridType == "large"){
         // size = 100
         // rowSize = vw/size;
         // leftPadding = 0;
         // topPadding = 0;
-        size = 100;
+        size = 60;
         rowSize = 600/size
         
         
+        let left = ((rank) % rowSize)*size + leftPadding
+        let top = (Math.floor((rank)/rowSize))*size + topPadding
+        return [left,top,size-padding]
+    }
+
+    if(gridType == "grid"){
         let left = ((rank) % rowSize)*size + leftPadding
         let top = (Math.floor((rank)/rowSize))*size + topPadding
         return [left,top,size]
@@ -35,41 +105,26 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize) 
 
     if(gridType == "grid-1"){
         rowSize = 20;
-        size = vw/rowSize
+        size = vw/rowSize;
 
         let left = ((rank) % 20)*size
-        let top = (Math.floor((rank)/20))*size
+        let top = (Math.floor((rank)/20))*size + topPadding
         return [left,top,size]
     }
 
-    if(gridType == "grouped"){
-        let offSet = album.groupCounts.slice(0,album.groupCount);
-        let totalOffset = 0
-        offSet.forEach(d => {
-            let rows = Math.ceil(d/rowSize);
-            totalOffset = rows + totalOffset
-        })
-        
-        let top = (Math.floor((album.count)/rowSize))*size + topPadding;
-        let left = ((album.count) % 10)*size + rowSize*size*album.groupCount + album.groupCount*20;
 
-        return [left,top,size]
-    }
 
     if(gridType == "waffle-single"){
         let left = ((rank-1) % rowSize)*size + leftPadding
         let top = (Math.floor((rank-1)/rowSize))*size + topPadding
-        return [left,top,size]
+        return [left,top,size-padding]
     }
 
     if(gridType == "waffle"){
-        let rowSize = 5;
-        small = 300/5;
+        let left = ((rank-1) % rowSize)*size + leftPadding
+        let top = (Math.floor((rank-1)/rowSize))*size + topPadding
 
-        let left = ((rank-1) % rowSize)*small + leftPadding
-        let top = (Math.floor((rank-1)/rowSize))*small + topPadding
-
-        return [left,top,small]
+        return [left,top,size-padding]
     }
 
     if(gridType == "col"){
@@ -118,17 +173,14 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize) 
     if(gridType == "fill"){
         let left = ((rank-1) % rowSize)*size + (padding * ((rank-1) % rowSize));        
         let top = (Math.floor((rank-1)/rowSize))*size + padding*(Math.floor((rank-1)/rowSize));
+        
+        let multiple = .08
+        if(((rank-1) % rowSize) % 2 === 0){
+            multiple = multiple * 1.2
+        }
+
+        top = top - album.scroll*(rowSize*multiple - ((rank-1) % rowSize)*multiple)
         return [left,top,size]
-    }
-
-
-
-
-
-    if(gridType == "grid"){
-        let left = ((rank) % 15)*groupedSize
-        let top = (Math.floor((rank)/15))*groupedSize
-        return [left,top,groupedSize]
     }
 
     if(gridType == "grouped-voter"){
@@ -157,7 +209,6 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize) 
         let left = ((album.count) % rowSize)*squareSize + (totalOffset*squareSize) + album.groupCount*20;
 
         return [left,top,squareSize]
-
     }
 
 

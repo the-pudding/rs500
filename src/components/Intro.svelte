@@ -14,6 +14,7 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 
 export let vw;
 export let vh;
+export let scrollY;
 
 
 let stepValue = "fill";
@@ -21,6 +22,7 @@ let value;
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "fill" ;
 $: stepValue, setScene(stepValue);
 
+$: console.log(stepValue)
 
 let textStep = {
     "fill":"title",
@@ -182,7 +184,7 @@ let sizing = {
     }
 }
 
-function filterData(year,layout,sceneSetTo){
+function filterData(year,layout,sceneSetTo,scrollY){
     
     let size = sizing[sceneSetTo].size;
     let padding = sizing[sceneSetTo].padding;
@@ -196,11 +198,16 @@ function filterData(year,layout,sceneSetTo){
     }
     else if (sceneSetTo == "fill"){
 
+        temp = temp
+            .filter(d => d[`${year} Rank`] !== "")
+
         rowSize = Math.ceil(vw / size);
 
         temp = temp.sort((a,b) => {
-            return +a[`${year} Rank`] - b[`${year} Rank`];
+            return +a[`${year} Rank`] - +b[`${year} Rank`];
         })
+
+        temp = temp.slice(0,200);
     }
     else {
         temp = temp
@@ -218,6 +225,7 @@ function filterData(year,layout,sceneSetTo){
             }
             else {
                 d.rank = d[`${year} Rank`]
+                d.scroll = scrollY;
             }
             
             d.year = year;
@@ -261,7 +269,9 @@ function setScene(sceneCount){
     if(sceneCount == "fourth2"){
         cols = fourthScene;
         sceneSetTo = "fourth";
-        sceneSetToSub = "2"
+        sceneSetToSub = "2";
+        toAnnotate = ["1BZoqf8Zje5nGdwZhOjAtD"]
+
     }
     if(sceneCount == "fifth"){
         cols = fifthScene;
@@ -364,6 +374,9 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     }
 
     if(sceneSetTo == "sixth" && +col.year == 2003){
+        if([2,3,4].indexOf(+sceneSetToSub) > -1){
+            return .2;
+        }
         if(sceneSetToSub == "5"){
             return 1;
         }
@@ -387,33 +400,17 @@ onMount(() => {
     <div
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
-    >
-
-        <div class="buttons">
-            <button on:click={() => setScene("fill")}>fill</button>
-            <button on:click={() => setScene("first")}>first</button>
-            <button on:click={() => setScene("second")}>second</button>
-            <button on:click={() => setScene("third")}>third</button>
-            <button on:click={() => setScene("fourth")}>fourth</button>
-            <button on:click={() => setScene("fourth2")}>fourth-2</button>
-            <button on:click={() => setScene("fifth")}>fifth</button>
-            <button on:click={() => setScene("sixth")}>sixth</button>
-            <button on:click={() => setScene("sixth2")}>sixth-2</button>
-            <button on:click={() => setScene("sixth3")}>sixth-3</button>
-            <button on:click={() => setScene("sixth4")}>sixth-4</button>
-            <button on:click={() => setScene("sixth5")}>sixth-5</button>
-        </div>
-        
+    >        
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
                 <div class="img-grid">
-                    {#each filterData(col.year,col.layout,sceneSetTo) as album, i (album["Album ID"])}
+                    {#each filterData(col.year,col.layout,sceneSetTo,scrollY) as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                         {@const filePath = album.pos[2] > 100 ? "full" : "256"}
 
                         <div
                             class="{album["2020 Rank"]} img-wrapper {album[`${col.year} Rank`]}"
-                            style="--delay: {album.rank < 11 ? album.rank : (50)}; --duration: {album.rank < 11 ? ".5s" : ".5s"}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                            style="--delay: {album.rank < 11 ? album.rank : 50}; --duration: {album.rank < 11 ? ".5s" : ".5s"}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                         >
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
                                 <div class="counter {col.layout == "full" && +album.rank < 10 ? 'counter-big' : ''}"
@@ -424,10 +421,14 @@ onMount(() => {
                             {/if}
 
                             {#if ["col","full"].indexOf(col.layout) > -1 && album[`${col.year} Rank`] == 1}
-                                <p class="year-label">{col.year}</p>
+                                <p class="year-label"
+                                    style="display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
+                                >
+                                    {col.year}{sceneSetTo == "first" ? " Rolling Stone Ranking" : ''}
+                                </p>
                             {/if}
                             {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
-                                <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label">2020</p>
+                                <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label">2020 Ranking</p>
                             {/if}
 
                             <img style="opacity:{visibility};" year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt="" />
@@ -437,7 +438,10 @@ onMount(() => {
                             <div
                                 in:scale
                                 class="{album["2020 Rank"]} img-wrapper img-annotation"
-                                style="transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);"
+                                style="
+                                    transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);
+                                    display:{sceneSetTo == "fourth" && +col.year == 2020 ? 'none' : ''};
+                                "
                             >
                                 <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                             </div>
@@ -521,7 +525,6 @@ h3 {
 
 .year-col .counter{
     transform: translate(calc(-100% - 10px),0%);
-    width: 30px;
     text-align: right;
 }
 
@@ -540,8 +543,14 @@ h3 {
     /* box-shadow: rgba(16, 26, 64, 0) 0px 0px 1px, rgba(16, 26, 64, 0.05) -1px 4px 3px, rgba(16, 26, 64, 0.05) -4px 11px 6px, rgba(16, 26, 64, 0.05) -7px 22px 10px, rgba(16, 26, 64, 0.05) -13px 38px 15px, rgba(16, 26, 64, 0.05) -19px 58px 21px; */
 }
 
-.year-full .img-wrapper, .year-col .img-wrapper {
-    transition: transform var(--duration) calc(var(--delay) * calc(var(--1s) * 0.005));
+.year-col .img-wrapper {
+    transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005)), width .5s, height .5s;
+    transition-timing-function: ease-in-out;
+}
+
+.year-full .img-wrapper {
+    transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005));
+    transition-timing-function: ease-in-out;
 }
 
 .img-annotation {

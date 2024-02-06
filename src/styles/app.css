@@ -65,6 +65,7 @@
     font-size: 24px;
     position: absolute;
     top: 0;
+	line-height: 1.2;
     left: 0;
     margin: 0;
     transform: translate(0,-100%);
@@ -87,13 +88,37 @@
 	font-size: 24px;
 }
 
+
+
 .counter {
     position: absolute;
     left: 0;
-    top: 0;
-    width:150px;
-    font-size: 12px;
-    transform: translate(0,-100%);
+	top: 0;
+	font-family: var(--sans);
+    width:auto;
+    font-size: 14px;
+	font-weight: 600;
+	-webkit-font-smoothing: antialiased;
+	color: black;
+	padding-right: 3px;
+	padding-left: 3px;
+	border-top-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	background: var(--color-bg);
+}
+
+.year-full .counter, .year-grouped .counter, .voter-grid .counter, .year-col .counter {
+	background: none;
+    color: var(--color-fg);
+    font-weight: 400;
+	-webkit-font-smoothing: auto;
+	transform: translate(0,-100%);
+	width: 200px;
+	padding: 0;
+}
+
+.year-col .counter {
+	width: 50px;
 }
 
 .counter-big {
@@ -106,9 +131,12 @@
 	font-size: 36px;
 }
 
+.img-wrapper img {
+	border-radius: 3px;
+}
+
 .year {
     position: absolute;
-    transition: transform 1s;
     width: 100%;
 }
 .year-wrapper {
@@ -123,12 +151,14 @@
 }
 .step {
     min-height: 100px;
-    padding-top: 500px;
+	padding-left: 50px;
+    /* padding-top: 500px; */
     padding-bottom: 300px;
     max-width: 300px;
 }
 .step p {
     margin: 0;
+	font-size: 18px;
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {

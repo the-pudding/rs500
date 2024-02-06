@@ -136,16 +136,20 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
             d.year = year;
             if(layout == "waffle-single" || layout == "waffle"){
 
+                padding = 3;
+
                 if(layout == "waffle-single"){
                     size = 600/12;
                     rowSize = 12;
                 }
+                else {
+                    rowSize = 5;
+                    size = 300/rowSize;
+                }
                 d.pos = getGridPosition(layout,i+1,d,vw,vh,size,padding,rowSize);
-                // d.pos = getGridPosition(layout,i+1,d);
             }
             else {
                 d.pos = getGridPosition(layout,d.rank,d,vw,vh,size,padding,rowSize);
-                // d.pos = getGridPosition(layout,d.rank,d);
             }
         });
 
@@ -210,26 +214,16 @@ function getColOffset(col,count,vw){
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
     >
-        <p class="chart-hed">2003 Rolling Stone Rankings</p>
-        <div class="button">
-            <button on:click={() => setScene("first")}>first</button>
-            <button on:click={() => setScene("second")}>second</button>
-            <button on:click={() => setScene("second2")}>second-2</button>
-            <button on:click={() => setScene("second3")}>second-3</button>
-            <button on:click={() => setScene("third")}>third</button>
-            <button on:click={() => setScene("third2")}>third-2</button>
-        
-        </div>
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
                 <p class="year-label">{col.year}</p>
-                {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album (album["Album ID"])}
+                {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, j (album["Album ID"])}
                     {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
 
                     <div
                         class="img-wrapper {+album["rank"] > 100 ? "low-rank": ''}"
                         in:fade={{delay:1000}}
-                        style="--delay: {album.rank}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                        style="--delay: {j}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
                         {#if sceneSetTo == "first"}
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
@@ -240,10 +234,14 @@ function getColOffset(col,count,vw){
                             {/if}
                         {/if}
                         {#if sceneSetTo == "third"}
+                            {#if j == 0}
+                                <p class="year-label" style="width:200px;">{col.year} Ranking</p>
+                            {/if}
+
                             <div class="counter"
-                                style="width:auto;"
+                                style="width:auto; opacity:{visibility};"
                             >
-                                #{album.rank}
+                                {album.rank}
                             </div>
                         {/if}
                         <img style="opacity:{visibility};" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
@@ -283,25 +281,17 @@ function getColOffset(col,count,vw){
         height: 10px;
     }
 
-    .third .counter {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: black;
-        color: white;
-        transform: none;
-    }
-
     .graphic {
         display: flex;
     }
     .img-wrapper {
         position: absolute;
-        transition: all 1s,
-			transform 1s;
+        transition: transform .5s calc(var(--delay) * calc(1s * 0.005));
+        transition-timing-function: ease-in-out;
+    }
 
+    .year-full .img-wrapper {
+        transition: 0;
     }
 
     .img-wrapper img {
