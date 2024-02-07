@@ -29,9 +29,10 @@ let rowSize = 10;
 
 
 let textStep = {
-    "first":"here's all the voters",
-    "second":"gender for one set",
-    "third":"gender for both sets",
+    "first":"voters intro",
+    "second":"point about gender on this list",
+    "third":"point about change in gender by year",
+    "third":"disgression on voting point system",
     "fourth":"age for one set",
     "fourth2":"age for both sets",
     "fourth3":"teenage years",
@@ -88,7 +89,8 @@ let thirdScene = [
         layout:"grouped-voter-gender",
         dataset:"voters",
         direction:"vert"
-    },
+    }
+    ,
     {
         year:2020,
         layout:"grouped-voter-gender",
@@ -98,14 +100,14 @@ let thirdScene = [
 ]
 let fourthScene = [
     {
-        year:2020,
+        year:2003,
         layout:"grouped-voter-gender",
         dataset:"voters",
         direction:"horz"
     }
     ,
     {
-        year:2003,
+        year:2020,
         layout:"grouped-voter-gender",
         dataset:"voters",
         direction:"horz"
@@ -211,6 +213,8 @@ function setScene(sceneCount){
 function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
     let temp;
+    let test = [];
+
     let direction = col.direction;
 
     if(dataset !== "voters"){
@@ -239,58 +243,58 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         let colCount = 7;
 
         if(sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
-            size = 20;
-            rowSize = Math.floor((vw - 7*size)/7/size);
-            let bigCardsNeeded = 100;
+            // size = 20;
+            // rowSize = Math.floor((vw - 7*size)/7/size);
+            // let bigCardsNeeded = 100;
 
-            if(sceneSetTo == "fifth" || sceneSetTo == "sixth"){
-                bigCardsNeeded = 200;
-            }
+            // if(sceneSetTo == "fifth" || sceneSetTo == "sixth"){
+            //     bigCardsNeeded = 200;
+            // }
 
-            let availableWidth = (vw - (25*(colCount - 1)))/colCount;
-            let availableHeight = vh/2-50;
+            // let availableWidth = (vw - (25*(colCount - 1)))/colCount;
+            // let availableHeight = vh/2-50;
 
-            if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
-                availableWidth = Math.min(vw,600);
-                availableHeight = vh - 50;
-            }
+            // if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
+            //     availableWidth = Math.min(vw,600);
+            //     availableHeight = vh - 50;
+            // }
 
-            let maxSquare = 300;
+            // let maxSquare = 300;
         
-            let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
-            squareSize = Math.min(maxSquare,squareSize);
+            // let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+            // squareSize = Math.min(maxSquare,squareSize);
 
-            let getMaxSizeOfSquaresInRect = function(n,w,h) {
-                var sw, sh;
-                var pw = Math.ceil(Math.sqrt(n*w/h));
-                if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
-                else sw = w/pw;
-                var ph = Math.ceil(Math.sqrt(n*h/w));
-                if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
-                else sh = h/ph;
-                return Math.max(sw,sh);
-            }
+            // let getMaxSizeOfSquaresInRect = function(n,w,h) {
+            //     var sw, sh;
+            //     var pw = Math.ceil(Math.sqrt(n*w/h));
+            //     if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+            //     else sw = w/pw;
+            //     var ph = Math.ceil(Math.sqrt(n*h/w));
+            //     if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+            //     else sh = h/ph;
+            //     return Math.max(sw,sh);
+            // }
         
-            const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+            // const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
         
-            squareSize = squareDimension;
+            // squareSize = squareDimension;
 
-            size = squareSize;
-            rowSize = Math.floor(availableWidth/size);
+            // size = squareSize;
+            // rowSize = Math.floor(availableWidth/size);
 
-            if(dataset == "voters"){
-                temp = temp.sort((a,b) => {
-                    return a["Birthyear"].localeCompare(b["Birthyear"])
-                })
+            // if(dataset == "voters"){
+            //     temp = temp.sort((a,b) => {
+            //         return a["Birthyear"].localeCompare(b["Birthyear"])
+            //     })
 
-                temp = temp
-                    .filter(d => d.Birthyear.length == 4);
-            }
-            else {
-                temp = temp.sort((a,b) => {
-                    return a["Release Year"].localeCompare(b["Release Year"])
-                })
-            }
+            //     temp = temp
+            //         .filter(d => d.Birthyear.length == 4);
+            // }
+            // else {
+            //     temp = temp.sort((a,b) => {
+            //         return a["Release Year"].localeCompare(b["Release Year"])
+            //     })
+            // }
         }
 
         let grouped = groups(temp, d => {
@@ -298,11 +302,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             if(sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
 
                 if(dataset == "voters"){
-                    let teenage = d["Teenage Decade"];
-                    if(teenage == "1940s" || teenage == "1930s" || teenage == "1950s"){
+                    let rank = d["Teenage Decade"];
+                    if(rank == "1940s" || rank == "1930s" || rank == "1950s"){
                         return "1950s and earlier"
                     }
-                    return d["Teenage Decade"];
+                    return rank;
                 } 
                 else {
                     let rank;
@@ -368,6 +372,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
                 tempGroup.push(j)
             })
         });
+
+        tempGroup = tempGroup.sort((a,b) => {
+            return +b["ID"] - +a["ID"];
+        })
+
         temp = tempGroup 
     }
 
@@ -424,9 +433,6 @@ function getColOffset(col,count,vw,sceneSetTo){
     else if(sceneSetTo == "first"){
         top = -1000;
     }
-    // else if(sceneSetTo == "fifth" && col.dataset == "albums"){
-        
-    // }
     else if(cols[count].layout == "grouped-voter-gender" && cols[count].year == "2020 "){
         if(vw > 600){
             if(cols[count].direction == "vert"){
@@ -492,7 +498,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
                 "
             >
                     {#if col.dataset == "voters"}
-                        {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (voter["ID"])}
+                        {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (+voter["ID"])}
                             <div
                                 class="img-wrapper"
                                 style="--delay: {0}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"

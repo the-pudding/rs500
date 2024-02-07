@@ -16,8 +16,8 @@ let rowSize = 15;
 let stepValue = "second";
 let value;
 let textStep = {
-    "second":"tk point",
-    "third":"In fact, albums that peaked in the top 40 are more likely to be ranked in Rolling Stone’s top 100 than those that peaked at a lower position."
+    "second":"share of top 100 songs that charted at #1 or didn't chart",
+    "third":"bottom 400 still chart well but not as high as top 100"
 }
 
 let scenes = Object.keys(textStep);
@@ -222,11 +222,7 @@ function getColOffset(col,count,vw,sceneSetTo){
 </script>
 
 <section>
-    <p class="center">But beyond shifting tastes, we found four non-musical factors that also help shape this list: popularity, demographics, how we listen, and vote scoring.
-    </p>
-    <p class="subhead center">tk subhead</p>
-    <p class="center">
-        You can’t - or at least shouldn’t - vote for something you haven’t heard. Thus, part of the reason Marvin Gaye’s What’s Going On topped Rolling Stone’s 2020 list is that many of the voters had heard it. 
+    <p class="center">transition to shifting music tastes.
     </p>
     <div 
         class="year-wrapper {sceneSetTo}"

@@ -129,7 +129,8 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
     if(gridType == "col"){
         if(rank < 11){
-            mid = 75;
+            let bottomPadding = 20;
+            mid = (vh-topPadding-gapTwo*(10)-bottomPadding)/10    ;
             let left = leftPadding
             let top = mid*(rank-1) + gapTwo*(rank-1) + topPadding
             return [left,top,mid]
@@ -137,7 +138,8 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
     }
 
     if(gridType == "full"){
-
+        let bottomPadding = 20;
+        rowSize = 25;
 
         if(vw > 600){
             big = 300;
@@ -145,12 +147,58 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             small = (big * 2) / 25;
         }
 
+        if(vh < 900){
+            mid = (Math.min(600,vw))/10;
+            big = mid
+            small = (Math.min(600,vw))/25;
+            rowSize = 25;
+        }
+
+        let bigCardsNeeded = 490;
+        let availableWidth = (Math.min(600,vw));
+        let availableHeight = vh-topPadding-mid-gap-50;
+
+        let maxSquare = 300;
+    
+        let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+        squareSize = Math.min(maxSquare,squareSize);
+
+        let getMaxSizeOfSquaresInRect = function(n,w,h) {
+            var sw, sh;
+            var pw = Math.ceil(Math.sqrt(n*w/h));
+            if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+            else sw = w/pw;
+            var ph = Math.ceil(Math.sqrt(n*h/w));
+            if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+            else sh = h/ph;
+            return Math.max(sw,sh);
+        }
+    
+        const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+    
+        squareSize = squareDimension;
+
+        if(vh < 900){
+            mid = (Math.min(600,vw)/10);
+            big = mid
+            small = squareSize;
+            rowSize = Math.floor(Math.min(600,vw)/squareSize);
+        }
+
+
         if(rank == 1){
             let left = 0 + leftPadding;
             let top = 0 + topPadding;
             return [left,top,big]
         }
         if(rank < 11){
+
+            if(vh < 900){
+                let left = leftPadding + (((rank-1) % 10)*mid)
+                let top = Math.floor((rank-1)/10)*mid + topPadding
+                return [left,top,mid]
+            }
+
             let top = (Math.floor((rank-2)/3)*mid + Math.floor((rank-2)/3)*gapTwo) + topPadding;
             let left = (((rank-2) % 3)*mid + big) + ((rank-2) % 3)*gapTwo + gapTwo + leftPadding;
             return [left,top,mid]
@@ -160,14 +208,23 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         
         if(rank > 250){
             secondGap = gapBreak;
-            let top = Math.floor((rank-251)/25)*small + big + gap + secondGap + Math.ceil(240/25)*small + topPadding;
-            let left = (((rank- 251) % 25)*small) + leftPadding;
+            let top = Math.floor((rank-251)/rowSize)*small + big + gap + secondGap + Math.ceil(240/rowSize)*small + topPadding;
+            let left = (((rank- 251) % rowSize)*small) + leftPadding;
             return [left,top,small];    
         }
 
-        let top = (Math.floor((rank-11)/25)*small + big) + gap + secondGap + topPadding;
-        let left = (((rank-11) % 25)*small) + leftPadding;
+        // if(vh < 900){
+        //     // let top = (Math.floor((rank-11)/25)*small) + topPadding;
+        //     // let left = (((rank-11) % 25)*small) + leftPadding + (mid + 20);
+            
+        //     return [left,top,small]
+        // }
+
+
+        let top = (Math.floor((rank-11)/rowSize)*small + big) + gap + secondGap + topPadding;
+        let left = (((rank-11) % rowSize)*small) + leftPadding;
         return [left,top,small];
+
     }
 
     if(gridType == "fill"){

@@ -26,17 +26,17 @@ $: console.log(stepValue)
 
 let textStep = {
     "fill":"title",
-    "first":"in 2003 RS released its top 500, with sgt peppers at #1",
-    "second":"When the publication updated the list in 2012 to include the first decade of the new millennium, not only did The Beatles’ classic remain at number one but the entire top 10 was unchanged.",
-    "third":"This certitude wasn’t to last, though. When Rolling Stone revised the list in 2020, the two decade consensus was no more. Except for Pet Sounds remaining at number two, the entire top 10 was different.",
-    "fourth":"And not just a little different. Very different. Let’s look at what changed. Here we see where today’s top 10 ranked in 2003.",
-    "fourth2":"In 2003, The Miseducation of Lauryn Hill was only 6 years-old and already ranked at #321 on the all-time list. Twenty years later, judges voted it into the #10 slot.",
-    "fifth":"174 albums in the 2003 ranking don’t appear at all in the 2020 ranking. This includes albums such as Creedence Clearwater Revival’s Green River, which appeared canonical at #95 in 2003. Let’s look at what replaced them in the 2020 data.",
-    "sixth":"Naturally, many of the albums that replaced those 174 in the 2020 ranking were recent releases.",
-    "sixth2":"Such as Beyonce's Lemonade (#73)",
-    "sixth3":"But others had been out for decades. Released in 1985, Kate Bush’s Hounds of Love wasn’t on the list in 2003 or 2012 but was declared the 68th greatest album of all-time in 2020. Joy Division’s Unknown Pleasures, released just a few years before Bush’s masterpiece, saw a similar shift.",
-    "sixth4":"And it wasn’t just the last few decades that saw a reevaluation. Billie Holiday’s Lady in Satin was suddenly one of the greatest albums of all-time despite being unranked in 2003, 45 years after its release.",
-    "sixth5":"You’d think we’d have a grasp on what was good and what was bad after all that time. These changes left us wondering …"
+    "first":"intro to 500 greatest albums, highlight sgt peppers",
+    "second":"show 2012 list, things are unchanged. wouldn't last...",
+    "third":"new top 10 in 2020...",
+    "fourth":"comparison of top 10 in 2020 to where it was in 2003.",
+    "fourth2":"Lauryn Hill highlight",
+    "fifth":"174 albums in the 2003 ranking don’t appear at all in the 2020 ranking...CCR highlight",
+    "sixth":"switch to 2020 ranking and the empty slots from what dropped",
+    "sixth2":"Lemonade...",
+    "sixth3":"Kate Bush and Joy Division",
+    "sixth4":"Billie Holiday",
+    "sixth5":"tk transition..."
 }
 
 let scenes = Object.keys(textStep);
@@ -53,6 +53,16 @@ let counterTextFull = {
     251:"#251 - 500"
 }
 
+if(vh < 900){
+    counterTextFull = {
+        1:"#1",
+        5:"#5",
+        10:"#10",
+        11:"#11 - #250",
+        251:"#251 - 500"
+    }
+}
+
 let counterTextCol = {
     1:"#1",
     5:"#5",
@@ -60,7 +70,7 @@ let counterTextCol = {
 }
 
 let layoutCounts = {
-    "full":[1,2,11,251],
+    "full":Object.keys(counterTextFull).map(d => +d),
     "col":[1,5,10],
     "fill":[]
 }
@@ -207,7 +217,12 @@ function filterData(year,layout,sceneSetTo,scrollY){
             return +a[`${year} Rank`] - +b[`${year} Rank`];
         })
 
-        temp = temp.slice(0,200);
+        let screenspace = vh*vw;
+        let avail = screenspace/((size)*(size));
+        console.log(avail)
+
+
+        temp = temp.slice(0,avail);
     }
     else {
         temp = temp
@@ -402,18 +417,18 @@ onMount(() => {
         style="height:{vh}px; overflow:hidden;"
     >        
         {#each cols as col, i (col.year)}
-            <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
+            <div transition:fly={{delay:100, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
                 <div class="img-grid">
                     {#each filterData(col.year,col.layout,sceneSetTo,scrollY) as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
-                        {@const filePath = album.pos[2] > 100 ? "full" : "256"}
+                        {@const filePath = album.pos[2] > 100 ? "256" : "256"}
 
                         <div
                             class="{album["2020 Rank"]} img-wrapper {album[`${col.year} Rank`]}"
                             style="--delay: {album.rank < 11 ? album.rank : 50}; --duration: {album.rank < 11 ? ".5s" : ".5s"}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                         >
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
-                                <div class="counter {col.layout == "full" && +album.rank < 10 ? 'counter-big' : ''}"
+                                <div class="counter {col.layout == "full" && +album.rank < 11 ? 'counter-big' : ''}"
                                     style=""
                                 >
                                     {col.layout == "full" ? counterTextFull[album.rank] : counterTextCol[album.rank]}
@@ -422,9 +437,9 @@ onMount(() => {
 
                             {#if ["col","full"].indexOf(col.layout) > -1 && album[`${col.year} Rank`] == 1}
                                 <p class="year-label"
-                                    style="display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
+                                    style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                                 >
-                                    {col.year}{sceneSetTo == "first" ? " Rolling Stone Ranking" : ''}
+                                    {sceneSetTo == "first" ? "500 Greatest Albums of All-time" : col.year}
                                 </p>
                             {/if}
                             {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
@@ -465,6 +480,7 @@ onMount(() => {
                         margin-top: {i == 0 ? -vh : ''}px;
                         padding-top: {i == 0 ? '0' : ''}px;
                         min-height: {vh*.75}px;
+                        padding-left: {i == 0 ? '0' : ''}px;
                     "
 
                 >
@@ -472,7 +488,7 @@ onMount(() => {
                         <div class="title"
                             style="
                                 margin-top:{(sizing["fill"].size+sizing["fill"].padding)*3}px;
-                                margin-left:{sizing["fill"].size + sizing["fill"]["padding"]/2}px;
+                                margin-left:{sizing["fill"].size*2 + sizing["fill"].padding*2}px;
                                 width:{(sizing["fill"].size+sizing["fill"]["padding"])*6}px;
                                 min-height:{(sizing["fill"].size+sizing["fill"]["padding"])*4}px;
                             "
@@ -508,7 +524,6 @@ h3 {
     margin: 0;
     line-height: 1.3;
 }
-
 /* .year-full {
     left: 0;
     right: 0;
@@ -520,7 +535,8 @@ h3 {
 
 
 .year-full .year-label {
-    transform: translate(0,calc(-100% - 18px));
+    transform: translate(0,calc(-100% - 22px));
+    width: 300px;
 }
 
 .year-col .counter{
@@ -541,6 +557,10 @@ h3 {
 .img-wrapper {
     position: absolute;
     /* box-shadow: rgba(16, 26, 64, 0) 0px 0px 1px, rgba(16, 26, 64, 0.05) -1px 4px 3px, rgba(16, 26, 64, 0.05) -4px 11px 6px, rgba(16, 26, 64, 0.05) -7px 22px 10px, rgba(16, 26, 64, 0.05) -13px 38px 15px, rgba(16, 26, 64, 0.05) -19px 58px 21px; */
+}
+
+.year {
+    transition: transform .5s;
 }
 
 .year-col .img-wrapper {
@@ -573,4 +593,22 @@ img {
     position: absolute;
     z-index: 100000;
 }
+
+@media (max-height: 900px) {
+    .year-full .counter-big {
+        transform: none;
+        font-family: var(--sans);
+        width:auto;
+        font-size: 14px;
+        font-weight: 600;
+        -webkit-font-smoothing: antialiased;
+        padding-right: 3px;
+        padding-left: 3px;
+        border-top-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+        background: var(--color-bg);
+    }
+}
+
+
 </style>
