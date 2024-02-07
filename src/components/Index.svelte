@@ -14,11 +14,11 @@
 
 </script>
 
-<!-- <Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY}/> -->
-<!-- <Title /> -->
+<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY}/>
+<Title />
 
-<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
-<!-- <Popularity vw={$viewport.width} vh={$viewport.height}/> -->
+<HipHop vw={$viewport.width} vh={$viewport.height}/>
+<Popularity vw={$viewport.width} vh={$viewport.height}/>
  
 <Spotify vw={$viewport.width} vh={$viewport.height}/>
 
