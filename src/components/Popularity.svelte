@@ -16,8 +16,8 @@ let rowSize = 15;
 let stepValue = "second";
 let value;
 let textStep = {
-    "second":"share of top 100 songs that charted at #1 or didn't chart",
-    "third":"bottom 400 still chart well but not as high as top 100"
+    "second":"[15] share of top 100 songs that charted at #1 or didn't chart",
+    "third":"[16] bottom 400 still chart well but not as high as top 100"
 }
 
 let scenes = Object.keys(textStep);
@@ -222,7 +222,7 @@ function getColOffset(col,count,vw,sceneSetTo){
 </script>
 
 <section>
-    <p class="center">transition to shifting music tastes.
+    <p class="center">[14] transition to shifting music tastes.
     </p>
     <div 
         class="year-wrapper {sceneSetTo}"

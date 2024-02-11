@@ -26,17 +26,17 @@ $: console.log(stepValue)
 
 let textStep = {
     "fill":"title",
-    "first":"intro to 500 greatest albums, highlight sgt peppers",
-    "second":"show 2012 list, things are unchanged. wouldn't last...",
-    "third":"new top 10 in 2020...",
-    "fourth":"comparison of top 10 in 2020 to where it was in 2003.",
-    "fourth2":"Lauryn Hill highlight",
-    "fifth":"174 albums in the 2003 ranking don’t appear at all in the 2020 ranking...CCR highlight",
-    "sixth":"switch to 2020 ranking and the empty slots from what dropped",
-    "sixth2":"Lemonade...",
-    "sixth3":"Kate Bush and Joy Division",
-    "sixth4":"Billie Holiday",
-    "sixth5":"tk transition..."
+    "first":"[1] intro to 500 greatest albums, highlight sgt peppers",
+    "second":"[2] show 2012 list, things are unchanged. wouldn't last...",
+    "third":"[3] new top 10 in 2020...",
+    "fourth":"[4] comparison of top 10 in 2020 to where it was in 2003.",
+    "fourth2":"[5] Lauryn Hill highlight",
+    "fifth":"[6] 174 albums in the 2003 ranking don’t appear at all in the 2020 ranking...CCR highlight",
+    "sixth":"[7] switch to 2020 ranking and the empty slots from what dropped",
+    "sixth2":"[8] Lemonade...",
+    "sixth3":"[9] Kate Bush and Joy Division",
+    "sixth4":"[10] Billie Holiday",
+    "sixth5":"[11] tk transition..."
 }
 
 let scenes = Object.keys(textStep);

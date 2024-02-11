@@ -16,7 +16,7 @@ let rowSize = 5;
 let stepValue = "first";
 let value;
 let textStep = {
-    "first":"In 2003, there were only 26 hip-hop albums on the list, the highest ranked of which was Public Enemy’s It Takes a Nation of Millions to Hold Us Back at 48, the only hip-hop album in the top 100. By 2020, hip-hop had cemented its cultural prominence. The updated list reflected that. 57 hip-hop albums made the cut, 17 of which were in the top 100.",
+    "first":"[13] Hip Hop Comparison...more hip hop albums in 2020 and rise in rankings.",
 }
 
 let scenes = Object.keys(textStep);

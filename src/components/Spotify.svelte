@@ -18,12 +18,12 @@ let size = 25;
 let rowSize = 10;
 
 let textStep = {
-    "first":"tk transition to 174 albums that fell off the list",
-    "second":"isolated 174",
-    "second2":"point about compliations",
-    "second3":"point about precense on spotify",
-    "third":"point about change in rankings",
-    "third2":"highlight albums: neil young, funkadelic, troutman"
+    "first":"[17] tk transition to 174 albums that fell off the list",
+    "second":"[17 continued...] isolated 174",
+    "second2":"[18] point about compliations",
+    "second3":"[19] point about precense on spotify",
+    "third":"[19 continued] point about change in rankings",
+    "third2":"[19 continued] highlight albums: neil young, funkadelic, troutman"
 }
 
 let scenes = Object.keys(textStep);
@@ -209,7 +209,7 @@ function getColOffset(col,count,vw){
 
 </script>
 
-<p class="center">transition to How We Listen
+<p class="center">[17] transition to How We Listen
 </p>
 
 <section>
@@ -274,7 +274,7 @@ function getColOffset(col,count,vw){
 
 </section>
 
-<p class="center">transition to voter section
+<p class="center">[20] transition to voter section
 </p>
 
 <style>

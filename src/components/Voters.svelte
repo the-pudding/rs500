@@ -29,22 +29,22 @@ let rowSize = 10;
 
 
 let textStep = {
-    "first":"voters intro",
-    "second":"point about gender on this list",
-    "third":"point about change in gender by year",
-    "third":"disgression on voting point system",
-    "fourth":"age for one set",
-    "fourth2":"age for both sets",
-    "fourth3":"teenage years",
-    "fifth":"release comparison",
-    "sixth":"concluding",
-    "sixth2":"zoom",
-    "sixth3":"zoom",
-    "sixth4":"zoom",
-    "sixth5":"zoom",
-    "sixth6":"zoom",
-    "sixth7":"zoom",
-    "sixth8":"zoom"
+    "first":"[21] voters intro",
+    "second":"[22] point about gender on this list",
+    "third":"[23] point about change in gender by year",
+    "third":"[24] disgression on voting point system",
+    "fourth":"[25] age for one set",
+    "fourth2":"[25 continued] age for both sets",
+    "fourth3":"[26] teenage years",
+    "fifth":"[26 continued] release comparison",
+    "sixth":"[27] concluding",
+    "sixth2":"[27 continued] zoom",
+    "sixth3":"[27 continued] zoom",
+    "sixth4":"[27 continued] zoom",
+    "sixth5":"[27 continued] zoom",
+    "sixth6":"[27 continued zoom",
+    "sixth7":"[27 continued] zoom",
+    "sixth8":"[27 continued] zoom"
 }
 
 let scenes = Object.keys(textStep);

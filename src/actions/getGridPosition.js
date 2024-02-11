@@ -128,6 +128,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
     }
 
     if(gridType == "col"){
+        let topPadding = 70;
         if(rank < 11){
             let bottomPadding = 20;
             mid = (vh-topPadding-gapTwo*(10)-bottomPadding)/10    ;
@@ -139,6 +140,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
     if(gridType == "full"){
         let bottomPadding = 20;
+        let topPadding = 70;
         rowSize = 25;
 
         if(vw > 600){
