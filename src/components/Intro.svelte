@@ -1,5 +1,6 @@
 <script>
 import data from "$data/albums.csv"
+import { onMount, setContext, getContext } from "svelte";
 
 import { getGridPosition } from '$actions/getGridPosition.js';
 // import { tweened } from 'svelte/motion';
@@ -7,7 +8,6 @@ import {fade, fly, scale} from 'svelte/transition';
 // import { flip } from 'svelte/animate';
 
 import { cubicOut } from 'svelte/easing';
-import { onMount } from "svelte";
 import { setResponse } from "@sveltejs/kit/node";
 import { index } from "d3";
 import Scrolly from "$components/helpers/Scrolly.svelte";
@@ -15,7 +15,9 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 export let vw;
 export let vh;
 export let scrollY;
-
+export let spriteMap;
+export let spriteMapBig;
+export let copy;
 
 let stepValue = "fill";
 let value;
@@ -25,19 +27,21 @@ $: stepValue, setScene(stepValue);
 $: console.log(stepValue)
 
 let textStep = {
-    "fill":"title",
-    "first":"[1] intro to 500 greatest albums, highlight sgt peppers",
-    "second":"[2] show 2012 list, things are unchanged. wouldn't last...",
-    "third":"[3] new top 10 in 2020...",
-    "fourth":"[4] comparison of top 10 in 2020 to where it was in 2003.",
-    "fourth2":"[5] Lauryn Hill highlight",
-    "fifth":"[6] 174 albums in the 2003 ranking don’t appear at all in the 2020 ranking...CCR highlight",
-    "sixth":"[7] switch to 2020 ranking and the empty slots from what dropped",
-    "sixth2":"[8] Lemonade...",
-    "sixth3":"[9] Kate Bush and Joy Division",
-    "sixth4":"[10] Billie Holiday",
-    "sixth5":"[11] tk transition..."
+    "fill":"",
+    "first":copy.introfirst,
+    "second":copy.introsecond,
+    "third":copy.introthird,
+    "fourth":copy.introfourth,
+    "sixth":copy.introfifth,
+    // "fifth":[{value:"[6] 174 albums in the 2003 ranking don’t appear at all in the 2020 ranking...CCR highlight"}],
+    // "sixth":[{value:"[7] switch to 2020 ranking and the empty slots from what dropped"}],
+    "sixth2":copy.introsixtwo,
+    "sixth3":copy.introsixthree,
+    // "sixth4":[{value:"[10] Billie Holiday"}],
+    // "sixth5":[{value:"[11] tk transition..."}]
 }
+
+console.log(textStep)
 
 let scenes = Object.keys(textStep);
 
@@ -119,16 +123,12 @@ let fourthScene = [
     {
         year:2003,
         layout:"full"
-    },
-    {
-        year:2020,
-        layout:"col"
     }
 ]
 
 let fifthScene = [
     {
-        year:2003,
+        year:2020,
         layout:"full"
     }
 ]
@@ -219,10 +219,10 @@ function filterData(year,layout,sceneSetTo,scrollY){
 
         let screenspace = vh*vw;
         let avail = screenspace/((size)*(size));
-        console.log(avail)
+        console.log("counts:",avail)
 
 
-        temp = temp.slice(0,avail);
+        temp = temp.slice(0,50);
     }
     else {
         temp = temp
@@ -249,6 +249,13 @@ function filterData(year,layout,sceneSetTo,scrollY){
 
     return temp;
 }
+
+let Annotations = {
+    "fourth":["1BZoqf8Zje5nGdwZhOjAtD"],
+    "sixth2":["20r762YmB5HeofjMCiPMLv","7ycBtnsMtyVbbwTfJwRjSP","7dK54iZuOxXFarGhXwEXfF","3mH6qwIy9crq0I9YQbOuDf"],
+    "sixth3":["5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s","4LrLP7DM1KBj8r2Sc098JA"]
+}
+
 
 function setScene(sceneCount){
     toAnnotate = [];
@@ -280,12 +287,13 @@ function setScene(sceneCount){
         cols = fourthScene;
         sceneSetTo = sceneCount;
         sceneSetToSub = ""
+        toAnnotate = Annotations["fourth"]
     }
     if(sceneCount == "fourth2"){
         cols = fourthScene;
         sceneSetTo = "fourth";
         sceneSetToSub = "2";
-        toAnnotate = ["1BZoqf8Zje5nGdwZhOjAtD"]
+        toAnnotate = Annotations["fourth"]
 
     }
     if(sceneCount == "fifth"){
@@ -303,13 +311,13 @@ function setScene(sceneCount){
         cols = sixthScene;
         sceneSetTo = "sixth";
         sceneSetToSub = "2"
-        toAnnotate = ["7dK54iZuOxXFarGhXwEXfF"]
+        toAnnotate = Annotations["sixth2"]
     }
     if(sceneCount == "sixth3"){
         cols = sixthScene;
         sceneSetTo = "sixth";
         sceneSetToSub = "3"
-        toAnnotate = ["7dK54iZuOxXFarGhXwEXfF","5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s"]
+        toAnnotate = Annotations["sixth3"]
     }
     if(sceneCount == "sixth4"){
         cols = sixthScene;
@@ -325,30 +333,40 @@ function setScene(sceneCount){
     }
 }
 
-function getColOffset(col,count,vw){
+function getColOffset(col,count,vw,sceneSetTo){
+    let left = 0;
+    let top = 0;
+
     if(count == 0){
         if(cols.length > 1 && cols[count].layout == "full"){
             if(cols[count+1].layout == "col"){
-                return -50;
+               left = -50;
             }
         }
-        return 0
+        left = 0
     }
     else {
         if(cols[count-1].layout == "col"){
-            if(vw > 600){
-                return 150*count;
+            if(vh < 900){
+                top = 100*count;
             }
-            return 100*count;
+            else if(vw > 600){
+                left = 150*count;
+            }
+            else {
+                left = 100*count;
+            }
+            
         }
         else if(cols[count-1].layout == "full"){
             if(vw > 600){
-                return 600;
+                left = 600;
             }
-            return 100*count;
+            left = 100*count;
         }
-        return 0;
     }
+    return `${left}px,${top}px`
+
 }
 
 function getVisibility(col,album,sceneSetTo,sceneSetToSub){
@@ -373,7 +391,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
                 if(album["Album ID"]=="1BZoqf8Zje5nGdwZhOjAtD"){
                     return 1;
                 }
-                return .2;
+                return .6;
             }
             return 1;
         }
@@ -381,7 +399,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     }
     if(sceneSetTo == "fifth" && +col.year == 2003){
         if(+album["2020 Rank"] == ""){
-            return .2
+            return .6
         }
         else {
             1;
@@ -390,13 +408,13 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
 
     if(sceneSetTo == "sixth" && +col.year == 2003){
         if([2,3,4].indexOf(+sceneSetToSub) > -1){
-            return .2;
+            return .6;
         }
         if(sceneSetToSub == "5"){
             return 1;
         }
         if(+album["2003 Rank"] == ""){
-            return 0
+            return 1
         }
         else {
             return 1;
@@ -407,28 +425,57 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
 
 onMount(() => {
     cols = fillScene;
+    console.log(copy.headings)
+    // console.log(spriteMapBig.get("6QaVfG1pHYl1z15ZxkvVDW"))
 })
 
+function getFly(){
+    if(sceneSetTo == "fifth"){
+        return 500;
+    }
+    return 50;
+}
+function getDelay(direction){
+    if(sceneSetTo == "fifth"){
+        if(direction == "in"){
+            return 1000;
+        }
+        return 100;
+        
+    }
+    return 100;
+}
 </script>
 
 <section>
     <div
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
-    >        
+    >   
         {#each cols as col, i (col.year)}
-            <div transition:fly={{delay:100, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
+            <div in:fly={{delay:getDelay("in"), y:getFly()}} out:fly={{delay:getDelay("out"), y:getFly()}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw,sceneSetTo)});"> 
                 <div class="img-grid">
                     {#each filterData(col.year,col.layout,sceneSetTo,scrollY) as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
-                        {@const filePath = album.pos[2] > 100 ? "256" : "256"}
+                        {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
+                        {@const spriteData = album.pos[2] > 50 ? spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                        {@const spriteBase = album.pos[2] > 50 ? 192 : 96}
+                        {@const spriteAdjust = spriteBase/album.pos[2]}
+                        {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+                        {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
                         <div
-                            class="{album["2020 Rank"]} img-wrapper {album[`${col.year} Rank`]}"
-                            style="--delay: {album.rank < 11 ? album.rank : 50}; --duration: {album.rank < 11 ? ".5s" : ".5s"}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                            class="{album["2020 Rank"]} album-id-{album["Album ID"]} img-wrapper {album[`${col.year} Rank`]}"
+                            style="
+                                --delay: {album.rank < 11 ? album.rank : 50};
+                                --duration: {album.rank < 11 ? ".5s" : ".5s"};
+                                transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0);
+                                width:{album.pos[2]}px;
+                                height:{album.pos[2]}px;
+                            "
                         >
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
-                                <div class="counter {col.layout == "full" && +album.rank < 11 ? 'counter-big' : ''}"
+                                <div class="counter {["full","col"].indexOf(col.layout) > -1 && +album.rank < 11 ? 'counter-big' : ''}"
                                     style=""
                                 >
                                     {col.layout == "full" ? counterTextFull[album.rank] : counterTextCol[album.rank]}
@@ -439,14 +486,31 @@ onMount(() => {
                                 <p class="year-label"
                                     style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                                 >
-                                    {sceneSetTo == "first" ? "500 Greatest Albums of All-time" : col.year}
+                                    {@html sceneSetTo == "first" ? "Rolling Stone&rsquo;s 2003 Ranking of Greatest Albums" : `${col.year}${col.layout !== "col" ? ' Ranking' : ''}`}
                                 </p>
                             {/if}
                             {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
                                 <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label">2020 Ranking</p>
                             {/if}
 
-                            <img style="opacity:{visibility};" year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt="" />
+                            {#if album.pos[2] > 100}
+                                <img style="
+                                        opacity:{visibility};
+                                        filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    "
+                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                                />
+                            {:else}
+                                <div class="img-sprite" style="
+                                    opacity:{visibility};
+                                    background-image:url(assets/spritesheet_{album.pos[2] > 50 ? "192" : "96"}.jpg);
+                                    background-size:{size};
+                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    background-position:{pos};
+                                "
+                                >
+                                </div>
+                            {/if}
                         </div>
                     {/each}
                     {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
@@ -474,12 +538,13 @@ onMount(() => {
                 {@const padding = sizing[sceneSetTo].padding}
 
 
-                <div class="step"
+                <div class="step {i == 0 ? "title-step" : ''}"
                      class:active
                      style="
                         margin-top: {i == 0 ? -vh : ''}px;
-                        padding-top: {i == 0 ? '0' : ''}px;
+                        padding-top: {i == 0 ? '0' : vh*.2}px;
                         min-height: {vh*.75}px;
+                        margin-bottom: {i == 0 ? vh/2 : ''}px;
                         padding-left: {i == 0 ? '0' : ''}px;
                     "
 
@@ -493,12 +558,37 @@ onMount(() => {
                                 min-height:{(sizing["fill"].size+sizing["fill"]["padding"])*4}px;
                             "
                         >
-                            <h1>What defines greatness?</h1>
-                            <h3>Analyzing the Rolling Stone 500</h3>
-                            <p>by Chris Dalla Riva</p>
+                            <h1>{copy.headings[0].title}</h1>
+                            <p>{@html copy.headings[0].byline}</p>
                         </div>
                     {:else}
-                        <p>{textStep[scene]}</p>
+                        {#each textStep[scene] as text, i}
+                            <p style="margin-bottom:20px;">{@html text.value}</p>
+                            {#if scene == "sixth2" || scene == "sixth3"}
+                                <div
+                                    in:scale
+                                    class="text-annotation"
+                                    style="
+                                    "
+                                >
+                                    <img width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                                </div>
+                            {/if}
+
+                        {/each}
+                        {#if scene == "fourth"}    
+                                {#each Annotations["fourth"] as album}
+                                    <div
+                                        in:scale
+                                        class="text-annotation"
+                                        style="
+                                        "
+                                    >        
+                                        <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album}.jpg" alt="" />
+                                    </div>
+                                {/each}
+
+                            {/if}
                     {/if}
                     
                 </div>
@@ -509,9 +599,20 @@ onMount(() => {
 
 <style>
 
+
+
 .title {
     background-color: var(--color-bg);
     padding: 30px;
+}
+
+.step {
+    opacity: .2;
+    transition: opacity .5s;
+}
+
+.active.step {
+    opacity: 1;
 }
 
 h1 {
@@ -531,7 +632,14 @@ h3 {
 } */
 
 
+.title-step {
+    opacity: 0;
+    transition: opacity .5s;
+}
 
+.title-step.active {
+    opacity: 1;
+}
 
 
 .year-full .year-label {
@@ -594,8 +702,12 @@ img {
     z-index: 100000;
 }
 
+.steps {
+    pointer-events: none;
+}
+
 @media (max-height: 900px) {
-    .year-full .counter-big {
+    .year-full .counter-big, .year-col .counter-big {
         transform: none;
         font-family: var(--sans);
         width:auto;

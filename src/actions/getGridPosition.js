@@ -29,7 +29,24 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         leftPadding = 100;
         topPadding = 100;
 
-        if(orientation == "horz"){
+        let leftOffset = 0
+        let topOffset = 0;
+
+        offSet.forEach(d => {
+            if(orientation == "stacked") {
+                totalOffset = Math.ceil(d/rowSize) + totalOffset
+                leftOffset = (totalOffset*size) + album.groupCount*20;
+            }
+        })
+
+        if(orientation == "stacked"){
+
+            let top = ((album.count) % rowSize)*size + topPadding;
+            let left = (Math.floor((album.count)/rowSize))*size + leftPadding + leftOffset
+            return [left,top,size]
+        }
+
+        else if(orientation == "horz"){
             let top = (Math.floor((album.count)/rowSize))*size + topPadding;
             let left = ((album.count) % rowSize)*size + rowSize*size*album.groupCount + album.groupCount*20 + leftPadding;
             return [left,top,size]
@@ -42,6 +59,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         
 
     }
+
 
     if(gridType == "grouped-voter-gender"){
 
@@ -115,6 +133,9 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
 
     if(gridType == "waffle-single"){
+        if(vh < 900){
+            topPadding = 50;
+        }
         let left = ((rank-1) % rowSize)*size + leftPadding
         let top = (Math.floor((rank-1)/rowSize))*size + topPadding
         return [left,top,size-padding]
@@ -128,10 +149,21 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
     }
 
     if(gridType == "col"){
-        let topPadding = 70;
+        let topPadding = 50;
+        let bottomPadding = 20;
         if(rank < 11){
-            let bottomPadding = 20;
-            mid = (vh-topPadding-gapTwo*(10)-bottomPadding)/10    ;
+
+            if(vh < 900){
+                mid = (Math.min(600,vw))/10;
+                let left = leftPadding + (((rank-1) % 10)*mid)
+                let top = topPadding
+                return [left,top,mid]
+    
+            }
+            else {
+                mid = (vh-topPadding-gapTwo*(10)-bottomPadding)/10;
+            }
+            
             let left = leftPadding
             let top = mid*(rank-1) + gapTwo*(rank-1) + topPadding
             return [left,top,mid]
@@ -147,13 +179,6 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             big = 300;
             mid = big/3 - gapTwo + 1;
             small = (big * 2) / 25;
-        }
-
-        if(vh < 900){
-            mid = (Math.min(600,vw))/10;
-            big = mid
-            small = (Math.min(600,vw))/25;
-            rowSize = 25;
         }
 
         let bigCardsNeeded = 490;
@@ -184,8 +209,11 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             mid = (Math.min(600,vw)/10);
             big = mid
             small = squareSize;
-            rowSize = Math.floor(Math.min(600,vw)/squareSize);
+            rowSize = Math.ceil(Math.min(600,vw)/squareSize);
         }
+
+        small = Math.floor(small);
+        mid = Math.floor(mid);
 
 
         if(rank == 1){

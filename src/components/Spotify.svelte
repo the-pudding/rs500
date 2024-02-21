@@ -8,6 +8,13 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 
 export let vw;
 export let vh;
+export let copy;
+export let spriteMap;
+export let spriteMapBig;
+export let spriteMapSpotify;
+
+
+
 
 let stepValue = "first";
 let value;
@@ -16,14 +23,21 @@ let sceneSetToSub = ""
 let padding = 0;
 let size = 25;
 let rowSize = 10;
+let toAnnotate = [];
+
+
+let Annotations = {
+    "third2":["NOS120","NOS116"]
+}
+
 
 let textStep = {
-    "first":"[17] tk transition to 174 albums that fell off the list",
-    "second":"[17 continued...] isolated 174",
-    "second2":"[18] point about compliations",
-    "second3":"[19] point about precense on spotify",
-    "third":"[19 continued] point about change in rankings",
-    "third2":"[19 continued] highlight albums: neil young, funkadelic, troutman"
+    "first":copy.spotifytwo,
+    "second":copy.spotifythree,
+    "second2":copy.spotifyfour,
+    "second3":copy.spotifyfive,
+    "third":copy.spotifysix,
+    "third2":copy.spotifyseven
 }
 
 let scenes = Object.keys(textStep);
@@ -31,13 +45,7 @@ let scenes = Object.keys(textStep);
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
 $: stepValue, setScene(stepValue);
 
-
-
-let layoutCounts = {
-    "grouped":[0],
-    "full":[1,2,11,251],
-    "waffle-single":[]
-}
+$: console.log(sceneSetTo,sceneSetToSub)
 
 let counterTextFull = {
     1:"#1 Greatest Album",
@@ -45,6 +53,23 @@ let counterTextFull = {
     11:"#11 - #249",
     251:"#251 - 500"
 }
+
+if(vh < 900){
+    counterTextFull = {
+        1:"#1",
+        5:"#5",
+        10:"#10",
+        11:"#11 - #250",
+        251:"#251 - 500"
+    }
+}
+
+let layoutCounts = {
+    "full":Object.keys(counterTextFull).map(d => +d),
+    "grouped":[0],
+    "waffle-single":[]
+}
+
 
 let counterTextGroup = {
     0:"Charted at #1 on Billboard",
@@ -59,6 +84,8 @@ let firstScene = [
         layout:"full"
     }
 ]
+
+
 let secondScene = [
     {
         year:2003,
@@ -82,6 +109,8 @@ let cols = firstScene;
 function setScene(sceneCount){
     sceneSetTo = sceneCount;
     sceneSetToSub = ""
+    toAnnotate = [];
+
 
     if(sceneCount == "first"){
         cols = firstScene;
@@ -106,6 +135,7 @@ function setScene(sceneCount){
         cols = thirdScene;
         sceneSetTo = "third";
         sceneSetToSub = "2"
+        toAnnotate = []
     }
 }
 
@@ -153,6 +183,8 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
             }
         });
 
+    console.log(temp)
+
     return temp;
 }
 
@@ -182,7 +214,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     }
     if(sceneSetTo == "third"){
         if(sceneSetToSub == "2"){
-            if(album["Album ID"]=="NOS120"){
+            if(album["Album ID"]=="NOS120" || album["Album ID"] == "NOS116"){
                 return 1;
             }
             return .2;
@@ -209,37 +241,58 @@ function getColOffset(col,count,vw){
 
 </script>
 
-<p class="center">[17] transition to How We Listen
-</p>
+
 
 <section>
+    <div class="center-col">
+        {#each copy.spotifyone as text, i}
+            <p class="center">
+                {@html text.value}
+            </p>
+        {/each}
+    </div>
     <div 
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
     >
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
-                <p class="year-label">{col.year}</p>
                 {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, j (album["Album ID"])}
+                    {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
+                    {@const spriteData = album.pos[2] > 35 ? sceneSetTo !== "first" ? spriteMapSpotify.get(`${album["Album ID"]}`)[0] : spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                    {@const spriteBase = album.pos[2] > 35 ? sceneSetTo !== "first" ? 150 : 192 : 96}
+                    {@const spriteAdjust = spriteBase/album.pos[2]}
+                    {@const pos = `-${Math.ceil(+spriteData.x / spriteAdjust)}px -${Math.floor(+spriteData.y / spriteAdjust)}px`}
+                    {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
                     {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
 
                     <div
                         class="img-wrapper {+album["rank"] > 100 ? "low-rank": ''}"
-                        in:fade={{delay:1000}}
+                        in:fade={{delay:1000}} out:fade={{delay:0,duration:1000}}
                         style="--delay: {j}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
                         {#if sceneSetTo == "first"}
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
-                                <div class="counter {col.layout == "full" && +album.rank < 10 ? 'counter-big' : ''}"
+                                <div class="counter {col.layout == "full" && +album.rank < 11 ? 'counter-big' : ''}"
                                 >
                                     {counterTextFull[album.rank]}
                                 </div>
                             {/if}
                         {/if}
+
+
+                        {#if ["col","full","waffle"].indexOf(col.layout) > -1 && j == 0}
+                            <p class="year-label"
+                                style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
+                            >
+                                {@html sceneSetTo == "first" ? "Rolling Stone&rsquo;s 2003 Ranking of Greatest Albums" : `${col.year}${col.layout !== "col" ? ' Ranking' : ''}`}
+                            </p>
+                        {/if}
+
                         {#if sceneSetTo == "third"}
-                            {#if j == 0}
+                            <!-- {#if j == 0}
                                 <p class="year-label" style="width:200px;">{col.year} Ranking</p>
-                            {/if}
+                            {/if} -->
 
                             <div class="counter"
                                 style="width:auto; opacity:{visibility};"
@@ -247,7 +300,35 @@ function getColOffset(col,count,vw){
                                 {album.rank}
                             </div>
                         {/if}
-                        <img style="opacity:{visibility};" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+
+                        {#if album.pos[2] > 100}
+                            <img style="
+                                    opacity:{visibility};
+                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                "
+                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                            />
+                        {:else if sceneSetTo == "third"}
+                            <img style="
+                                        opacity:{visibility};
+                                        filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    "
+                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                                />
+                        {:else}
+                            <div class="img-sprite {album["Album Genre"]}" style="
+                                background-image:url(assets/spritesheet_{album.pos[2] > 35 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
+                                background-size:{size};
+                                filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                opacity:{visibility};
+                                background-position:{pos};
+                            "
+                            >
+                            </div>
+                        {/if}
+
+
+                        <!-- <img style="opacity:{visibility};" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" /> -->
                     </div>
                 {/each}
             </div>
@@ -266,7 +347,25 @@ function getColOffset(col,count,vw){
                         min-height: {vh*.75}px;
                     "
                 >
-                    <p>{textStep[scene]}</p>
+                    {#each textStep[scene] as text, i}
+                        <div class="text-wrapper">
+                            <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                            <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                        </div>
+                        {#if scene == "third2"}
+                            <div
+                                in:scale
+                                class="img-annotation text-annotation"
+                                style="
+                                "
+                            >
+                                <img width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                            </div>
+                        {/if}
+
+                    {/each}
+
+
                 </div>
             {/each}
         </Scrolly>
@@ -278,6 +377,11 @@ function getColOffset(col,count,vw){
 </p>
 
 <style>
+
+    .steps {
+        pointer-events: none;
+    }
+
     .button {
         position: absolute;
         z-index: 10000000;
@@ -296,11 +400,33 @@ function getColOffset(col,count,vw){
         transition-timing-function: ease-in-out;
     }
 
-    .year-full .img-wrapper {
-        transition: 0;
+    .year-waffle .year-label {
+       top: -10px;
     }
 
-    .img-wrapper img {
+    .img-wrapper img, .img-wrapper .img-sprite {
         transition: opacity .5s;
     }
+
+    .year-full .year-label {
+        transform: translate(0,calc(-100% - 22px));
+        width: 300px;
+    }
+
+    @media (max-height: 900px) {
+        .year-full .counter-big, .year-col .counter-big {
+            transform: none;
+            font-family: var(--sans);
+            width:auto;
+            font-size: 14px;
+            font-weight: 600;
+            -webkit-font-smoothing: antialiased;
+            padding-right: 3px;
+            padding-left: 3px;
+            border-top-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            background: var(--color-bg);
+        }
+    }
+
 </style>

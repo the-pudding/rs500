@@ -20,7 +20,7 @@ export default function resizeImage({ pathIn, pathOut, file, size, blur }) {
 					.write(dest, resolve);
 				else img
 					.resize(size, jimp.AUTO)
-					.quality(70)
+					.quality(100)
 					.write(dest, resolve);
 			})
 			.catch(reject);
