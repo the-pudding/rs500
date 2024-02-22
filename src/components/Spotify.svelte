@@ -45,8 +45,6 @@ let scenes = Object.keys(textStep);
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
 $: stepValue, setScene(stepValue);
 
-$: console.log(sceneSetTo,sceneSetToSub)
-
 let counterTextFull = {
     1:"#1 Greatest Album",
     2:"The Remaining Top 10",
@@ -183,8 +181,6 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
             }
         });
 
-    console.log(temp)
-
     return temp;
 }
 
@@ -295,7 +291,10 @@ function getColOffset(col,count,vw){
                             {/if} -->
 
                             <div class="counter"
-                                style="width:auto; opacity:{visibility};"
+                                style="
+                                    width:auto; opacity:{visibility};
+                                    display:{visibility < 1 ? "none" : ''};
+                                "
                             >
                                 {album.rank}
                             </div>
@@ -370,11 +369,15 @@ function getColOffset(col,count,vw){
             {/each}
         </Scrolly>
     </div>
+    <div class="center-col">
+        {#each copy.voterone as text, i}
+            <p class="center">
+                {@html text.value}
+            </p>
+        {/each}
+    </div>
 
 </section>
-
-<p class="center">[20] transition to voter section
-</p>
 
 <style>
 

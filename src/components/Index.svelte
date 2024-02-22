@@ -41,7 +41,7 @@
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
 	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {spriteMapSpotify} {copy}/>
 
-	<!-- <Voters vw={$viewport.width} vh={$viewport.height} scrollY={$scrollY}/> -->
+	<Voters vw={$viewport.width} vh={$viewport.height} scrollY={$scrollY} {copy}/>
 
 		
 

@@ -11,6 +11,7 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 export let vw;
 export let vh;
 export let scrollY;
+export let copy;
 
 
 let voterCountGender = {
@@ -26,6 +27,7 @@ let sceneSetToSub = ""
 let padding = 0;
 let size = 25;
 let rowSize = 10;
+let transformAmount = 0;
 
 
 let textStep = {
@@ -217,6 +219,16 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
     let direction = col.direction;
 
+    if(layout == "large") {
+        size = 60;
+    }
+
+    transformAmount = Math.ceil(
+            JSON.parse(JSON.stringify(Voters)).filter(d => d.Year == "2003").filter(d => d.Race !== "n/a").length/10
+        ) * size;
+
+
+
     if(dataset !== "voters"){
         temp = JSON.parse(JSON.stringify(data));
         temp = temp
@@ -233,8 +245,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
     }
 
     if(sceneSetTo == "first") {
+
         temp = temp
             .filter(d => d.Race !== "n/a");
+
+        
     }
 
     if(sceneSetTo == "second" || sceneSetTo == "third" || sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
@@ -431,7 +446,9 @@ function getColOffset(col,count,vw,sceneSetTo){
         }
     }
     else if(sceneSetTo == "first"){
-        top = -1000;
+        console.log(transformAmount)
+        top = -transformAmount + vh*.8;
+        // top = 0;
     }
     else if(cols[count].layout == "grouped-voter-gender" && cols[count].year == "2020 "){
         if(vw > 600){
@@ -472,7 +489,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
 </script>
 
 
-<section style="height:100vh; background:red;">
+<section style="height:{vh}px; background:red;">
     <h1>test</h1>
 </section>
 

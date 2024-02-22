@@ -102,11 +102,12 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
 
     if(gridType == "large"){
+        topPadding = 0;
         // size = 100
         // rowSize = vw/size;
         // leftPadding = 0;
         // topPadding = 0;
-        size = 60;
+        // size = 60;
         rowSize = 600/size
         
         

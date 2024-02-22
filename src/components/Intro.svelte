@@ -563,7 +563,11 @@ function getDelay(direction){
                         </div>
                     {:else}
                         {#each textStep[scene] as text, i}
-                            <p style="margin-bottom:20px;">{@html text.value}</p>
+
+                            <div class="text-wrapper">
+                                <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                                <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                            </div>
                             {#if scene == "sixth2" || scene == "sixth3"}
                                 <div
                                     in:scale
