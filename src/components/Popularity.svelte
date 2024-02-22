@@ -303,7 +303,7 @@ function getColOffset(col,count,vw,sceneSetTo){
                         {/if}
 
                         {#if album.pos[2] > 100}
-                            <img style="
+                            <img loading="lazy" style="
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
                             />

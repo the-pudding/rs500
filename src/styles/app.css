@@ -171,10 +171,16 @@
 	padding-left: 50px;
     padding-bottom: 300px;
     max-width: 300px;
+	opacity: .2;
+    transition: opacity .5s;
 }
 .step p {
     margin: 0;
 	font-size: 18px;
+}
+
+.active.step {
+    opacity: 1;
 }
 
 .center-col {

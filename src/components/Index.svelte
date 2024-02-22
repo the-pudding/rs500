@@ -14,11 +14,13 @@
 	import spriteData from "$data/sprite-data_96.csv"
 	import spriteDataBig from "$data/sprite-data_192.csv"
 	import spriteDataSpotify from "$data/sprite-data_150.csv"
+	import spriteDataVoters from "$data/sprite-data_voters_100.csv"
 
 
 	let spriteMap;
 	let spriteMapBig;
 	let spriteMapSpotify;
+	let spriteMapVoters;
 	let sprites = false;
 	const copy = getContext("copy");
 	console.log(copy)
@@ -27,7 +29,7 @@
 		spriteMap = group(spriteData, d => d.id);
 		spriteMapBig = group(spriteDataBig, d => d.id);
 		spriteMapSpotify = group(spriteDataSpotify, d => d.id);
-
+		spriteMapVoters = group(spriteDataVoters, d => d.id);
 
 		sprites = true;
 	})
@@ -41,7 +43,7 @@
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
 	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {spriteMapSpotify} {copy}/>
 
-	<Voters vw={$viewport.width} vh={$viewport.height} scrollY={$scrollY} {copy}/>
+	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} scrollY={$scrollY} {copy}/>
 
 		
 

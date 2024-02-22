@@ -1,12 +1,12 @@
 import fs from "fs";
 import mkdirp from "mkdirp";
-import resize from "./resize-image.js";
+import resize from "./resize-image-voter.js";
 
 const CWD = process.cwd();
 console.log(CWD)
 const pathIn = `${CWD}/rolling_test`;
 const pathOut = `${CWD}/rolling_images_resized`;
-const sizes = [256];
+const sizes = [100];
 
 function getNewImages() {
 	const filesIn = fs.readdirSync(pathIn).filter(d => d.match(/jpg|jpeg|png/))//.filter((d,i) => i < 3);//
@@ -31,9 +31,9 @@ function makeThumbnail(file) {
 
 	sizes.forEach(size => mkdirp.sync(`${pathOut}/${size}`));
 
-	const files = getNewImages();
+	let files = getNewImages();
 
-    console.log(files)
+	console.log(files.length)
 
 	try {
 		for (let file of files) {

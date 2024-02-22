@@ -12,7 +12,7 @@ export let vw;
 export let vh;
 export let scrollY;
 export let copy;
-
+export let spriteMapVoters;
 
 let voterCountGender = {
     2020:336,
@@ -31,8 +31,9 @@ let transformAmount = 0;
 
 
 let textStep = {
-    "first":"[21] voters intro",
-    "second":"[22] point about gender on this list",
+    "first":copy.voterthree,
+    "firstTwo":copy.voterfour,
+    "second":copy.voterfive,
     "third":"[23] point about change in gender by year",
     "third":"[24] disgression on voting point system",
     "fourth":"[25] age for one set",
@@ -75,14 +76,22 @@ let firstScene = [
         layout:"large",
         dataset:"voters"
     }
-]
+];
+
+let firstTwoScene = [
+    {
+        year:2020,
+        layout:"fill-voters",
+        dataset:"voters"
+    }
+];
+
 let secondScene = [
     {
         year:2003,
         layout:"grouped-voter-gender",
         dataset:"voters",
         direction:"vert"
-
     }
 ]
 let thirdScene = [
@@ -148,15 +157,23 @@ function setScene(sceneCount){
 
     if(sceneCount == "first"){
         cols = firstScene;
+        sceneSetTo = "first"
+    }
+    if(sceneCount == "firstTwo"){
+        cols = firstTwoScene;
+        sceneSetTo = "firstTwo";
     }
     if(sceneCount == "second"){
         cols = secondScene;  
+        sceneSetTo = "second"
     }
     if(sceneCount == "third"){
         cols = thirdScene;
+        sceneSetTo = "third"
     }
     if(sceneCount == "fourth"){
         cols = fourthScene;
+        sceneSetTo = "fourth"
     }
     if(sceneCount == "fourth2"){
         cols = fourthScene;
@@ -244,12 +261,10 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         })
     }
 
-    if(sceneSetTo == "first") {
+    if(sceneSetTo == "first" || sceneSetTo == "firstTwo") {
 
         temp = temp
             .filter(d => d.Race !== "n/a");
-
-        
     }
 
     if(sceneSetTo == "second" || sceneSetTo == "third" || sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
@@ -351,8 +366,6 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         grouped = grouped.sort((a,b) => {
             return a[0] - b[0];
         })
-
-        console.log(grouped)
         
         let groupLengths = [];
         let groupAmounts = [];
@@ -394,7 +407,6 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
         temp = tempGroup 
     }
-
 
     temp
         .forEach((d,i) => {
@@ -446,7 +458,6 @@ function getColOffset(col,count,vw,sceneSetTo){
         }
     }
     else if(sceneSetTo == "first"){
-        console.log(transformAmount)
         top = -transformAmount + vh*.8;
         // top = 0;
     }
@@ -484,13 +495,34 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     return null;
 }
 
+function getDelay(scene){
+    if(scene == "firstTwo" || scene == "first"){
+        return 0;
+    }
+    return 1000;
+}
+
+function getSpriteData(voter){
+
+    if(spriteMapVoters.has(voter["ID"])){
+        return spriteMapVoters.get(voter["ID"])[0];
+    }
+    return {x:0,y:0,width:0,height:0};
+}
+
 
 
 </script>
 
-
-<section style="height:{vh}px; background:red;">
-    <h1>test</h1>
+<section class="voter-intro step" style="opacity:1; height:{vh}px;">
+    <div class="text-transform">
+        {#each copy.votertwo as text, i}
+            <div class="text-wrapper" style="">
+                <p class="text-fg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+                <p class="text-bg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+            </div>
+        {/each}
+    </div>
 </section>
 
 <section>
@@ -509,13 +541,21 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
         </div> -->
         
         {#each cols as col, i (JSON.stringify(col.year).concat(col.dataset))}
-            <div in:fly={{delay:1000, y:50}} class="direction-{sceneSetTo == "third" ? col.direction : 'none'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
+            <div in:fly={{delay:getDelay(sceneSetTo), y:50}} class="direction-{sceneSetTo == "third" ? col.direction : 'none'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
                 style="
                     transform:translate({getColOffset(col,i,vw,sceneSetTo)});
                 "
             >
                     {#if col.dataset == "voters"}
                         {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (+voter["ID"])}
+
+                            {@const filePath = "100"}
+                            {@const spriteData = getSpriteData(voter)}
+                            {@const spriteBase = 100}
+                            {@const spriteAdjust = spriteBase/voter.pos[2]}
+                            {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+                            {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+    
                             <div
                                 class="img-wrapper"
                                 style="--delay: {0}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
@@ -573,8 +613,15 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
                                     </div>
                                 {/if}
 
-                                
-                                <img class="voter-image" style="" width="100%" height="100%" src="assets/rolling_images_resized/256/{voter["ID"]}.jpg" alt="" />
+                                <div class="img-sprite" style="
+                                    background-image:url(assets/spritesheet_voters_100.jpg);
+                                    background-size:{size};
+                                    background-position:{pos};
+                                    "
+                                >
+                                </div>
+                                    
+                                <!-- <img loading="lazy" class="voter-image" style="" width="100%" height="100%" src="assets/rolling_images_resized/256/{voter["ID"]}.jpg" alt="" /> -->
                                 
                                 
                             </div>
@@ -614,7 +661,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
                                     {/if}
                                 {/if}
                             
-                            <img style="opacity:{visibility};" class="album-image" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                            <img loading="lazy" style="opacity:{visibility};" class="album-image" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                             
                             
                         </div>
@@ -639,7 +686,14 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
                         min-height: {vh*.75}px;
                     "
                 >
-                    <p>{textStep[scene]}</p>
+
+                    {#each textStep[scene] as text, i}
+                        <div class="text-wrapper">
+                            <p class="text-fg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+                            <p class="text-bg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+                        </div>
+                    {/each}
+
                 </div>
             {/each}
         </Scrolly>
@@ -662,6 +716,19 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.voter-intro {
+    position: relative;
+}
+
+.voter-intro .text-transform {
+    z-index: 1000;
+    position: absolute;
+    top: 50%;
+    transform: translate(0,-50%);
+
+
 }
 
 .steps {

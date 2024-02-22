@@ -9,6 +9,17 @@ let mid = 50-gapTwo+1;
 let gapBreak = 20;
 let groupedSize = 25;
 
+let getMaxSizeOfSquaresInRect = function(n,w,h) {
+    var sw, sh;
+    var pw = Math.ceil(Math.sqrt(n*w/h));
+    if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+    else sw = w/pw;
+    var ph = Math.ceil(Math.sqrt(n*h/w));
+    if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+    else sh = h/ph;
+    return Math.max(sw,sh);
+}
+
 export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,direction) => {
 
     let leftPadding = 0;
@@ -185,23 +196,9 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         let bigCardsNeeded = 490;
         let availableWidth = (Math.min(600,vw));
         let availableHeight = vh-topPadding-mid-gap-50;
-
         let maxSquare = 300;
-    
         let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
         squareSize = Math.min(maxSquare,squareSize);
-
-        let getMaxSizeOfSquaresInRect = function(n,w,h) {
-            var sw, sh;
-            var pw = Math.ceil(Math.sqrt(n*w/h));
-            if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
-            else sw = w/pw;
-            var ph = Math.ceil(Math.sqrt(n*h/w));
-            if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
-            else sh = h/ph;
-            return Math.max(sw,sh);
-        }
-    
         const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
     
         squareSize = squareDimension;
@@ -270,6 +267,29 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         top = top - album.scroll*(rowSize*multiple - ((rank-1) % rowSize)*multiple)
         return [left,top,size]
     }
+
+
+    if(gridType == "fill-voters"){
+
+        leftPadding = 0
+        topPadding = 0;
+        let padding = 2;
+
+        let bigCardsNeeded = 336;
+        let availableWidth = vw;
+        let availableHeight = vh;
+        let maxSquare = 300;
+        const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+    
+        let squareSize = squareDimension;
+        rowSize = Math.floor(vw/squareSize);
+
+        let left = ((rank-1) % rowSize)*squareSize;
+        let top = (Math.floor((rank-1)/rowSize))*squareSize;
+
+        return [left,top,squareSize-padding]
+    }
+
 
     if(gridType == "grouped-voter"){
 

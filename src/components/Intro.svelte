@@ -494,7 +494,7 @@ function getDelay(direction){
                             {/if}
 
                             {#if album.pos[2] > 100}
-                                <img style="
+                                <img loading="lazy" style="
                                         opacity:{visibility};
                                         filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                     "
@@ -522,7 +522,7 @@ function getDelay(direction){
                                     display:{sceneSetTo == "fourth" && +col.year == 2020 ? 'none' : ''};
                                 "
                             >
-                                <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                                <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                             </div>
                         <!-- {/if} -->
                     {/each}
@@ -575,7 +575,7 @@ function getDelay(direction){
                                     style="
                                     "
                                 >
-                                    <img width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                                    <img loading="lazy" width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
                                 </div>
                             {/if}
 
@@ -588,7 +588,7 @@ function getDelay(direction){
                                         style="
                                         "
                                     >        
-                                        <img year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album}.jpg" alt="" />
+                                        <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album}.jpg" alt="" />
                                     </div>
                                 {/each}
 

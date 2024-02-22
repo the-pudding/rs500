@@ -301,14 +301,14 @@ function getColOffset(col,count,vw){
                         {/if}
 
                         {#if album.pos[2] > 100}
-                            <img style="
+                            <img loading="lazy" style="
                                     opacity:{visibility};
                                     filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
                             />
                         {:else if sceneSetTo == "third"}
-                            <img style="
+                            <img loading="lazy" style="
                                         opacity:{visibility};
                                         filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                     "
@@ -358,7 +358,7 @@ function getColOffset(col,count,vw){
                                 style="
                                 "
                             >
-                                <img width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                                <img loading="lazy" width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
                             </div>
                         {/if}
 
