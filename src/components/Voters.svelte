@@ -13,15 +13,17 @@ export let vh;
 export let scrollY;
 export let copy;
 export let spriteMapVoters;
+export let spriteMapAlbums;
+
 
 let voterCountGender = {
     2020:336,
     2003:269
 }
 
-let stepValue = "first";
+let stepValue = "second";
 let value;
-let sceneSetTo = "first"
+let sceneSetTo = "second"
 let sceneSetToSub = ""
 
 let padding = 0;
@@ -31,30 +33,28 @@ let transformAmount = 0;
 
 
 let textStep = {
-    "first":copy.voterthree,
-    "firstTwo":copy.voterfour,
     "second":copy.voterfive,
-    "third":"[23] point about change in gender by year",
-    "third":"[24] disgression on voting point system",
-    "fourth":"[25] age for one set",
-    "fourth2":"[25 continued] age for both sets",
-    "fourth3":"[26] teenage years",
-    "fifth":"[26 continued] release comparison",
-    "sixth":"[27] concluding",
-    "sixth2":"[27 continued] zoom",
-    "sixth3":"[27 continued] zoom",
-    "sixth4":"[27 continued] zoom",
-    "sixth5":"[27 continued] zoom",
-    "sixth6":"[27 continued zoom",
-    "sixth7":"[27 continued] zoom",
-    "sixth8":"[27 continued] zoom"
+    "third":copy.votersix,
+    "fourth":copy.voterseven,
+    // "fourth2":"[25 continued] age for both sets",
+    // "fourth3":"[26] teenage years",
+    "fifth":copy.votereight,
+    "fifth2":copy.voternine,
+    "fifth3":copy.voterten,
+    "sixth":copy.votereleven,
+    "sixth2":copy.votertwelve,
+    "sixth3":copy.voterthirteen,
+    "sixth4":copy.voterfourteen,
+    "sixth5":copy.voterfifteen,
+    "sixth6":copy.votersixteen,
+    "sixth6":copy.votersixteen
 }
 
-let scenes = Object.keys(textStep);
-$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
+let scenes = Object.keys(textStep)//.filter(d => d !== "first");
+$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "second" ;
 $: stepValue, setScene(stepValue);
 
-$: console.log(sceneSetTo,sceneSetToSub)
+$: console.log(sceneSetTo,sceneSetToSub,value)
 
 let counterTextGroup = {
     0:"Charted at #1",
@@ -126,9 +126,9 @@ let fourthScene = [
 ]
 let fifthScene = [
     {
-        year:2020,
+        year:2003,
         layout:"grouped-voter-gender",
-        dataset:"albums",
+        dataset:"voters",
         direction:"horz"
     }
     ,
@@ -136,6 +136,38 @@ let fifthScene = [
         year:2020,
         layout:"grouped-voter-gender",
         dataset:"voters",
+        direction:"horz"
+    }
+]
+
+let fifthTwoScene = [
+    {
+        year:2003,
+        layout:"grouped-voter-gender",
+        dataset:"voters",
+        direction:"horz"
+    }
+    ,
+    {
+        year:2003,
+        layout:"grouped-voter-gender",
+        dataset:"albums",
+        direction:"horz"
+    }
+]
+
+let fifthThreeScene = [
+    {
+        year:2020,
+        layout:"grouped-voter-gender",
+        dataset:"voters",
+        direction:"horz"
+    }
+    ,
+    {
+        year:2020,
+        layout:"grouped-voter-gender",
+        dataset:"albums",
         direction:"horz"
     }
 ]
@@ -188,8 +220,19 @@ function setScene(sceneCount){
     if(sceneCount == "fifth"){
         cols = fifthScene;
     }
+    if(sceneCount == "fifth2"){
+        cols = fifthTwoScene;
+        sceneSetTo = "fifth";
+        sceneSetToSub = "2"
+    }
+    if(sceneCount == "fifth3"){
+        cols = fifthThreeScene;
+        sceneSetTo = "fifth";
+        sceneSetToSub = "3"
+    }
     if(sceneCount == "sixth"){
         cols = sixthScene;
+        sceneSetToSub = ""
     }
     if(sceneCount == "sixth2"){
         cols = sixthScene;
@@ -240,11 +283,9 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         size = 60;
     }
 
-    transformAmount = Math.ceil(
-            JSON.parse(JSON.stringify(Voters)).filter(d => d.Year == "2003").filter(d => d.Race !== "n/a").length/10
-        ) * size;
-
-
+    // transformAmount = Math.ceil(
+    //         JSON.parse(JSON.stringify(Voters)).filter(d => d.Year == "2003").filter(d => d.Race !== "n/a").length/10
+    //     ) * size;
 
     if(dataset !== "voters"){
         temp = JSON.parse(JSON.stringify(data));
@@ -269,75 +310,98 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
     if(sceneSetTo == "second" || sceneSetTo == "third" || sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
         let tempGroup = [];
-
+        
+        let bigCardsNeeded = 100;
         let colCount = 7;
+        
+        if(sceneSetTo == "fourth"){
+            colCount = 5;
+            bigCardsNeeded = 97;
+        }
+        if(sceneSetTo == "fifth"){
+            colCount = 7;
+            if(sceneSetToSub == ""){
+                bigCardsNeeded = 97;
+            }
+            else if(sceneSetToSub == "3"){
+                bigCardsNeeded = 160;
+            }
+            else {
+                bigCardsNeeded = 200;
+            }
+        }
 
         if(sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
-            // size = 20;
-            // rowSize = Math.floor((vw - 7*size)/7/size);
-            // let bigCardsNeeded = 100;
 
-            // if(sceneSetTo == "fifth" || sceneSetTo == "sixth"){
-            //     bigCardsNeeded = 200;
-            // }
+            if(sceneSetTo == "sixth"){
+                bigCardsNeeded = 200;
+            }
 
-            // let availableWidth = (vw - (25*(colCount - 1)))/colCount;
-            // let availableHeight = vh/2-50;
+            let availableWidth = ((vw - 100) - (25*(colCount - 1)))/colCount;
+            let availableHeight = vh/2-50;
 
-            // if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
-            //     availableWidth = Math.min(vw,600);
-            //     availableHeight = vh - 50;
-            // }
+            if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
+                availableWidth = (vw-100)/2;
+                availableHeight = vh - 50;
+            }
 
-            // let maxSquare = 300;
+            let maxSquare = 300;
         
-            // let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
-            // squareSize = Math.min(maxSquare,squareSize);
+            let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+            squareSize = Math.min(maxSquare,squareSize);
 
-            // let getMaxSizeOfSquaresInRect = function(n,w,h) {
-            //     var sw, sh;
-            //     var pw = Math.ceil(Math.sqrt(n*w/h));
-            //     if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
-            //     else sw = w/pw;
-            //     var ph = Math.ceil(Math.sqrt(n*h/w));
-            //     if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
-            //     else sh = h/ph;
-            //     return Math.max(sw,sh);
-            // }
+            let getMaxSizeOfSquaresInRect = function(n,w,h) {
+                var sw, sh;
+                var pw = Math.ceil(Math.sqrt(n*w/h));
+                if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+                else sw = w/pw;
+                var ph = Math.ceil(Math.sqrt(n*h/w));
+                if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+                else sh = h/ph;
+                return Math.max(sw,sh);
+            }
         
-            // const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+            const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
         
-            // squareSize = squareDimension;
+            squareSize = squareDimension;
 
-            // size = squareSize;
-            // rowSize = Math.floor(availableWidth/size);
+            size = squareSize;
+            rowSize = Math.floor(availableWidth/size);
 
-            // if(dataset == "voters"){
-            //     temp = temp.sort((a,b) => {
-            //         return a["Birthyear"].localeCompare(b["Birthyear"])
-            //     })
+            if(dataset == "voters"){
+                temp = temp.sort((a,b) => {
+                    return a["Birthyear"].localeCompare(b["Birthyear"])
+                })
 
-            //     temp = temp
-            //         .filter(d => d.Birthyear.length == 4);
-            // }
-            // else {
-            //     temp = temp.sort((a,b) => {
-            //         return a["Release Year"].localeCompare(b["Release Year"])
-            //     })
-            // }
+                temp = temp
+                    .filter(d => d.Birthyear.length == 4);
+            }
+            else {
+                temp = temp.sort((a,b) => {
+                    return a["Release Year"].localeCompare(b["Release Year"])
+                })
+            }
         }
 
         let grouped = groups(temp, d => {
 
-            if(sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
 
+            if(sceneSetTo == "fifth" || sceneSetTo == "sixth"){
                 if(dataset == "voters"){
+                    // console.log(d)
+                    // let rank = d["Birthyear"].slice(0,3);
+                    // console.log(rank)
+                    // if(+rank < 196){
+                    //     return "pre 1970s"
+                    // }
+                    // return rank;
+
                     let rank = d["Teenage Decade"];
                     if(rank == "1940s" || rank == "1930s" || rank == "1950s"){
-                        return "1950s and earlier"
+                        rank = "1950s and earlier"
                     }
                     return rank;
-                } 
+                }
                 else {
                     let rank;
                     rank = +d["Release Year"];//.slice(2,4);
@@ -348,6 +412,14 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
                     }
                     return rank;
                 }
+            }
+
+            if(sceneSetTo == "fourth"){
+                let rank = Math.round(d["Age at Vote"]/10)*10;
+                if(rank > 59){
+                    return 0;
+                }
+                return 60-rank;
             }
             
             let gender = d["Gender"];
@@ -427,10 +499,24 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
             d.pos = getGridPosition(layout,i,d,vw,vh,size,padding,rowSize,direction);
 
-            if(sceneSetTo == "fourth" && col.year == "2003"){
+            if(sceneSetTo == "fourth" && col.year == "2020"){
                 d.pos[1] = d.pos[1] * -1;
             }
-            if(["fifth","sixth"].indexOf(sceneSetTo) > -1 && col.dataset == "albums"){
+
+            // if(sceneSetTo == "fifth" && col.year == "2020" && col.dataset == "voters"){
+            //     d.pos[1] = d.pos[1] * -1;
+            // }
+
+            if(sceneSetTo == "fifth" && sceneSetToSub == "" && col.year == "2020"){
+                d.pos[1] = d.pos[1] * -1;
+            }
+
+
+            if(sceneSetTo == "fifth" && col.dataset == "albums"){
+                d.pos[1] = d.pos[1] * -1;
+            }
+
+            if(["sixth"].indexOf(sceneSetTo) > -1 && col.dataset == "albums"){
                 d.pos[1] = d.pos[1] * -1;
             }
         });
@@ -450,26 +536,41 @@ function getColOffset(col,count,vw,sceneSetTo){
             left = (vw - 600)/2;
         }
 
-        if(col.year == 2003 && sceneSetTo == "fourth"){
-            top = top - 50;
+        if(sceneSetTo == "fourth"){
+            if(col.year == 2020){
+                top = top - 70;
+            }
+            left = 100;
         }
-        if(col.dataset == "albums" && sceneSetTo == "fifth"){
-            top = top - 50;
+
+        if(sceneSetTo == "fifth"){
+            if(count == 1){
+            // if(col.dataset == "albums"){
+                top = top - 70;
+            }
+            left = 100;
+        }
+
+        if(sceneSetTo == "sixth"){
+            left = 100;
         }
     }
+
     else if(sceneSetTo == "first"){
         top = -transformAmount + vh*.8;
         // top = 0;
     }
+
     else if(cols[count].layout == "grouped-voter-gender" && cols[count].year == "2020 "){
         if(vw > 600){
             if(cols[count].direction == "vert"){
-                let rowSize = 15;
+                let rowSize = 10;
                 let size = (580/2)/rowSize;
                 left = rowSize*size + 20;
             }
         }
     }
+
     else {
         if(cols[count].layout == "grid" && cols[count].year == "2020"){
             if(vw > 600){
@@ -481,7 +582,7 @@ function getColOffset(col,count,vw,sceneSetTo){
         }
     }
     
-    return `${left}px,${top}px`
+    return [left,top]
 }
 
 
@@ -492,17 +593,35 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
         }
         return .1;
     }
+    return 1;
     return null;
 }
 
 function getDelay(scene){
-    if(scene == "firstTwo" || scene == "first"){
-        return 0;
+    if(scene == "firstTwo" || scene == "first" || scene == "second"){
+        return 1000;
     }
-    return 1000;
+    return 0;
 }
 
-function getSpriteData(voter){
+function getDelayOut(scene){
+    if(scene == "firstTwo"){
+        return 0;
+    }
+}
+
+function getDurationOut(scene){
+    if(scene == "firstTwo"){
+        return 1000;
+    }
+    return 0;
+}
+
+function getSpriteData(voter,type){
+
+    if(type == "album"){
+        return spriteMapAlbums.get(voter["Album ID"])[0];
+    }
 
     if(spriteMapVoters.has(voter["ID"])){
         return spriteMapVoters.get(voter["ID"])[0];
@@ -511,19 +630,112 @@ function getSpriteData(voter){
 }
 
 
-
+// 
 </script>
 
-<section class="voter-intro step" style="opacity:1; height:{vh}px;">
-    <div class="text-transform">
-        {#each copy.votertwo as text, i}
-            <div class="text-wrapper" style="">
-                <p class="text-fg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
-                <p class="text-bg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+<div class="center-col" style="margin:0;">
+    {#each copy.voterone as text, i}
+        <p class="center">
+            {@html text.value}
+        </p>
+    {/each}
+</div>
+
+<section class="" style="">
+    <div class="voter-grid year-wrapper" style="height:{vh}px;">
+
+        {#each filterData(2003,"fill-voters",null,"","voters",{year:2003,layout:"large",dataset:"voters"}) as voter, j (+voter["ID"])}
+
+            {@const filePath = "100"}
+            {@const spriteData = getSpriteData(voter,"voter")}
+            {@const spriteBase = 100}
+            {@const spriteAdjust = spriteBase/voter.pos[2]}
+            {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+            {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+
+            <div
+                class="img-wrapper {voter.ID}"
+                style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
+            >
+                <div class="img-sprite" style="
+                    background-image:url(assets/spritesheet_voters_100.jpg);
+                    background-size:{size};
+                    background-color:{spriteData.x == 0 ? "black" : ''};
+                    background-position:{pos};
+                    "
+                >
+                </div>
+            </div>
+        {/each}
+    </div>
+    <div class="steps">
+        <Scrolly>
+            {#each [copy.votertwo,copy.voterthree] as scene, i}
+                <div class="voter-intro step"
+                style="
+                    opacity:1;
+                    margin-top: {i == 0 ? -vh/2 : ''}px;
+                    padding-top: {i == 0 ? 0 : vh/4}px;
+                    padding-bottom: {i == 0 ? 0 : vh/2}px;
+                    min-height: {i == 0 ? vh/2 : vh/2}px;
+                "
+                >
+                    {#each scene as text, i}
+                        <div class="text-wrapper" style="">
+                            <p class="text-fg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+                            <p class="text-bg" style="margin-bottom:30px;"><span>{@html text.value}</span></p>
+                        </div>
+                    {/each}
+                </div>
+            {/each}
+        </Scrolly>
+    </div>
+</section>
+
+<div class="center-col" style="margin:0;">
+    {#each copy.voterfour as text, i}
+        <p class="center">
+            {@html text.value}
+        </p>
+    {/each}
+</div>
+
+<section class="" style="">
+    <div class="voter-grid year-wrapper" style="height:{vh}px;">
+
+        {#each filterData(2020,"fill-voters",null,"","voters",{year:2003,layout:"large",dataset:"voters"}) as voter, j (+voter["ID"])}
+
+            {@const filePath = "100"}
+            {@const spriteData = getSpriteData(voter,"voter")}
+            {@const spriteBase = 100}
+            {@const spriteAdjust = spriteBase/voter.pos[2]}
+            {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+            {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+
+            <div
+                class="img-wrapper {voter.ID}"
+                style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
+            >
+                <div class="img-sprite" style="
+                    background-image:url(assets/spritesheet_voters_100.jpg);
+                    background-size:{size};
+                    background-color:{spriteData.x == 0 ? "black" : ''};
+                    background-position:{pos};
+                    "
+                >
+                </div>
             </div>
         {/each}
     </div>
 </section>
+
+<div class="center-col" style="margin-bottom:0;">
+    {#each copy.voterfourtwo as text, i}
+        <p class="center">
+            {@html text.value}
+        </p>
+    {/each}
+</div>
 
 <section>
     <div 
@@ -531,142 +743,185 @@ function getSpriteData(voter){
         style="
             height:{vh}px;
         "
-    >
-        <!-- <div class="buttons">
-            <button on:click={() => setScene("first")}>first</button>
-            <button on:click={() => setScene("second")}>second</button>
-            <button on:click={() => setScene("third")}>third</button>
-            <button on:click={() => setScene("fourth")}>fourth</button>
-            <button on:click={() => setScene("fifth")}>fifth</button>
-        </div> -->
-        
+    >            
         {#each cols as col, i (JSON.stringify(col.year).concat(col.dataset))}
-            <div in:fly={{delay:getDelay(sceneSetTo), y:50}} class="direction-{sceneSetTo == "third" ? col.direction : 'none'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
+            {@const offset = getColOffset(col,i,vw,sceneSetTo)}
+            {@const count = i}
+            <div
+                class="direction-{sceneSetTo == "third" ? col.direction : 'none'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
                 style="
-                    transform:translate({getColOffset(col,i,vw,sceneSetTo)});
+                    transform:translate({offset[0]}px,{offset[1]}px);
                 "
+                transition:fly={{y:50, duration:1000}}
             >
-                    {#if col.dataset == "voters"}
-                        {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (+voter["ID"])}
+                {#if ["fourth","fifth"].indexOf(sceneSetTo) > -1}
+                    <div class="grid grid-{i}"
+                        style="transform:translate(-{offset[0]}px,{i == 0 ? -3 : 33}px);"
+                    >
+                        <p
+                        class="year-label"
+                        style="
+                            width:70px;
+                            transform:translate(10px,{i == 0 ? '5px' : 'calc(-100% - 5px)'});
+                            font-size:18px;
+                            font-weight:500;
+                            text-align:right;
+                            "
+                        >
+                            {col.year} {col.dataset}
+                        </p>
+                    </div>
+                {/if}
 
-                            {@const filePath = "100"}
-                            {@const spriteData = getSpriteData(voter)}
-                            {@const spriteBase = 100}
-                            {@const spriteAdjust = spriteBase/voter.pos[2]}
-                            {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
-                            {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
-    
-                            <div
-                                class="img-wrapper"
-                                style="--delay: {0}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
-                            >
 
-                                {#if sceneSetTo == "fourth" || sceneSetTo == "fifth"}
-                                    {#if +voter.count == 0}
-                                        {#key sceneSetToSub}
-                                            <div class="counter counter-big"
-                                                transition:fly={{duration:1000, y:50}}
-                                                style="width:{Math.min(10,+voter["groupLength"])*voter["size"]}px;"
-                                            >
-                                                {#if voter["groupCount"] == 0}
-                                                    {#if sceneSetToSub == "3"}
-                                                        Teen pre-1960s
-                                                    {:else if sceneSetTo == "fifth"}
-                                                        pre-1960s
-                                                    {:else}
-                                                        Born pre-1940s
-                                                    {/if}
-                                                {:else}
-                                                    {#if sceneSetToSub == "3"}
-                                                        Teen in {voter["Teenage Decade"]}
-                                                    {:else if sceneSetTo == "fifth"}
-                                                        {""}
-                                                    {:else}
-                                                        Born in {voter["Birthyear"].slice(0,3)}0s
-                                                    {/if}
-                                                {/if}
-                                            </div>
-                                        {/key}
-                                    {/if}
-                                {/if}
 
-                                {#if sceneSetTo == "fourth" || sceneSetTo == "fifth"}
-                                    {#if voter["count"] == 0 && voter["groupCount"] == 0}
-                                        <p
-                                            class="year-label"
-                                            style="width:200px; transform:translate(0,{+col.year == 2020 ? voter["adjust"] + 20 : -voter["adjust"] - 30}px);"
+                {#if col.dataset == "voters"}
+                    {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (+voter["ID"])}
+
+                        {@const filePath = "100"}
+                        {@const spriteData = getSpriteData(voter,"voter")}
+                        {@const spriteBase = 100}
+                        {@const spriteAdjust = spriteBase/voter.pos[2]}
+                        {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+                        {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+
+                        <div
+                            in:fly={{duration:10000}}
+                            class="img-wrapper {voter.ID}"
+                            style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
+                        >
+
+                            {#if sceneSetTo == "fourth" || sceneSetTo == "fifth"}
+                                {#if +voter.count == 0}
+                                    {#key sceneSetToSub}
+                                        <div class="count-{count} counter counter-big teen-{voter["Teenage Decade"]}"
+                                            transition:fly={{duration:1000, y:50}}
+                                            style="display:{count == 0 ? 'none' : ''};
+                                            width:{Math.min(10,+voter["groupLength"])*voter["size"]}px;"
                                         >
-                                            {col.year} Voters
-                                        </p>
-                                    {/if}
+                                            {#if voter["groupCount"] == 0}
+                                                {#if sceneSetToSub == "3"}
+                                                    Teen pre-1960s
+                                                {:else if sceneSetTo == "fifth"}
+                                                    Teen in pre-1960s
+                                                {:else}
+                                                    Ages 60+
+                                                {/if}
+                                            {:else}
+                                                {#if sceneSetToSub == "3"}
+                                                    Teen in {voter["Teenage Decade"]}
+                                                {:else if sceneSetTo == "fifth"}
+                                                    <!-- Born in {voter["Birthyear"].slice(0,3)}0s -->
+                                                    Teen in {voter["Teenage Decade"]}
+                                                {:else}
+                                                    Age {Math.round(voter["Age at Vote"]/10)*10}s
+                                                    <!-- Born in {voter["Birthyear"].slice(0,3)}0s -->
+                                                {/if}
+                                            {/if}
+                                        </div>
+                                    {/key}
                                 {/if}
+                            {/if}
 
-                                {#if sceneSetTo == "third" && j == 0}
+                            {#if sceneSetTo == "third"}
+                                {#if voter["count"] == 0 && voter["groupCount"] == 0}
                                     <p class="year-label" style="width:200px;">{col.year} Voters</p>
                                 {/if}
+                            {/if}
 
-                                {#if ["second","third"].indexOf(sceneSetTo) > -1 && +voter.count == 0}
-                                    <div class="counter counter-big"
-                                        style="width:{(580/2)}px;"
-                                    >
-                                        {counterTextGender[+voter.groupCount]}, {Math.round(+voter.groupLength/voterCountGender[col.year]*1000)/10}%
-                                    </div>
-                                {/if}
-
-                                <div class="img-sprite" style="
-                                    background-image:url(assets/spritesheet_voters_100.jpg);
-                                    background-size:{size};
-                                    background-position:{pos};
-                                    "
+                            {#if ["second","third"].indexOf(sceneSetTo) > -1 && +voter.count == 0}
+                                <div class="counter counter-big"
+                                    style="width:{(580/2)}px;"
                                 >
+                                    {counterTextGender[+voter.groupCount]}, {Math.round(+voter.groupLength/voterCountGender[col.year]*1000)/10}%
                                 </div>
-                                    
-                                <!-- <img loading="lazy" class="voter-image" style="" width="100%" height="100%" src="assets/rolling_images_resized/256/{voter["ID"]}.jpg" alt="" /> -->
-                                
-                                
-                            </div>
-                        {/each}
-                    {:else}
-                        {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as album, j (album["Album ID"])}
-                            {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
+                            {/if}
 
-                            <div
-                                class="img-wrapper" data-count={album.count} data-group={album.groupCount}
-                                style="--delay: {0}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                            <div class="img-sprite" style="
+                                background-image:url(assets/spritesheet_voters_100.jpg);
+                                background-size:{size};
+                                background-color:{spriteData.x == 0 ? "black" : ''};
+                                background-position:{pos};
+                                "
                             >
-
-                                {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"}
-                                    {#if +album.count == 0}
-                                            <div class="counter counter-big"
-                                                transition:fly={{duration:1000, y:50}}
-                                                style="width:{Math.min(10,+album["groupLength"])*album["size"]}px;"
-                                            >
-                                                {#if +album.groupCount !== 0}
-                                                    {Math.floor(+album["Release Year"]/10)}0s
-                                                {:else}
-                                                    pre-1960s
-                                                {/if}
-                                            </div>
-                                    {/if}
-                                {/if}
-
-                                {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"}
-                                    {#if album["count"] == 0 && album["groupCount"] == 0}
-                                        <p
-                                            class="year-label"
-                                            style="width:200px; transform:translate(0,calc(-100% - 25px));"
-                                        >
-                                            {col.year} Album Rankings
-                                        </p>
-                                    {/if}
-                                {/if}
-                            
-                            <img loading="lazy" style="opacity:{visibility};" class="album-image" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                            </div>
+                                
+                            <!-- <img loading="lazy" class="voter-image" style="" width="100%" height="100%" src="assets/rolling_images_resized/256/{voter["ID"]}.jpg" alt="" /> -->
                             
                             
                         </div>
-                        {/each}
-                    {/if}
+                    {/each}
+                {:else}
+                    {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as album, j (album["Album ID"])}
+                        {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
+                        {@const filePath = "100"}
+                        {@const spriteData = getSpriteData(album,"album")}
+                        {@const spriteBase = 100}
+                        {@const spriteAdjust = spriteBase/album.pos[2]}
+                        {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+                        {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+
+
+                        <div
+                            class="img-wrapper" data-count={album.count} data-group={album.groupCount}
+                            style="--delay: {0}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
+                        >
+
+                            {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"}
+                                {#if +album.count == 0}
+                                        <div class="counter counter-big scene-{sceneSetToSub}" 
+                                            transition:fly={{duration:1000, y:50}}
+                                            data-scene={sceneSetToSub}
+                                            style="
+                                                width:{Math.min(10,+album["groupLength"])*album["size"]}px;
+                                                transform:translate(0,{album.size}px);
+s                                            "
+                                        >
+                                            {#if +album.groupCount !== 0}
+                                                {Math.floor(+album["Release Year"]/10)}0s
+                                            {:else}
+                                                {#if sceneSetTo == "sixth"}
+                                                    1950s
+                                                {:else}
+                                                    pre-1960s
+                                                {/if}
+                                                
+                                            {/if}
+                                        </div>
+                                {/if}
+                            {/if}
+
+                            <!-- {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"}
+                                {#if album["count"] == 0 && album["groupCount"] == 0}
+                                    <p
+                                        class="year-label"
+                                        style="width:200px; transform:translate(0,calc(-100% - 25px));"
+                                    >
+                                        {col.year} Album Rankings
+                                    </p>
+                                {/if}
+                            {/if} -->
+
+                            <div 
+                                class="
+                                img-sprite album-image {album["Album Genre"]}"
+                                style="
+                                background-image:url(assets/spritesheet_96.jpg);
+                                background-size:{size};
+                                filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                opacity:{visibility};
+                                background-position:{pos};
+                                "
+                            >
+                        </div>
+
+
+                        <!-- <img loading="lazy" style="opacity:{visibility};" class="album-image" width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" /> -->
+                        
+                        
+                    </div>
+                    {/each}
+                {/if}
 
             </div>
         {/each}
@@ -699,6 +954,14 @@ function getSpriteData(voter){
         </Scrolly>
     </div>
 </section>
+
+<div class="center-col" style="">
+    {#each copy.conclusion as text, i}
+        <p class="center">
+            {@html text.value}
+        </p>
+    {/each}
+</div>
 
 <style>
 
@@ -736,7 +999,7 @@ function getSpriteData(voter){
 }
 
 .fourth .counter {
-    transform: translate(0,-100%);
+    transform: translate(0,100%);
 }
 
 .fourth- .year-2020 .img-wrapper img, .fourth- .year-2020 .img-wrapper .year-label {
@@ -744,21 +1007,27 @@ function getSpriteData(voter){
     transition: opacity .5s;
 }
 
-.fourth .year-2003 .counter {
+.fourth .year-2020 .counter {
     transform: translate(0,100%);
-    top: 5px;
+    top: 15px;
 }
 
+.fourth .year-2003 .counter {
+    display: none;
+}
 
+.fifth .counter {
+    transform: translate(0,100%);
+    top: 15px;
+    display: block;
+}
+
+.fifth .year-2003 .counter {
+    display: none;
+}
 
 .fifth .year-albums .counter {
-    transform: translate(0,100%);
-    top: 5px;
-}
-
-.sixth .year-albums .counter {
-    transform: translate(0,100%);
-    top: 5px;
+    display: block;
 }
 
 .fourth-3 .year-2020 .img-wrapper .counter {
@@ -780,6 +1049,10 @@ function getSpriteData(voter){
 
 .wrapper {
     width: 500px;
+}
+
+.sixth .counter.scene-2, .sixth .counter.scene-3, .sixth .counter.scene-4, .sixth .counter.scene-5, .sixth .counter.scene-6 {
+    font-size: 24px;
 }
 
 .year {
@@ -807,6 +1080,7 @@ function getSpriteData(voter){
     position: absolute;
     /* transition: transform .5s; */
     transition: transform .5s calc(var(--delay) * calc(1s * 0.005));
+    transform: translate3d(0,0,0);
 }
 
 .first .year {
@@ -823,6 +1097,25 @@ function getSpriteData(voter){
 
 .third .year-label {
     top: -35px;
+}
+
+.grid {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    transform: translate(0,-36px);
+    z-index: 1000;
+    left: 0;
+    position: absolute;
+    background-color: var(--color-fg);
+}
+
+.grid-2 {
+    transform: translate(0,-5px);
+}
+
+.grid .year-label {
+    line-height: 1.1;
 }
 
 </style>

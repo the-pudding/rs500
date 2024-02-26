@@ -86,12 +86,8 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             topPadding = 0;
 
             if(album.sceneSub !== "" && album.scene == "sixth"){
-                leftPadding = (rowSize*size*(7 - (+album.sceneSub)) + 20*5)*-1
+                leftPadding = (rowSize*size*(6 - (+album.sceneSub)) + 20*5)*-1
             }
-            // leftPadding = (vw - (rowSize*size*7 + 7*25))/2;
-            // if(album["scene"] == "fifth"){
-            //     leftPadding = 0;
-            // }
         }
 
         offSet.forEach(d => {
@@ -267,7 +263,6 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         top = top - album.scroll*(rowSize*multiple - ((rank-1) % rowSize)*multiple)
         return [left,top,size]
     }
-
 
     if(gridType == "fill-voters"){
 

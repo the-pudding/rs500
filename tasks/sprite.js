@@ -19,7 +19,7 @@ fs.createReadStream("albums.csv")
 // const dsv = createRequire("d3-dsv");
 
 const EXT = ".jpg";
-const size = "150"
+const size = "96"
 const PATH_IN = `album_art_resized/${size}`;
 
 function runSprites(){
@@ -27,7 +27,9 @@ function runSprites(){
 
   result = result
     .filter(d => {
-      // return d;
+      //for all
+      return d;
+
       let rank1 = d["2003 Rank"];
       let rank2 = d["2020 Rank"];
 

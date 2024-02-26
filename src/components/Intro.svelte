@@ -219,7 +219,7 @@ function filterData(year,layout,sceneSetTo,scrollY){
 
         let screenspace = vh*vw;
         let avail = screenspace/((size)*(size));
-        console.log("counts:",avail)
+        console.log("counts:",avail,sceneSetTo)
 
 
         temp = temp.slice(0,50);
@@ -251,6 +251,7 @@ function filterData(year,layout,sceneSetTo,scrollY){
 }
 
 let Annotations = {
+    "first":["6QaVfG1pHYl1z15ZxkvVDW"],
     "fourth":["1BZoqf8Zje5nGdwZhOjAtD"],
     "sixth2":["20r762YmB5HeofjMCiPMLv","7ycBtnsMtyVbbwTfJwRjSP","7dK54iZuOxXFarGhXwEXfF","3mH6qwIy9crq0I9YQbOuDf"],
     "sixth3":["5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s","4LrLP7DM1KBj8r2Sc098JA"]
@@ -270,6 +271,7 @@ function setScene(sceneCount){
         cols = firstScene;
         sceneSetTo = sceneCount;
         sceneSetToSub = ""
+        toAnnotate = Annotations["first"]
     }
     if(sceneCount == "second"){
         cols = secondScene;
@@ -455,11 +457,11 @@ function getDelay(direction){
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:getDelay("in"), y:getFly()}} out:fly={{delay:getDelay("out"), y:getFly()}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw,sceneSetTo)});"> 
                 <div class="img-grid">
-                    {#each filterData(col.year,col.layout,sceneSetTo,scrollY) as album, i (album["Album ID"])}
+                    {#each filterData(col.year,col.layout,sceneSetTo,sceneSetTo == "fill" ? scrollY : '') as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                         {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
-                        {@const spriteData = album.pos[2] > 50 ? spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
-                        {@const spriteBase = album.pos[2] > 50 ? 192 : 96}
+                        {@const spriteData = album.pos[2] > 100 ? spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                        {@const spriteBase = album.pos[2] > 100 ? 192 : 96}
                         {@const spriteAdjust = spriteBase/album.pos[2]}
                         {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                         {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
@@ -503,7 +505,7 @@ function getDelay(direction){
                             {:else}
                                 <div class="img-sprite" style="
                                     opacity:{visibility};
-                                    background-image:url(assets/spritesheet_{album.pos[2] > 50 ? "192" : "96"}.jpg);
+                                    background-image:url(assets/spritesheet_{album.pos[2] > 100 ? "192" : "96"}.jpg);
                                     background-size:{size};
                                     filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                     background-position:{pos};
@@ -513,19 +515,20 @@ function getDelay(direction){
                             {/if}
                         </div>
                     {/each}
-                    {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
+                    {#if sceneSetTo !== "first"}
+                        {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
                             <div
                                 in:scale
                                 class="{album["2020 Rank"]} img-wrapper img-annotation"
                                 style="
                                     transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);
-                                    display:{sceneSetTo == "fourth" && +col.year == 2020 ? 'none' : ''};
+                                    display:{["fourth"].indexOf(sceneSetTo) > -1 && +col.year == 2020 ? 'none' : ''};
                                 "
                             >
                                 <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
                             </div>
-                        <!-- {/if} -->
-                    {/each}
+                        {/each}
+                    {/if}
                 </div>
             </div>
         {/each}
@@ -558,7 +561,7 @@ function getDelay(direction){
                                 min-height:{(sizing["fill"].size+sizing["fill"]["padding"])*4}px;
                             "
                         >
-                            <h1>{copy.headings[0].title}</h1>
+                            <h1>{@html copy.headings[0].title}</h1>
                             <p>{@html copy.headings[0].byline}</p>
                         </div>
                     {:else}
@@ -580,8 +583,8 @@ function getDelay(direction){
                             {/if}
 
                         {/each}
-                        {#if scene == "fourth"}    
-                                {#each Annotations["fourth"] as album}
+                        {#if scene == "fourth" || scene == "first"}    
+                                {#each Annotations[scene] as album}
                                     <div
                                         in:scale
                                         class="text-annotation"

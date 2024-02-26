@@ -27,7 +27,8 @@ let toAnnotate = [];
 
 
 let Annotations = {
-    "third2":["NOS120","NOS116"]
+    "third2":["NOS120","NOS116"],
+    "second3":["NOS124"]
 }
 
 
@@ -42,8 +43,39 @@ let textStep = {
 
 let scenes = Object.keys(textStep);
 
-$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "first" ;
+$: stepValue = getStepValue(value);
 $: stepValue, setScene(stepValue);
+
+
+$: console.log(stepValue,value);
+
+
+// function setStepValue(){    
+//     if(+value > -1){
+//         return scenes[value]
+//     }
+
+//     if(stepValue == scenes[scenes.length - 1]){
+//         return stepValue;
+//     }
+//     else {
+//         return "second";
+//     }
+// }
+
+
+
+function getStepValue(){
+    if(+value > -1){
+        return scenes[value]
+    }
+    if(stepValue == scenes[scenes.length - 1]){
+        return stepValue;
+    }
+    else {
+        return "first";
+    }
+}
 
 let counterTextFull = {
     1:"#1 Greatest Album",
@@ -255,8 +287,8 @@ function getColOffset(col,count,vw){
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
                 {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, j (album["Album ID"])}
                     {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
-                    {@const spriteData = album.pos[2] > 35 ? sceneSetTo !== "first" ? spriteMapSpotify.get(`${album["Album ID"]}`)[0] : spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
-                    {@const spriteBase = album.pos[2] > 35 ? sceneSetTo !== "first" ? 150 : 192 : 96}
+                    {@const spriteData = album.pos[2] > 100 ? sceneSetTo !== "first" ? spriteMapSpotify.get(`${album["Album ID"]}`)[0] : spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                    {@const spriteBase = album.pos[2] > 100 ? sceneSetTo !== "first" ? 150 : 192 : 96}
                     {@const spriteAdjust = spriteBase/album.pos[2]}
                     {@const pos = `-${Math.ceil(+spriteData.x / spriteAdjust)}px -${Math.floor(+spriteData.y / spriteAdjust)}px`}
                     {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
@@ -277,7 +309,17 @@ function getColOffset(col,count,vw){
                         {/if}
 
 
-                        {#if ["col","full","waffle"].indexOf(col.layout) > -1 && j == 0}
+                        {#if ["full"].indexOf(col.layout) > -1 && album.rank == 1}
+                            <p class="year-label"
+                                style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
+                            >
+                                Rolling Stone&rsquo;s 2003 Ranking of Greatest Albums
+                            </p>
+
+                        {/if}
+
+
+                        {#if ["col","waffle"].indexOf(col.layout) > -1 && j == 0}
                             <p class="year-label"
                                 style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                             >
@@ -307,16 +349,9 @@ function getColOffset(col,count,vw){
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
                             />
-                        {:else if sceneSetTo == "third"}
-                            <img loading="lazy" style="
-                                        opacity:{visibility};
-                                        filter:{visibility < 1 ? 'grayscale(.8)' : ''};
-                                    "
-                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
-                                />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
-                                background-image:url(assets/spritesheet_{album.pos[2] > 35 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
+                                background-image:url(assets/spritesheet_{album.pos[2] > 100 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
                                 background-size:{size};
                                 filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                 opacity:{visibility};
@@ -362,6 +397,17 @@ function getColOffset(col,count,vw){
                             </div>
                         {/if}
 
+                        {#if scene == "second3" && i == 1}
+                            <div
+                                in:scale
+                                class="img-annotation text-annotation"
+                                style="
+                                "
+                            >
+                                <img loading="lazy" width="100%" height="100%" data={Annotations["second3"][0]} src="assets/album_art_resized/256/{Annotations["second3"][0]}.jpg" alt="" />
+                            </div>
+                        {/if}
+
                     {/each}
 
 
@@ -369,14 +415,6 @@ function getColOffset(col,count,vw){
             {/each}
         </Scrolly>
     </div>
-    <div class="center-col">
-        {#each copy.voterone as text, i}
-            <p class="center">
-                {@html text.value}
-            </p>
-        {/each}
-    </div>
-
 </section>
 
 <style>

@@ -14,12 +14,14 @@ export default function resizeImage({ pathIn, pathOut, file, size, blur }) {
 		jimp.read(src)
 			.then(img => {
 				if (blur) img
-					.resize(size, jimp.AUTO)
-					.blur(1)
+					.cover(size, size, jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE)
+					// .resize(size, jimp.AUTO)
+					// .blur(1)
 					.quality(100)
 					.write(dest, resolve);
 				else img
-					.resize(size, jimp.AUTO)
+					.cover(size, size, jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE)
+					// .resize(size, jimp.AUTO)
 					.quality(100)
 					.write(dest, resolve);
 			})

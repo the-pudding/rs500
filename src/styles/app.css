@@ -179,6 +179,14 @@
 	font-size: 18px;
 }
 
+.big {
+	font-size: 28px;
+}
+
+.emphasis {
+	font-weight: 600;
+}
+
 .active.step {
     opacity: 1;
 }

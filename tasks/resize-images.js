@@ -6,7 +6,7 @@ const CWD = process.cwd();
 console.log(CWD)
 const pathIn = `${CWD}/album_art`;
 const pathOut = `${CWD}/album_art_resized`;
-const sizes = [150];
+const sizes = [96];
 
 function getNewImages() {
 	const filesIn = fs.readdirSync(pathIn).filter(d => d.includes('.jpg'));
