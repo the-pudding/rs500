@@ -21,6 +21,9 @@ export let copy;
 
 let stepValue = "fill";
 let value;
+let highlighted = null;
+let highlightTimeout;
+
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "fill" ;
 $: stepValue, setScene(stepValue);
 
@@ -256,10 +259,21 @@ let Annotations = {
     "sixth2":["20r762YmB5HeofjMCiPMLv","7ycBtnsMtyVbbwTfJwRjSP","7dK54iZuOxXFarGhXwEXfF","3mH6qwIy9crq0I9YQbOuDf"],
     "sixth3":["5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s","4LrLP7DM1KBj8r2Sc098JA"]
 }
+function clickEvent(album){
+    
+    highlighted = album["Album ID"];
+    
+    clearTimeout(highlightTimeout)
+    highlightTimeout = setTimeout(() =>{
+        highlighted = null;
+    },3000)
+
+}
 
 
 function setScene(sceneCount){
     toAnnotate = [];
+    highlighted = null;
 
     if(sceneCount == "fill"){
         cols = fillScene;
@@ -466,6 +480,27 @@ function getDelay(direction){
                         {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                         {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
+
+                        {#if highlighted == album["Album ID"]}
+                            <div 
+                                transition:fly={{duration:500,y:20}}
+                                class="highlighted-click"
+                                style="
+                                    transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0);
+                                    height:{album.pos[2]}px;
+                                    left:{album.pos[2]/2}px;
+                                "
+                            >
+                                <span
+                                    style=" 
+                                    "
+                                >{album["Album"]}</span>
+                            </div>
+                        {/if}
+
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+
                         <div
                             class="{album["2020 Rank"]} album-id-{album["Album ID"]} img-wrapper {album[`${col.year} Rank`]}"
                             style="
@@ -475,6 +510,7 @@ function getDelay(direction){
                                 width:{album.pos[2]}px;
                                 height:{album.pos[2]}px;
                             "
+                            on:click={() => clickEvent(album)}
                         >
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
                                 <div class="counter {["full","col"].indexOf(col.layout) > -1 && +album.rank < 11 ? 'counter-big' : ''}"
@@ -486,13 +522,13 @@ function getDelay(direction){
 
                             {#if ["col","full"].indexOf(col.layout) > -1 && album[`${col.year} Rank`] == 1}
                                 <p class="year-label"
-                                    style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
+                                    style="width:{600}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                                 >
-                                    {@html sceneSetTo == "first" ? "Rolling Stone&rsquo;s 2003 Ranking of Greatest Albums" : `${col.year}${col.layout !== "col" ? ' Ranking' : ''}`}
+                                    {@html sceneSetTo == "first" ? "Rolling Stone&rsquo;s <span class='year2003title'>2003 Ranking</span> of Greatest Albums" : `<span class='year${col.year}title'>${col.year}</span>${col.layout !== "col" ? ' Ranking' : ''}`}
                                 </p>
                             {/if}
                             {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
-                                <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label">2020 Ranking</p>
+                                <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label"><span class='year2020title'>2020</span> Ranking</p>
                             {/if}
 
                             {#if album.pos[2] > 100}
@@ -566,19 +602,20 @@ function getDelay(direction){
                         </div>
                     {:else}
                         {#each textStep[scene] as text, i}
+                            {@const count = scene == "sixth3" ? i : i -1}
 
                             <div class="text-wrapper">
                                 <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
                                 <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
                             </div>
-                            {#if scene == "sixth2" || scene == "sixth3"}
+                            {#if (scene == "sixth2" && i > 0) || scene == "sixth3"}
                                 <div
                                     in:scale
                                     class="text-annotation"
                                     style="
                                     "
                                 >
-                                    <img loading="lazy" width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                                    <img loading="lazy" width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][count]}.jpg" alt="" />
                                 </div>
                             {/if}
 
@@ -661,8 +698,8 @@ h3 {
 
 .img-grid {
     position: relative;
-    width: 400px;
-    height: 600px;
+    /* width: 400px; */
+    /* height: 600px; */
 }
 
 .fill .img-wrapper {
@@ -681,6 +718,10 @@ h3 {
 .year-col .img-wrapper {
     transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005)), width .5s, height .5s;
     transition-timing-function: ease-in-out;
+}
+
+.year-col .year-label {
+    transform: translate(0,calc(-100% - 5px));
 }
 
 .year-full .img-wrapper {

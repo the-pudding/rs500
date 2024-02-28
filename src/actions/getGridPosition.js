@@ -81,6 +81,10 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         let leftOffset = 0
         let topOffset = 0;
 
+        if(vh < 900){
+            topPadding = 50;
+        }
+
         if(orientation == "horz"){
             leftPadding = 0;
             topPadding = 0;
@@ -92,8 +96,15 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
         offSet.forEach(d => {
             if(orientation == "horz") {
-                totalOffset = rowSize + totalOffset
-                leftOffset = (totalOffset*size) + album.groupCount*20;
+
+                if(vw > 600 && album.scene !== "fourth"){
+                    totalOffset = rowSize + totalOffset
+                    leftOffset = (totalOffset*size) + album.groupCount*20;
+                }
+                else {
+                    totalOffset = rowSize + totalOffset
+                    topOffset = (totalOffset*size) + album.groupCount*25;
+                }
             }
             else {
                 totalOffset = Math.ceil(d/rowSize) + totalOffset
@@ -103,6 +114,11 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         
         let top = (Math.floor((album.count)/rowSize))*size + topPadding + topOffset;
         let left = ((album.count) % rowSize)*size + leftPadding + leftOffset;
+
+        if(vw < 400 && album.scene == "fourth"){
+            top = ((album.count) % rowSize)*size + topOffset;
+            left = (Math.floor((album.count)/rowSize))*size;
+        }
 
         return [left,top,size];
     }
@@ -141,9 +157,11 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
 
 
     if(gridType == "waffle-single"){
-        if(vh < 900){
-            topPadding = 50;
-        }
+        topPadding = 50;
+        leftPadding = (vw - (rowSize*size))/2;
+        // if(vh < 900){
+        //     topPadding = 50;
+        // }
         let left = ((rank-1) % rowSize)*size + leftPadding
         let top = (Math.floor((rank-1)/rowSize))*size + topPadding
         return [left,top,size-padding]

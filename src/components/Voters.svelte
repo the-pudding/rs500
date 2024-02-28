@@ -14,12 +14,15 @@ export let scrollY;
 export let copy;
 export let spriteMapVoters;
 export let spriteMapAlbums;
-
+export let mobile = false;
 
 let voterCountGender = {
     2020:336,
     2003:269
 }
+
+
+let highlighted = null;
 
 let stepValue = "second";
 let value;
@@ -30,6 +33,7 @@ let padding = 0;
 let size = 25;
 let rowSize = 10;
 let transformAmount = 0;
+
 
 
 let textStep = {
@@ -54,7 +58,7 @@ let scenes = Object.keys(textStep)//.filter(d => d !== "first");
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "second" ;
 $: stepValue, setScene(stepValue);
 
-$: console.log(sceneSetTo,sceneSetToSub,value)
+$: console.log(sceneSetTo,sceneSetToSub,value,mobile);
 
 let counterTextGroup = {
     0:"Charted at #1",
@@ -186,6 +190,7 @@ let cols = firstScene;
 function setScene(sceneCount){
     sceneSetTo = sceneCount;
     sceneSetToSub = ""
+    highlighted = null;
 
     if(sceneCount == "first"){
         cols = firstScene;
@@ -340,6 +345,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             let availableWidth = ((vw - 100) - (25*(colCount - 1)))/colCount;
             let availableHeight = vh/2-50;
 
+            if(mobile && sceneSetTo == "fourth"){
+                availableHeight = ((vh - 50) - (25*(colCount - 1)))/colCount
+                availableWidth = vw/2 - 100;
+            }
+
             if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
                 availableWidth = (vw-100)/2;
                 availableHeight = vh - 50;
@@ -367,6 +377,9 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
             size = squareSize;
             rowSize = Math.floor(availableWidth/size);
+            if(mobile && sceneSetTo == "fourth"){
+                rowSize = Math.floor(availableHeight/size);
+            }
 
             if(dataset == "voters"){
                 temp = temp.sort((a,b) => {
@@ -500,7 +513,13 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             d.pos = getGridPosition(layout,i,d,vw,vh,size,padding,rowSize,direction);
 
             if(sceneSetTo == "fourth" && col.year == "2020"){
-                d.pos[1] = d.pos[1] * -1;
+                if(mobile){
+                    d.pos[0] = d.pos[0] * -1 - d.pos[2];
+                }
+                else {
+                    d.pos[1] = d.pos[1] * -1;
+                }
+                
             }
 
             // if(sceneSetTo == "fifth" && col.year == "2020" && col.dataset == "voters"){
@@ -508,12 +527,12 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             // }
 
             if(sceneSetTo == "fifth" && sceneSetToSub == "" && col.year == "2020"){
-                d.pos[1] = d.pos[1] * -1;
+                d.pos[1] = d.pos[1] * -1 - d.pos[2];
             }
 
 
             if(sceneSetTo == "fifth" && col.dataset == "albums"){
-                d.pos[1] = d.pos[1] * -1;
+                d.pos[1] = d.pos[1] * -1 - d.pos[2];
             }
 
             if(["sixth"].indexOf(sceneSetTo) > -1 && col.dataset == "albums"){
@@ -541,12 +560,19 @@ function getColOffset(col,count,vw,sceneSetTo){
                 top = top - 70;
             }
             left = 100;
+            if(mobile){
+                top = 50
+                left = vw/2
+                if(col.year == 2020){
+                    left = left - 50;
+                }
+            }
         }
 
         if(sceneSetTo == "fifth"){
-            if(count == 1){
+            if(count == 0){
             // if(col.dataset == "albums"){
-                top = top - 70;
+                top = top + 30// - 70;
             }
             left = 100;
         }
@@ -591,7 +617,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
         if(+album["2003 Rank"] > 0){
             return 1;
         }
-        return .1;
+        return .3;
     }
     return 1;
     return null;
@@ -630,6 +656,17 @@ function getSpriteData(voter,type){
 }
 
 
+function clickEvent(voter,type){
+    console.log("clcking")
+    if(type=="album"){
+        highlighted = voter["Album ID"]
+    }
+    else {
+        highlighted = voter.ID;
+    }
+    
+}
+
 // 
 </script>
 
@@ -653,8 +690,25 @@ function getSpriteData(voter,type){
             {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
             {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
+            {#if highlighted == voter.ID}
+                <div 
+                    class="highlighted-click"
+                    style="
+                        transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0);
+                        height:{voter.pos[2]}px;
+                        left:{voter.pos[2]/2}px;
+                    "
+                >
+                    <span
+                        style=" 
+                        "
+                    >{voter.Voter}</span>
+                </div>
+            {/if}
+
             <div
                 class="img-wrapper {voter.ID}"
+                on:click={() => clickEvent(voter,"voter")}
                 style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
             >
                 <div class="img-sprite" style="
@@ -712,8 +766,26 @@ function getSpriteData(voter,type){
             {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
             {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
+
+            {#if highlighted == voter.ID}
+                <div 
+                    class="highlighted-click"
+                    style="
+                        transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0);
+                        height:{voter.pos[2]}px;
+                        left:{voter.pos[2]/2}px;
+                    "
+                >
+                    <span
+                        style=" 
+                        "
+                    >{voter.Voter}</span>
+                </div>
+            {/if}
+
             <div
                 class="img-wrapper {voter.ID}"
+                on:click={() => clickEvent(voter,"voter")}
                 style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
             >
                 <div class="img-sprite" style="
@@ -747,8 +819,12 @@ function getSpriteData(voter,type){
         {#each cols as col, i (JSON.stringify(col.year).concat(col.dataset))}
             {@const offset = getColOffset(col,i,vw,sceneSetTo)}
             {@const count = i}
+            {@const gridDesktopTop = i == 0 ? -3 : 0}
+            {@const gridDesktopLeft = -offset[0]}
+            {@const gridMobileLeft = i == 0 ? 0 : 0}
+
             <div
-                class="direction-{sceneSetTo == "third" ? col.direction : 'none'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
+                class="direction-{sceneSetTo == "third" ? col.direction : 'none'} mobile-{mobile ? 'on' : 'off'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
                 style="
                     transform:translate({offset[0]}px,{offset[1]}px);
                 "
@@ -756,16 +832,14 @@ function getSpriteData(voter,type){
             >
                 {#if ["fourth","fifth"].indexOf(sceneSetTo) > -1}
                     <div class="grid grid-{i}"
-                        style="transform:translate(-{offset[0]}px,{i == 0 ? -3 : 33}px);"
+                        style="
+                            --vh:{vh}px;
+                            transform:translate({mobile && sceneSetTo == "fourth" ? gridMobileLeft : gridDesktopLeft}px,{mobile && sceneSetTo == "fourth" ? 0 : gridDesktopTop}px);
+                        "
                     >
                         <p
                         class="year-label"
                         style="
-                            width:70px;
-                            transform:translate(10px,{i == 0 ? '5px' : 'calc(-100% - 5px)'});
-                            font-size:18px;
-                            font-weight:500;
-                            text-align:right;
                             "
                         >
                             {col.year} {col.dataset}
@@ -776,6 +850,7 @@ function getSpriteData(voter,type){
 
 
                 {#if col.dataset == "voters"}
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col.dataset,col) as voter, j (+voter["ID"])}
 
                         {@const filePath = "100"}
@@ -785,9 +860,28 @@ function getSpriteData(voter,type){
                         {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                         {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
+                        {#if highlighted == voter.ID}
+                            <div 
+                                class="highlighted-click"
+                                style="
+                                    transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0);
+                                    height:{voter.pos[2]}px;
+                                    left:{voter.pos[2]/2}px;
+                                "
+                            >
+                                <span
+                                    style=" 
+                                    "
+                                >{voter.Voter}</span>
+                            </div>
+                        {/if}
+
+
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
                             in:fly={{duration:10000}}
                             class="img-wrapper {voter.ID}"
+                            on:click={() => clickEvent(voter,"voter")}
                             style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
                         >
 
@@ -862,19 +956,45 @@ function getSpriteData(voter,type){
                         {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
 
+                        {#if highlighted == album["Album ID"]}
+                            <div 
+                                class="highlighted-click"
+                                style="
+                                    transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0);
+                                    height:{album.pos[2]}px;
+                                    left:{album.pos[2]/2}px;
+                                "
+                            >
+                                <span
+                                    style=" 
+                                    "
+                                >{album["Album"]}</span>
+                            </div>
+                        {/if}
+
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
                         <div
                             class="img-wrapper" data-count={album.count} data-group={album.groupCount}
+                            on:click={() => clickEvent(album,"album")}
                             style="--delay: {0}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                         >
 
                             {#if sceneSetTo == "fifth" || sceneSetTo == "sixth"}
-                                {#if +album.count == 0}
+                                {#if +album.count == 0}            
+
+                                        {#if Math.floor(+album["Release Year"] / 10) * 10 == 1990}
+                                        <div class="shading"
+                                            style="width:{album.rowSize*album.pos[2] + 10}px; height:{(Math.ceil(album.groupLength/album.rowSize))*album.pos[2] + 5}px"
+                                        >
+                                        </div>
+                                        {/if}
+
                                         <div class="counter counter-big scene-{sceneSetToSub}" 
                                             transition:fly={{duration:1000, y:50}}
                                             data-scene={sceneSetToSub}
                                             style="
                                                 width:{Math.min(10,+album["groupLength"])*album["size"]}px;
-                                                transform:translate(0,{album.size}px);
 s                                            "
                                         >
                                             {#if +album.groupCount !== 0}
@@ -908,7 +1028,7 @@ s                                            "
                                 style="
                                 background-image:url(assets/spritesheet_96.jpg);
                                 background-size:{size};
-                                filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                filter:{visibility < 1 ? 'grayscale(1)' : ''};
                                 opacity:{visibility};
                                 background-position:{pos};
                                 "
@@ -998,6 +1118,10 @@ s                                            "
     pointer-events: none;
 }
 
+.text-fg {
+    pointer-events: all;
+}
+
 .fourth .counter {
     transform: translate(0,100%);
 }
@@ -1016,10 +1140,11 @@ s                                            "
     display: none;
 }
 
-.fifth .counter {
+.fifth .counter, .sixth .counter {
     transform: translate(0,100%);
-    top: 15px;
+    top: auto;
     display: block;
+    bottom: -3px;
 }
 
 .fifth .year-2003 .counter {
@@ -1053,6 +1178,7 @@ s                                            "
 
 .sixth .counter.scene-2, .sixth .counter.scene-3, .sixth .counter.scene-4, .sixth .counter.scene-5, .sixth .counter.scene-6 {
     font-size: 24px;
+    transform:translate(0,calc(100% + 5px));
 }
 
 .year {
@@ -1083,8 +1209,19 @@ s                                            "
     transform: translate3d(0,0,0);
 }
 
+
+
 .first .year {
     transform:translate(0,-1000px);
+}
+
+.fourth .mobile-on .counter-big {
+    max-width: 45px;
+    font-size: 14px;
+    /* transform: translate(-50%,0); */
+    left: 100%;
+    right: auto;
+    text-align: center;
 }
 
 .buttons {
@@ -1096,19 +1233,21 @@ s                                            "
 }
 
 .third .year-label {
-    top: -35px;
+    top: -20px;
 }
 
 .grid {
     width: 100%;
     height: 1px;
-    top: 50%;
+    /* top: 50%; */
     transform: translate(0,-36px);
     z-index: 1000;
     left: 0;
     position: absolute;
     background-color: var(--color-fg);
+    background-color: #50555b;
 }
+
 
 .grid-2 {
     transform: translate(0,-5px);
@@ -1116,6 +1255,45 @@ s                                            "
 
 .grid .year-label {
     line-height: 1.1;
+    width:100px;
+    padding: 5px;
+    font-size:18px;
+    font-weight:500;
+    text-align:right;
+    transform:translate(0,0);
 }
+.grid-1 .year-label {
+    transform:translate(0,-100%);
+}
+
+.fourth .mobile-on .grid {
+    width: 1px;
+    left: 0;
+    height: var(--vh);
+}
+
+.fourth .mobile-on .grid .year-label {
+    width: 150px;
+    text-align: left;
+    transform:translate(0%,-100%);
+    
+}
+
+.shading {
+    background: linear-gradient(0deg, #151616, #2a8a3f);
+    border-radius: 10px;
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    z-index: -1;
+    left: -5px;
+    transform: translate(0,0%);
+}
+
+.fourth .mobile-on .grid-1 .year-label {
+    transform:translate(-100%,-100%);
+    text-align: right;
+}
+
 
 </style>

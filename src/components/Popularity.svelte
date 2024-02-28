@@ -16,6 +16,7 @@ export let spriteMapBig;
 let padding = 0;
 let size = 25;
 let rowSize = 15;
+let highlighted = null;
 
 let stepValue = "second";
 let value;
@@ -96,9 +97,15 @@ let thirdScene = [
 
 let cols = secondScene;
 
+function clickEvent(album){
+    console.log("clcking")
+    highlighted = album["Album ID"];   
+}
+
 function setScene(sceneCount){
     sceneSetTo = sceneCount;
     sceneSetToSub = ""
+    highlighted = null;
 
     if(sceneCount == "second"){
         cols = secondScene;
@@ -282,10 +289,29 @@ function getColOffset(col,count,vw,sceneSetTo){
                     {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                     {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
 
+                    {#if highlighted == album["Album ID"]}
+                        <div 
+                            class="highlighted-click"
+                            style="
+                                transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0);
+                                height:{album.pos[2]}px;
+                                left:{album.pos[2]/2}px;
+                            "
+                        >
+                            <span
+                                style=" 
+                                "
+                            >{album["Album"]}</span>
+                        </div>
+                    {/if}
+
+
                     <div
                         class="img-wrapper {album[`${col.year} Rank`]} {+album["rank"] > 100 ? "low-rank": ''}"
+                        on:click={() => clickEvent(album)}
                         style="transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
+
                         {#if layoutCounts[col.layout].indexOf(+album.count) > -1}
                             <div class="counter counter-big"
                                 style="width:{Math.max((Math.ceil(album.groupLength/album.rowSize)+1)*size,3*size)}px"

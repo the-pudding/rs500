@@ -23,7 +23,11 @@
 	let spriteMapVoters;
 	let sprites = false;
 	const copy = getContext("copy");
+
+	$: mobile = $viewport.width < 1500 ? true : false;
+
 	console.log(copy)
+
 
 	onMount(() => {
 		spriteMap = group(spriteData, d => d.id);
@@ -38,12 +42,12 @@
 
 {#if sprites}
 	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {spriteMapBig} {copy}/>
+	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {spriteMapSpotify} {copy}/>
 
 	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {copy}/>
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
-	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {spriteMapSpotify} {copy}/>
 
-	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy}/>
+	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile}/>
 
 		
 

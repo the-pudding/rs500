@@ -21,7 +21,9 @@
 	--font-body: var(--sans);
 	--font-form: var(--sans);
 	--color-bg: #feefd7;
+	--color-bg: #161616;
 	--color-fg: #FF0000;
+	--color-fg: #9f9e9f;
 	--color-primary: var(--color-black);
 	--color-link: var(--color-black);
 	--color-focus: var(--color-red);
@@ -86,6 +88,7 @@
 	margin: 0 auto;
 	margin-bottom: 2em;
 	font-size: 24px;
+	-webkit-font-smoothing: antialiased;
 }
 
 
@@ -99,7 +102,6 @@
     font-size: 14px;
 	font-weight: 600;
 	-webkit-font-smoothing: antialiased;
-	color: black;
 	padding-right: 3px;
 	padding-left: 3px;
 	border-top-left-radius: 3px;
@@ -202,14 +204,22 @@
 .text-wrapper .text-fg {
 	z-index: 1;
 	position: relative;
+	-webkit-font-smoothing: antialiased;
+	pointer-events: all;
+
 }
 
 .text-wrapper .text-bg {
 	position: absolute;
 	top: 0;
 	left: 0;
-	opacity: .9;
+	opacity: .95;
 }
+
+.redText {
+	color: rgb(217, 61, 66);
+}
+
 
 
 
@@ -221,10 +231,83 @@
 	background-color: rgba(255,255,255,0);
 }
 
+.text-wrapper span.year2003text {
+	background: rgb(57 17 19);
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: rgb(255 112 117);
+}
+
+.text-wrapper span.year2012text {
+	background: rgb(55 57 17);
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: rgb(214 255 112);
+}
+
+.text-wrapper span.year2020text {
+	background: #12313e;
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: #92beed;
+}
+
+.year-label span.year2003title {
+	background: rgb(57 17 19);
+    margin: 0;
+    padding: 0 7px;
+    border-radius: 5px;
+    color: rgb(255 112 117);
+}
+
+.year-label span.year2012title {
+	background: rgb(55 57 17);
+    margin: 0;
+    padding: 0 7px;
+    border-radius: 5px;
+    color: rgb(214 255 112);
+}
+
+.text-annotation img {
+	border: 1px solid #535353;
+}
+
+.year-label span.year2020title {
+	background: #12313e;
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: #92beed;
+}
+
 .text-bg span {
 	color: var(--color-bg);
 	background-color: var(--color-bg);
 	box-shadow: 15px 0 var(--color-bg), -15px 0 var(--color-bg);
+}
+
+.highlighted-click {
+    font-size: 12px;
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+    top: 0;
+    width: auto;
+    z-index: 100000;
+    width: fit-content;
+}
+
+.highlighted-click span {
+    background-color: white;
+    color: black;
+    transform:translate(-50%,-100%);
+    display: block;
+	pointer-events: all;
+    text-align: center;
+    padding: 0 5px;
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {

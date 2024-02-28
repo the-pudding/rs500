@@ -5,6 +5,7 @@ import { getGridPosition } from '$actions/getGridPosition.js';
 import {fade, scale, fly} from 'svelte/transition';
 import { group, sum } from "d3";
 import Scrolly from "$components/helpers/Scrolly.svelte";
+	import { stringify } from "postcss";
 
 export let vw;
 export let vh;
@@ -25,11 +26,11 @@ let size = 25;
 let rowSize = 10;
 let toAnnotate = [];
 
-
 let Annotations = {
     "third2":["NOS120","NOS116"],
     "second3":["NOS124"]
 }
+let highlighted = null;
 
 
 let textStep = {
@@ -49,21 +50,21 @@ $: stepValue, setScene(stepValue);
 
 $: console.log(stepValue,value);
 
+function clickEvent(album){
+    console.log("clcking")
+    highlighted = album["Album ID"];   
+}
 
-// function setStepValue(){    
-//     if(+value > -1){
-//         return scenes[value]
-//     }
-
-//     if(stepValue == scenes[scenes.length - 1]){
-//         return stepValue;
-//     }
-//     else {
-//         return "second";
-//     }
-// }
-
-
+let getMaxSizeOfSquaresInRect = function(n,w,h) {
+    var sw, sh;
+    var pw = Math.ceil(Math.sqrt(n*w/h));
+    if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+    else sw = w/pw;
+    var ph = Math.ceil(Math.sqrt(n*h/w));
+    if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+    else sh = h/ph;
+    return Math.max(sw,sh);
+}
 
 function getStepValue(){
     if(+value > -1){
@@ -126,12 +127,16 @@ let secondScene = [
 let thirdScene = [
     {
         year:2003,
-        layout:"waffle"
-    },
-    {
-        year:2020,
-        layout:"waffle"
+        layout:"waffle-single"
     }
+    // {
+    //     year:2003,
+    //     layout:"waffle"
+    // },
+    // {
+    //     year:2020,
+    //     layout:"waffle"
+    // }
 ]
 
 let cols = firstScene;
@@ -140,6 +145,7 @@ function setScene(sceneCount){
     sceneSetTo = sceneCount;
     sceneSetToSub = ""
     toAnnotate = [];
+    highlighted = null;
 
 
     if(sceneCount == "first"){
@@ -181,13 +187,38 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
     }
 
     if(sceneSetTo == "third"){
+
+        // temp = JSON.parse(JSON.stringify(data));
+
+        temp
+            .forEach((d,i) => {
+                d.rankText = getRankText(d);
+                // d.rank = d.rankText;
+            })
+
         temp = temp
             .filter(d => d["Spotify Popularity"] == "Not on Spotify")
             .sort((a,b) =>  {
-                let aRank = +a[`${year} Rank`]
-                let bRank = +b[`${year} Rank`]
+                let aRank = +a.rankText
+                let bRank = +b.rankText
                 return aRank - bRank;
             })
+
+
+    }
+
+    if(sceneSetTo == "third" || sceneSetTo == "second"){
+        let bigCardsNeeded = temp.length;
+        let availableWidth = (Math.min(600,vw));
+        let availableHeight = vh - 100;
+        let maxSquare = 100;
+        let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+        squareSize = Math.min(maxSquare,squareSize);
+        const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+    
+        squareSize = Math.min(squareDimension,maxSquare);
+        size = squareSize;
+        rowSize = Math.floor(availableWidth/squareSize);
     }
 
     temp
@@ -199,13 +230,15 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
                 padding = 3;
 
                 if(layout == "waffle-single"){
-                    size = 600/12;
-                    rowSize = 12;
+                    // size = squareSize;
+                    // rowSize = ;
                 }
                 else {
                     rowSize = 5;
                     size = 300/rowSize;
                 }
+
+                d.rowSize = rowSize;
                 d.pos = getGridPosition(layout,i+1,d,vw,vh,size,padding,rowSize);
             }
             else {
@@ -252,6 +285,16 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     return 1
 }
 
+function getRankText(album){
+    if(album["2020 Rank"] !== ""){
+        if(album["2003 Rank"] == ""){
+            return "new";
+        }
+        return (album["2020 Rank"] - album["2003 Rank"])*-1;
+    }
+    return 0;
+}
+
 function getColOffset(col,count,vw){
     if(count == 0){
         return 0
@@ -294,11 +337,35 @@ function getColOffset(col,count,vw){
                     {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
                     {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
 
+
+                    {#if highlighted == album["Album ID"]}
+                        <div 
+                            class="highlighted-click"
+                            style="
+                                transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0);
+                                height:{album.pos[2]}px;
+                                left:{album.pos[2]/2}px;
+                            "
+                        >
+                            <span
+                                style=" 
+                                "
+                            >{album["Album"]}</span>
+                        </div>
+                    {/if}
+
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
                         class="img-wrapper {+album["rank"] > 100 ? "low-rank": ''}"
+                        on:click={() => clickEvent(album)}
                         in:fade={{delay:1000}} out:fade={{delay:0,duration:1000}}
                         style="--delay: {j}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
+
+                        
+
+
                         {#if sceneSetTo == "first"}
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
                                 <div class="counter {col.layout == "full" && +album.rank < 11 ? 'counter-big' : ''}"
@@ -313,7 +380,7 @@ function getColOffset(col,count,vw){
                             <p class="year-label"
                                 style="width:{album.pos[2]*10}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                             >
-                                Rolling Stone&rsquo;s 2003 Ranking of Greatest Albums
+                                Rolling Stone&rsquo;s <span class="year2003title">2003</span> Ranking of Greatest Albums
                             </p>
 
                         {/if}
@@ -328,17 +395,18 @@ function getColOffset(col,count,vw){
                         {/if}
 
                         {#if sceneSetTo == "third"}
-                            <!-- {#if j == 0}
-                                <p class="year-label" style="width:200px;">{col.year} Ranking</p>
-                            {/if} -->
+                            {#if j == 0}
+                                <p class="year-label" style="width:{album.rowSize * album.pos[2]}px;">Ranking Changes (Albums not on Spotify)</p>
+                            {/if}
 
                             <div class="counter"
                                 style="
                                     width:auto; opacity:{visibility};
                                     display:{visibility < 1 ? "none" : ''};
+                                    color:{album.rankText > 0 ? "rgb(53, 185, 121)" : album.rankText == 0 ? "var(--color-fg)" : "rgb(217, 61, 66)"};
                                 "
                             >
-                                {album.rank}
+                                {+album.rankText > 0 ? "+".concat(JSON.stringify(album.rankText)) : album.rankText == 0 ? "n/a" : album.rankText}
                             </div>
                         {/if}
 
@@ -452,6 +520,16 @@ function getColOffset(col,count,vw){
     .year-full .year-label {
         transform: translate(0,calc(-100% - 22px));
         width: 300px;
+    }
+
+    .third .counter {
+        font-weight: 600;
+        -webkit-font-smoothing: auto;
+        font-size: 16px;
+    }
+
+    .third .year-label {
+        transform: translate(0,calc(-100% - 5px));
     }
 
     @media (max-height: 900px) {
