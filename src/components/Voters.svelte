@@ -8,6 +8,7 @@ import {fade, fly} from 'svelte/transition';
 import { group, groupSort,groups } from "d3";
 import Scrolly from "$components/helpers/Scrolly.svelte";
 	import { Rows } from "lucide-svelte";
+	import translate from "../utils/translate";
 
 export let vw;
 export let vh;
@@ -16,6 +17,7 @@ export let copy;
 export let spriteMapVoters;
 export let spriteMapAlbums;
 export let mobile = false;
+export let noMotion = false;
 
 let voterCountGender = {
     2020:336,
@@ -621,11 +623,18 @@ function getColOffset(col,count,vw,sceneSetTo){
             if(vertStack){
                 top = 30;
                 left = vw/2
-                if(col.year == 2020 && col.dataset == "voters" && sceneSetToSub !== "3"){
-                    left = left - 50;
+
+                if(col.year == 2003 && col.dataset == "voters" && +sceneSetToSub < 2){
+                    left = left + 25;
                 }
-                if(col.dataset == "albums"){
-                    left = left - 50;
+                else if(col.dataset == "voters" && +sceneSetToSub < 2) {
+                    left = left - 25;
+                }
+                else if(col.dataset == "albums"){
+                    left = left - 25;
+                }
+                else {
+                    left = left + 25;
                 }
             }
         }
@@ -634,7 +643,11 @@ function getColOffset(col,count,vw,sceneSetTo){
             if(vertStack && sceneSetToSub == ""){
                 top = 30;
                 left = vw/2
-                left = left - 50;
+                // left = left;
+            }
+            else if(+sceneSetToSub > 0 && vertStack){
+                left = vw - 70;
+                // left = 100;
             }
             else if(!vertStack) {
                 left = 100;
@@ -875,7 +888,7 @@ function clickEvent(voter,type){
     {/each}
 </div>
 
-<section class:mobile class:vertStack>
+<section class:mobile class:vertStack class:noMotion>
     <div 
         class="voter-grid year-wrapper {sceneSetTo} {sceneSetTo}-{sceneSetToSub}"
         style="
@@ -889,21 +902,22 @@ function clickEvent(voter,type){
             {@const gridDesktopTop = i == 0 ? -3 : 0}
             {@const gridDesktopLeft = -offset[0]}
             {@const gridMobileLeft = i == 0 ? 0 : 0}
+            {@const flyTime = noMotion ? 0 : 1000}
 
             <div
                 class="direction-{sceneSetTo == "third" ? col.direction : 'none'} mobile-{mobile ? 'on' : 'off'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo} scene-sub-{sceneSetToSub}"
                 style="
                     transform:translate({offset[0]}px,{offset[1]}px);
                 "
-                transition:fly={{y:50, duration:1000}}
+                transition:fly={{y:50, duration:flyTime}}
             >
                 {#if ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1}
                     <div class="grid grid-{i}"
                         style="
                             --vh:{vh}px;
                             transform:translate(
-                                {vertStack && ["fourth","fifth"].indexOf(sceneSetTo) > -1 ? gridMobileLeft : gridDesktopLeft}px,
-                                {vertStack && ["fourth","fifth"].indexOf(sceneSetTo) > -1 ? '0' : gridDesktopTop}px
+                                {vertStack && ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1 ? gridMobileLeft : gridDesktopLeft}px,
+                                {vertStack && ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1 ? '0' : gridDesktopTop}px
                             );
                         "
                     >
@@ -949,7 +963,6 @@ function clickEvent(voter,type){
 
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
-                            in:fly={{duration:10000}}
                             class="img-wrapper {voter.ID}"
                             on:click={() => clickEvent(voter,"voter")}
                             style="--delay: {j}; transform:translate3D({voter.pos[0]}px,{voter.pos[1]}px,0); width:{voter.pos[2]}px; height:{voter.pos[2]}px;"
@@ -959,7 +972,7 @@ function clickEvent(voter,type){
                                 {#if +voter.count == 0}
                                     {#key sceneSetToSub}
                                         <div class="count-{count} counter counter-big teen-{voter["Teenage Decade"]}"
-                                            transition:fly={{duration:1000, y:50}}
+                                            transition:fly={{duration:flyTime, y:50}}
                                             style="
                                                 display:{count == 0 ? 'none' : ''};
                                                 width:{vertStack ? '' : Math.min(10,+voter["groupLength"])*voter["size"]}px;
@@ -1064,7 +1077,7 @@ function clickEvent(voter,type){
                                         {/if}
 
                                         <div class="counter counter-big scene-{sceneSetToSub}" 
-                                            transition:fly={{duration:1000, y:50}}
+                                            transition:fly={{duration:flyTime, y:50}}
                                             data-scene={sceneSetToSub}
                                             style="
                                                 width:{vertStack ? '' : Math.min(10,+album["groupLength"])*album["size"]}px;
@@ -1196,6 +1209,10 @@ function clickEvent(voter,type){
     margin-left: 65px;
 }
 
+.mobile .step {
+    margin-left: auto;
+}
+
 .text-fg {
     pointer-events: all;
 }
@@ -1272,6 +1289,12 @@ function clickEvent(voter,type){
     transition: transform .5s;
 }
 
+.noMotion .year {
+    transition: none;
+}
+
+
+
 .mobile .counter {
     font-size: 14px;
 }
@@ -1299,7 +1322,9 @@ function clickEvent(voter,type){
     transform: translate3d(0,0,0);
 }
 
-
+.noMotion .img-wrapper {
+    transition: none;
+}
 
 .first .year {
     transform:translate(0,-1000px);
@@ -1384,9 +1409,15 @@ function clickEvent(voter,type){
     transform:translate(-100%,-100%);   
 }
 
-.mobile .year-label {
-    font-size: 18px;
-    margin-left: -7px;
+.vertStack .year-label {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.vertStack .sixth .year-label {
+    transform: translate(-100%,0);
+    top: 0;
+    left: -30px;
 }
 
 .shading {

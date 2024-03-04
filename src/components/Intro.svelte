@@ -18,6 +18,7 @@ export let scrollY;
 export let spriteMap;
 export let copy;
 export let mobile = false;
+export let noMotion = false;
 
 let stepValue = "fill";
 let value;
@@ -244,6 +245,9 @@ function filterData(year,layout,sceneSetTo,scrollY){
             else {
                 d.rank = d[`${year} Rank`]
                 d.scroll = scrollY;
+                if(noMotion) {
+                    d.scroll = 0;
+                }
             }
             
             d.year = year;
@@ -446,6 +450,9 @@ onMount(() => {
 })
 
 function getFly(){
+    if(noMotion){
+        return 0;
+    }
     if(sceneSetTo == "fifth"){
         return 500;
     }
@@ -463,7 +470,7 @@ function getDelay(direction){
 }
 </script>
 
-<section class:mobile>
+<section class:mobile class:noMotion>
     <div
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
@@ -524,7 +531,7 @@ function getDelay(direction){
                                 <p class="year-label"
                                     style="width:{600}px; display:{sceneSetTo == "sixth" && +col.year == 2003 ? 'none' : ''};"
                                 >
-                                    {@html sceneSetTo == "first" ? "Rolling Stone&rsquo;s <span class='year2003title'>2003 Ranking</span> of Greatest Albums" : `<span class='year${col.year}title'>${col.year}</span>${col.layout !== "col" ? ' Ranking' : ''}`}
+                                    {@html sceneSetTo == "first" ? mobile ? "Rolling Stone&rsquo;s <span class='year2003title'>2003</span> Album Ranking" : "Rolling Stone&rsquo;s <span class='year2003title'>2003 Ranking</span> of Greatest Albums" : `<span class='year${col.year}title'>${col.year}</span>${col.layout !== "col" ? ' Ranking' : ''}`}
                                 </p>
                             {/if}
                             {#if sceneSetTo == "sixth" && album["2020 Rank"] == 1}
@@ -718,9 +725,17 @@ h3 {
     transition: transform .5s;
 }
 
+.noMotion .year {
+    transition: none;
+}
+
 .year-col .img-wrapper {
     transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005)), width .5s, height .5s;
     transition-timing-function: ease-in-out;
+}
+
+.noMotion .year-col .img-wrapper {
+    transition: none;
 }
 
 .year-col .year-label {
@@ -732,6 +747,10 @@ h3 {
 .year-full .img-wrapper {
     transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005));
     transition-timing-function: ease-in-out;
+}
+
+.noMotion .year-full .img-wrapper {
+    transition: none;
 }
 
 .img-annotation {

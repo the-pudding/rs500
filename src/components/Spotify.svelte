@@ -12,6 +12,7 @@ export let vh;
 export let copy;
 export let spriteMap;
 export let mobile = false;
+export let noMotion = false;
 
 let stepValue = "first";
 let value;
@@ -310,7 +311,7 @@ function getColOffset(col,count,vw){
 
 
 
-<section class:mobile>
+<section class:mobile class:noMotion>
     <div class="center-col">
         {#each copy.spotifyone as text, i}
             <p class="center">
@@ -503,6 +504,10 @@ function getColOffset(col,count,vw){
         position: absolute;
         transition: transform .5s calc(var(--delay) * calc(1s * 0.005));
         transition-timing-function: ease-in-out;
+    }
+
+    .noMotion .img-wrapper {
+        transition: none;
     }
 
     .year-waffle .year-label {

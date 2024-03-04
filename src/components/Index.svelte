@@ -4,19 +4,21 @@
 	import Title from "$components/Title.svelte"
 	import HipHop from "$components/HipHop.svelte"
 	import Popularity from "$components/Popularity.svelte"
+	import Footer from "$components/Footer.svelte"
 
 	import Spotify from "$components/Spotify.svelte"
 	import Voters from "$components/Voters.svelte"
 	import viewport from "$stores/viewport.js";
 	import scrollY from "$stores/scrollY.js";
 	import { group } from "d3";
+	import reducedMotion from "$stores/mq.js";
 
 	import spriteData from "$data/sprite-data_96.csv"
 	// import spriteDataBig from "$data/sprite-data_192.csv"
 	// import spriteDataSpotify from "$data/sprite-data_150.csv"
 	import spriteDataVoters from "$data/sprite-data_voters_100.csv"
 
-
+	
 	let spriteMap;
 	// let spriteMapBig;
 	// let spriteMapSpotify;
@@ -25,11 +27,14 @@
 	const copy = getContext("copy");
 
 	$: mobile = $viewport.width < 500 ? true : false;
-
-	console.log(copy)
+	// $: reducedMotion = $reducedMotion ? true : false;
+	let noMotion = false;
 
 
 	onMount(() => {
+		if($reducedMotion.reducedMotion){
+			noMotion = true;
+		}
 		spriteMap = group(spriteData, d => d.id);
 		// spriteMapBig = group(spriteDataBig, d => d.id);
 		// spriteMapSpotify = group(spriteDataSpotify, d => d.id);
@@ -40,15 +45,18 @@
 
 </script>
 
+
+
 {#if sprites}
-	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile}/>
-	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
+<div>
+	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
 
 	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
 
-	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile}/>
-
+	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
+	<Footer />
 		
-
+</div>
 {/if}

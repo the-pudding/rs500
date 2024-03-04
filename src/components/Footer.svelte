@@ -75,17 +75,18 @@
 
 <style>
 	footer {
-		background-color: var(--color-fg);
-		color: var(--color-bg);
+		background-color: var(--color-bg);
+		color: var(--color-fg);
 		font-family: var(--sans);
 		padding: 3em 1em;
 		margin-top: 3em;
+		border-top: 1px solid #ddd;
 	}
 
 	a,
 	a:visited,
 	a:hover {
-		color: var(--color-bg);
+		color: var(--color-fg);
 	}
 
 	.stories {
@@ -105,7 +106,7 @@
 
 	.story a {
 		display: block;
-		font-weight: 900;
+		font-weight: 500;
 		text-decoration: none;
 		border: none;
 	}
