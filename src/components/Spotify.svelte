@@ -11,11 +11,7 @@ export let vw;
 export let vh;
 export let copy;
 export let spriteMap;
-export let spriteMapBig;
-export let spriteMapSpotify;
-
-
-
+export let mobile = false;
 
 let stepValue = "first";
 let value;
@@ -211,7 +207,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub){
         let bigCardsNeeded = temp.length;
         let availableWidth = (Math.min(600,vw));
         let availableHeight = vh - 100;
-        let maxSquare = 100;
+        let maxSquare = 75;
         let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
         squareSize = Math.min(maxSquare,squareSize);
         const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
@@ -314,7 +310,7 @@ function getColOffset(col,count,vw){
 
 
 
-<section>
+<section class:mobile>
     <div class="center-col">
         {#each copy.spotifyone as text, i}
             <p class="center">
@@ -330,7 +326,7 @@ function getColOffset(col,count,vw){
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
                 {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub) as album, j (album["Album ID"])}
                     {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
-                    {@const spriteData = album.pos[2] > 100 ? sceneSetTo !== "first" ? spriteMapSpotify.get(`${album["Album ID"]}`)[0] : spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                    {@const spriteData = spriteMap.get(`${album["Album ID"]}`)[0]}
                     {@const spriteBase = album.pos[2] > 100 ? sceneSetTo !== "first" ? 150 : 192 : 96}
                     {@const spriteAdjust = spriteBase/album.pos[2]}
                     {@const pos = `-${Math.ceil(+spriteData.x / spriteAdjust)}px -${Math.floor(+spriteData.y / spriteAdjust)}px`}
@@ -532,6 +528,10 @@ function getColOffset(col,count,vw){
         transform: translate(0,calc(-100% - 5px));
     }
 
+    .mobile .year-label {
+        font-size: 16px;
+    }
+
     @media (max-height: 900px) {
         .year-full .counter-big, .year-col .counter-big {
             transform: none;
@@ -545,6 +545,10 @@ function getColOffset(col,count,vw){
             border-top-left-radius: 3px;
             border-bottom-right-radius: 3px;
             background: var(--color-bg);
+        }
+
+        .year-full .year-label {
+            transform: translate(0,calc(-100% - 5px));
         }
     }
 

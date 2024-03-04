@@ -70,6 +70,7 @@
 	line-height: 1.2;
     left: 0;
     margin: 0;
+	color: #dddddd;
     transform: translate(0,-100%);
 }
 
@@ -84,11 +85,15 @@
 }
 
 .center {
-	width: 600px;
+	width: min(600px, calc(100% - 30px));
 	margin: 0 auto;
 	margin-bottom: 2em;
 	font-size: 24px;
 	-webkit-font-smoothing: antialiased;
+}
+
+.mobile .center {
+	font-size: 18px;
 }
 
 
@@ -167,6 +172,7 @@
 .steps {
     position: relative;
     z-index: 1000;
+	pointer-events: none;
 }
 .step {
     min-height: 100px;
@@ -176,6 +182,31 @@
 	opacity: .2;
     transition: opacity .5s;
 }
+
+.mobile .step {
+	padding-left: 0;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: calc(100% - 30px);
+}
+
+.mobile .text-annotation {
+	margin-left: 0;
+	box-shadow: none;
+}
+
+.mobile .text-annotation:after {
+	content: '';
+	width: 100%;
+	height: 100%;
+	outline: 10px solid var(--color-bg);
+	opacity: .95;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .step p {
     margin: 0;
 	font-size: 18px;
@@ -183,6 +214,7 @@
 
 .big {
 	font-size: 28px;
+	color: #ddd;
 }
 
 .emphasis {
@@ -195,6 +227,10 @@
 
 .center-col {
 	margin: 200px auto;
+}
+
+.mobile .center-col {
+	margin-bottom: 100px;
 }
 
 .text-wrapper {
@@ -232,19 +268,52 @@
 }
 
 .text-wrapper span.year2003text {
-	background: rgb(57 17 19);
+	background: rgb(57,17,19);
     margin: 0;
     padding: 0 5px;
     border-radius: 5px;
-    color: rgb(255 112 117);
+    color: rgb(255,112,117);
 }
 
 .text-wrapper span.year2012text {
-	background: rgb(55 57 17);
+	background: rgb(55,57,17);
     margin: 0;
     padding: 0 5px;
     border-radius: 5px;
-    color: rgb(214 255 112);
+    color: rgb(214,255,112);
+}
+
+.text-wrapper span.voters2003text, .center-col span.voters2003text {
+	background: rgb(42,25,70);
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: #eea9eb;
+}
+
+
+.year-label .voters2003title {
+	background: rgb(42,25,70);
+    margin: 0;
+    padding: 0 7px;
+    border-radius: 5px;
+    color: #eea9eb;
+}
+
+.year-label .voters2020title {
+	background: rgb(25,70,44);
+    margin: 0;
+    padding: 0 7px;
+    border-radius: 5px;
+    color: rgb(112,255,144);
+}
+
+.text-wrapper span.voters2020text, .center-col span.voters2020text {
+	background: rgb(25,70,44);
+    margin: 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    color: rgb(112,255,144);
 }
 
 .text-wrapper span.year2020text {
@@ -256,19 +325,19 @@
 }
 
 .year-label span.year2003title {
-	background: rgb(57 17 19);
+	background: rgb(57,17,19);
     margin: 0;
     padding: 0 7px;
     border-radius: 5px;
-    color: rgb(255 112 117);
+    color: rgb(255,112,117);
 }
 
 .year-label span.year2012title {
-	background: rgb(55 57 17);
+	background: rgb(55,57,17);
     margin: 0;
     padding: 0 7px;
     border-radius: 5px;
-    color: rgb(214 255 112);
+    color: rgb(214,255,112);
 }
 
 .text-annotation img {
@@ -310,6 +379,12 @@
     padding: 0 5px;
 }
 
+@media screen and (max-width: 1000px) {
+	.text-annotation {
+		box-shadow: 0 0 15px 12px var(--color-bg);
+	}
+}
+
 @media screen and (prefers-reduced-motion: no-preference) {
 	:root {
 		--1s: 1s;
@@ -318,6 +393,7 @@
 
 h1 {
 	font-size: var(--48px, 48px);
+	color: #dddddd;
 }
 
 h2 {

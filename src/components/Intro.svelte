@@ -16,8 +16,8 @@ export let vw;
 export let vh;
 export let scrollY;
 export let spriteMap;
-export let spriteMapBig;
 export let copy;
+export let mobile = false;
 
 let stepValue = "fill";
 let value;
@@ -210,22 +210,22 @@ function filterData(year,layout,sceneSetTo,scrollY){
             .filter(d => d[`2020 Rank`] !== "")
     }
     else if (sceneSetTo == "fill"){
-
+        
         temp = temp
-            .filter(d => d[`${year} Rank`] !== "")
+            .filter(d => d[`${year} Rank`] !== "" && +d[`${year} Rank`] < 200)
 
         rowSize = Math.ceil(vw / size);
 
-        temp = temp.sort((a,b) => {
-            return +a[`${year} Rank`] - +b[`${year} Rank`];
-        })
+        // temp = temp.sort((a,b) => {
+        //     return +a[`${year} Rank`] - +b[`${year} Rank`];
+        // })
 
         let screenspace = vh*vw;
         let avail = screenspace/((size)*(size));
-        console.log("counts:",avail,sceneSetTo)
+        // console.log("counts:",avail,sceneSetTo)
 
 
-        temp = temp.slice(0,50);
+        temp = temp.slice(0,avail);
     }
     else {
         temp = temp
@@ -463,7 +463,7 @@ function getDelay(direction){
 }
 </script>
 
-<section>
+<section class:mobile>
     <div
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
@@ -474,7 +474,7 @@ function getDelay(direction){
                     {#each filterData(col.year,col.layout,sceneSetTo,sceneSetTo == "fill" ? scrollY : '') as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                         {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
-                        {@const spriteData = album.pos[2] > 100 ? spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
+                        {@const spriteData = spriteMap.get(`${album["Album ID"]}`)[0]}
                         {@const spriteBase = album.pos[2] > 100 ? 192 : 96}
                         {@const spriteAdjust = spriteBase/album.pos[2]}
                         {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
@@ -585,16 +585,14 @@ function getDelay(direction){
                         min-height: {vh*.75}px;
                         margin-bottom: {i == 0 ? vh/2 : ''}px;
                         padding-left: {i == 0 ? '0' : ''}px;
+                        padding-bottom: {mobile ? vh/2 : ''}px;
                     "
 
                 >
                     {#if i == 0}
                         <div class="title"
                             style="
-                                margin-top:{(sizing["fill"].size+sizing["fill"].padding)*3}px;
-                                margin-left:{sizing["fill"].size*2 + sizing["fill"].padding*2}px;
-                                width:{(sizing["fill"].size+sizing["fill"]["padding"])*6}px;
-                                min-height:{(sizing["fill"].size+sizing["fill"]["padding"])*4}px;
+                                --vw: {vw}px;
                             "
                         >
                             <h1>{@html copy.headings[0].title}</h1>
@@ -648,6 +646,11 @@ function getDelay(direction){
 .title {
     background-color: var(--color-bg);
     padding: 30px;
+    margin-top:270px;
+    margin-left:180px;
+    width:540px;
+    min-height:360px;
+
 }
 
 .step {
@@ -724,6 +727,8 @@ h3 {
     transform: translate(0,calc(-100% - 5px));
 }
 
+
+
 .year-full .img-wrapper {
     transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005));
     transition-timing-function: ease-in-out;
@@ -751,8 +756,17 @@ img {
 }
 
 .steps {
-    pointer-events: none;
+    /* pointer-events: none; */
 }
+
+p a {
+    color: inherit;
+}
+
+.mobile .first .year-full .year-label {
+    font-size: 16px;
+}
+
 
 @media (max-height: 900px) {
     .year-full .counter-big, .year-col .counter-big {
@@ -767,8 +781,32 @@ img {
         border-top-left-radius: 3px;
         border-bottom-right-radius: 3px;
         background: var(--color-bg);
+        color: #ddd;
+    }
+
+    .year-full .year-label {
+        transform: translate(0,calc(-100% - 5px));
+    }
+
+    .title {
+        pointer-events: all;
     }
 }
+
+
+@media (max-width: 900px) {
+    .title-step {
+        width: 100%;
+        max-width: none;
+    }
+    .title {
+        width: calc(var(--vw) - 100);
+        margin-left: 90px;
+        margin-top: 180px;
+    }
+}
+
+
 
 
 </style>

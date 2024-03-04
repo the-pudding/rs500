@@ -26,9 +26,13 @@ mark {
 }
 
 a {
-	color: var(--color-link, blue);
+	/* color: var(--color-link, blue); */
 	text-decoration: none;
 	border-bottom: 1px solid currentColor;
+}
+
+a:visited {
+	color: inherit;
 }
 
 

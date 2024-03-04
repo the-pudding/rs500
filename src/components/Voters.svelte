@@ -33,8 +33,7 @@ let padding = 0;
 let size = 25;
 let rowSize = 10;
 let transformAmount = 0;
-
-
+let vertStack = false;
 
 let textStep = {
     "second":copy.voterfive,
@@ -55,10 +54,40 @@ let textStep = {
 }
 
 let scenes = Object.keys(textStep)//.filter(d => d !== "first");
-$: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "second" ;
+$: stepValue = getStepValue(value);
 $: stepValue, setScene(stepValue);
+$: vertStack = vw < 1100 ? true : false;
+
+
+function getStepValue(value){
+
+    // value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "second" ;
+
+    if(+value > -1){
+        return scenes[value]
+    }
+    if(stepValue == scenes[scenes.length - 1]){
+        return stepValue;
+    }
+    else {
+        return "second";
+    }
+}
+
+
 
 $: console.log(sceneSetTo,sceneSetToSub,value,mobile);
+
+let getMaxSizeOfSquaresInRect = function(n,w,h) {
+    var sw, sh;
+    var pw = Math.ceil(Math.sqrt(n*w/h));
+    if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+    else sw = w/pw;
+    var ph = Math.ceil(Math.sqrt(n*h/w));
+    if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+    else sh = h/ph;
+    return Math.max(sw,sh);
+}
 
 let counterTextGroup = {
     0:"Charted at #1",
@@ -69,7 +98,7 @@ let counterTextGroup = {
 
 let counterTextGender = {
     0:"She/her",
-    2:"Non-binary/They/Them",
+    2:"They/Non-binary",
     1:"He/Him",
     3:"Groups"
 }
@@ -307,6 +336,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         })
     }
 
+    if(layout == "fill-voters"){
+        temp = temp
+            .filter(d => d.Race.slice(0,4) == "http");
+    }
+
     if(sceneSetTo == "first" || sceneSetTo == "firstTwo") {
 
         temp = temp
@@ -336,6 +370,26 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             }
         }
 
+        if(sceneSetTo == "second" || sceneSetTo == "third"){
+            let availableWidth = Math.min(580,(vw-20));
+            bigCardsNeeded = temp.length;
+            let availableHeight = vh-200;
+
+            if(sceneSetTo == "third"){
+                availableWidth = Math.min(580/2,(vw-20)/2);
+                bigCardsNeeded = 336;
+                availableHeight = vh-250;
+            }
+            
+            let maxSquare = 75;
+            let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+            squareSize = Math.min(maxSquare,squareSize);
+            const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+            squareSize = squareDimension;
+            size = squareSize;
+            rowSize = Math.floor(availableWidth/size);
+        }
+
         if(sceneSetTo == "fourth" || sceneSetTo == "fifth" || sceneSetTo == "sixth"){
 
             if(sceneSetTo == "sixth"){
@@ -345,7 +399,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             let availableWidth = ((vw - 100) - (25*(colCount - 1)))/colCount;
             let availableHeight = vh/2-50;
 
-            if(mobile && sceneSetTo == "fourth"){
+            if(vertStack && sceneSetTo == "fourth"){
                 availableHeight = ((vh - 50) - (25*(colCount - 1)))/colCount
                 availableWidth = vw/2 - 100;
             }
@@ -359,17 +413,6 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         
             let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
             squareSize = Math.min(maxSquare,squareSize);
-
-            let getMaxSizeOfSquaresInRect = function(n,w,h) {
-                var sw, sh;
-                var pw = Math.ceil(Math.sqrt(n*w/h));
-                if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
-                else sw = w/pw;
-                var ph = Math.ceil(Math.sqrt(n*h/w));
-                if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
-                else sh = h/ph;
-                return Math.max(sw,sh);
-            }
         
             const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
         
@@ -377,7 +420,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
             size = squareSize;
             rowSize = Math.floor(availableWidth/size);
-            if(mobile && sceneSetTo == "fourth"){
+            if(vertStack && sceneSetTo == "fourth"){
                 rowSize = Math.floor(availableHeight/size);
             }
 
@@ -451,6 +494,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
         grouped = grouped.sort((a,b) => {
             return a[0] - b[0];
         })
+
         
         let groupLengths = [];
         let groupAmounts = [];
@@ -495,17 +539,6 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
     temp
         .forEach((d,i) => {
-
-            if(sceneSetTo == "third"){
-                rowSize = 15;
-                size = (580/2)/rowSize;
-            }
-
-            if(sceneSetTo == "second"){
-                size = 35;
-                rowSize = Math.floor(600/size);
-            }
-
             if(layout == "large"){
                 padding = 2;
             }
@@ -513,11 +546,11 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             d.pos = getGridPosition(layout,i,d,vw,vh,size,padding,rowSize,direction);
 
             if(sceneSetTo == "fourth" && col.year == "2020"){
-                if(mobile){
+                if(vertStack){
                     d.pos[0] = d.pos[0] * -1 - d.pos[2];
                 }
                 else {
-                    d.pos[1] = d.pos[1] * -1;
+                    d.pos[1] = d.pos[1] * -1 - d.pos[2];
                 }
                 
             }
@@ -555,26 +588,19 @@ function getColOffset(col,count,vw,sceneSetTo){
             left = (vw - 600)/2;
         }
 
-        if(sceneSetTo == "fourth"){
-            if(col.year == 2020){
-                top = top - 70;
+        if(sceneSetTo == "fourth" || sceneSetTo == "fifth"){
+            if(count == 0){
+                top = top + 30;
             }
             left = 100;
-            if(mobile){
+            if(vertStack){
                 top = 50
                 left = vw/2
                 if(col.year == 2020){
                     left = left - 50;
                 }
             }
-        }
 
-        if(sceneSetTo == "fifth"){
-            if(count == 0){
-            // if(col.dataset == "albums"){
-                top = top + 30// - 70;
-            }
-            left = 100;
         }
 
         if(sceneSetTo == "sixth"){
@@ -587,13 +613,16 @@ function getColOffset(col,count,vw,sceneSetTo){
         // top = 0;
     }
 
-    else if(cols[count].layout == "grouped-voter-gender" && cols[count].year == "2020 "){
+    else if(cols[count].layout == "grouped-voter-gender" && +cols[count].year == 2020){
         if(vw > 600){
             if(cols[count].direction == "vert"){
                 let rowSize = 10;
                 let size = (580/2)/rowSize;
                 left = rowSize*size + 20;
             }
+        }
+        else {
+            left = vw/2-5;
         }
     }
 
@@ -670,7 +699,7 @@ function clickEvent(voter,type){
 // 
 </script>
 
-<div class="center-col" style="margin:0;">
+<div class:mobile class="center-col" style="margin:0;">
     {#each copy.voterone as text, i}
         <p class="center">
             {@html text.value}
@@ -678,7 +707,7 @@ function clickEvent(voter,type){
     {/each}
 </div>
 
-<section class="" style="">
+<section class:mobile class="" style="">
     <div class="voter-grid year-wrapper" style="height:{vh}px;">
 
         {#each filterData(2003,"fill-voters",null,"","voters",{year:2003,layout:"large",dataset:"voters"}) as voter, j (+voter["ID"])}
@@ -746,7 +775,7 @@ function clickEvent(voter,type){
     </div>
 </section>
 
-<div class="center-col" style="margin:0;">
+<div class:mobile class="center-col" style="margin:0;">
     {#each copy.voterfour as text, i}
         <p class="center">
             {@html text.value}
@@ -754,7 +783,7 @@ function clickEvent(voter,type){
     {/each}
 </div>
 
-<section class="" style="">
+<section class:mobile class="" style="">
     <div class="voter-grid year-wrapper" style="height:{vh}px;">
 
         {#each filterData(2020,"fill-voters",null,"","voters",{year:2003,layout:"large",dataset:"voters"}) as voter, j (+voter["ID"])}
@@ -801,7 +830,7 @@ function clickEvent(voter,type){
     </div>
 </section>
 
-<div class="center-col" style="margin-bottom:0;">
+<div class:mobile class="center-col" style="margin-bottom:0;">
     {#each copy.voterfourtwo as text, i}
         <p class="center">
             {@html text.value}
@@ -809,11 +838,12 @@ function clickEvent(voter,type){
     {/each}
 </div>
 
-<section>
+<section class:mobile class:vertStack>
     <div 
         class="voter-grid year-wrapper {sceneSetTo} {sceneSetTo}-{sceneSetToSub}"
         style="
             height:{vh}px;
+            overflow:hidden;
         "
     >            
         {#each cols as col, i (JSON.stringify(col.year).concat(col.dataset))}
@@ -824,17 +854,20 @@ function clickEvent(voter,type){
             {@const gridMobileLeft = i == 0 ? 0 : 0}
 
             <div
-                class="direction-{sceneSetTo == "third" ? col.direction : 'none'} mobile-{mobile ? 'on' : 'off'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo}"
+                class="direction-{sceneSetTo == "third" ? col.direction : 'none'} mobile-{mobile ? 'on' : 'off'} year year-{col.dataset} year-{col.year} year-{col.layout} scene-{sceneSetTo} scene-sub-{sceneSetToSub}"
                 style="
                     transform:translate({offset[0]}px,{offset[1]}px);
                 "
                 transition:fly={{y:50, duration:1000}}
             >
-                {#if ["fourth","fifth"].indexOf(sceneSetTo) > -1}
+                {#if ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1}
                     <div class="grid grid-{i}"
                         style="
                             --vh:{vh}px;
-                            transform:translate({mobile && sceneSetTo == "fourth" ? gridMobileLeft : gridDesktopLeft}px,{mobile && sceneSetTo == "fourth" ? 0 : gridDesktopTop}px);
+                            transform:translate(
+                                {vertStack && sceneSetTo == "fourth" ? gridMobileLeft : gridDesktopLeft}px,
+                                {vertStack && sceneSetTo == "fourth" ? '0' : gridDesktopTop}px
+                            );
                         "
                     >
                         <p
@@ -842,7 +875,7 @@ function clickEvent(voter,type){
                         style="
                             "
                         >
-                            {col.year} {col.dataset}
+                            <span class="{col.dataset == 'albums' ? 'year' : 'voters'}{col.year}title">{col.year} {col.dataset}</span>
                         </p>
                     </div>
                 {/if}
@@ -917,9 +950,9 @@ function clickEvent(voter,type){
                                 {/if}
                             {/if}
 
-                            {#if sceneSetTo == "third"}
+                            {#if ["second","third"].indexOf(sceneSetTo) > -1}
                                 {#if voter["count"] == 0 && voter["groupCount"] == 0}
-                                    <p class="year-label" style="width:200px;">{col.year} Voters</p>
+                                    <p class="year-label " style="width:200px;"><span class="voters{col.year}title">{col.year}</span> Voters</p>
                                 {/if}
                             {/if}
 
@@ -934,7 +967,7 @@ function clickEvent(voter,type){
                             <div class="img-sprite" style="
                                 background-image:url(assets/spritesheet_voters_100.jpg);
                                 background-size:{size};
-                                background-color:{spriteData.x == 0 ? "black" : ''};
+                                background-color:{spriteData.x == 0 ? "#666666" : ''};
                                 background-position:{pos};
                                 "
                             >
@@ -985,7 +1018,7 @@ function clickEvent(voter,type){
 
                                         {#if Math.floor(+album["Release Year"] / 10) * 10 == 1990}
                                         <div class="shading"
-                                            style="width:{album.rowSize*album.pos[2] + 10}px; height:{(Math.ceil(album.groupLength/album.rowSize))*album.pos[2] + 5}px"
+                                            style="width:{album.rowSize*album.pos[2] + 10}px; height:{(Math.ceil(album.groupLength/album.rowSize))*album.pos[2]*2}px"
                                         >
                                         </div>
                                         {/if}
@@ -1059,6 +1092,7 @@ s                                            "
                         margin-top: {i == 0 ? -vh/2 : ''}px;
                         padding-top: {i == 0 ? '0' : ''}px;
                         min-height: {vh*.75}px;
+                        padding-bottom: {mobile ? vh : ''}px;
                     "
                 >
 
@@ -1075,7 +1109,7 @@ s                                            "
     </div>
 </section>
 
-<div class="center-col" style="">
+<div class:mobile class="center-col" style="">
     {#each copy.conclusion as text, i}
         <p class="center">
             {@html text.value}
@@ -1118,6 +1152,10 @@ s                                            "
     pointer-events: none;
 }
 
+.step {
+    margin-left: 65px;
+}
+
 .text-fg {
     pointer-events: all;
 }
@@ -1140,7 +1178,7 @@ s                                            "
     display: none;
 }
 
-.fifth .counter, .sixth .counter {
+.fifth .counter, .sixth .counter, .fourth .counter {
     transform: translate(0,100%);
     top: auto;
     display: block;
@@ -1185,6 +1223,10 @@ s                                            "
     transition: transform .5s;
 }
 
+.mobile .counter {
+    font-size: 14px;
+}
+
 /* .fourth, .fifth {
     display: block;
     position: absolute;
@@ -1215,7 +1257,7 @@ s                                            "
     transform:translate(0,-1000px);
 }
 
-.fourth .mobile-on .counter-big {
+.fourth .vertStack .counter-big {
     max-width: 45px;
     font-size: 14px;
     /* transform: translate(-50%,0); */
@@ -1232,8 +1274,9 @@ s                                            "
     transition: opacity .5s;
 }
 
-.third .year-label {
+.third .year-label, .second .year-label {
     top: -20px;
+    font-size: 22px;
 }
 
 .grid {
@@ -1244,9 +1287,26 @@ s                                            "
     z-index: 1000;
     left: 0;
     position: absolute;
-    background-color: var(--color-fg);
     background-color: #50555b;
 }
+
+.scene-sixth .grid {
+    background: none;
+}
+
+.scene-sixth .grid .year-label {
+    text-align: left;
+    transform: translate(100px,100%);
+    width: 150px;
+    padding: 0;
+    top: 24px;
+    font-size: 24px;
+}
+
+.scene-sixth:not(.scene-sub-) .grid .year-label {
+    display: none;
+}
+
 
 
 .grid-2 {
@@ -1266,22 +1326,26 @@ s                                            "
     transform:translate(0,-100%);
 }
 
-.fourth .mobile-on .grid {
+.fourth .vertStack .grid {
     width: 1px;
     left: 0;
     height: var(--vh);
 }
 
-.fourth .mobile-on .grid .year-label {
+.fourth .vertStack .grid .year-label {
     width: 150px;
     text-align: left;
-    transform:translate(0%,-100%);
-    
+    transform:translate(0%,-100%);   
+}
+
+.mobile .year-label {
+    font-size: 18px;
+    margin-left: -7px;
 }
 
 .shading {
-    background: linear-gradient(0deg, #151616, #2a8a3f);
-    border-radius: 10px;
+    background: linear-gradient(180deg, var(--color-bg) 20%, #727272 100%);
+    border-radius: 0px;
     position: absolute;
     top: auto;
     bottom: 0;
@@ -1290,10 +1354,21 @@ s                                            "
     transform: translate(0,0%);
 }
 
-.fourth .mobile-on .grid-1 .year-label {
+.sixth .shading {
+    display: none;
+}
+
+.fourth .vertStack .grid-1 .year-label {
     transform:translate(-100%,-100%);
     text-align: right;
 }
+
+.grid .year-label span {
+    padding: 0;
+    border-radius: 0;
+}
+
+
 
 
 </style>

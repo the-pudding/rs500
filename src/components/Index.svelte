@@ -12,27 +12,27 @@
 	import { group } from "d3";
 
 	import spriteData from "$data/sprite-data_96.csv"
-	import spriteDataBig from "$data/sprite-data_192.csv"
-	import spriteDataSpotify from "$data/sprite-data_150.csv"
+	// import spriteDataBig from "$data/sprite-data_192.csv"
+	// import spriteDataSpotify from "$data/sprite-data_150.csv"
 	import spriteDataVoters from "$data/sprite-data_voters_100.csv"
 
 
 	let spriteMap;
-	let spriteMapBig;
-	let spriteMapSpotify;
+	// let spriteMapBig;
+	// let spriteMapSpotify;
 	let spriteMapVoters;
 	let sprites = false;
 	const copy = getContext("copy");
 
-	$: mobile = $viewport.width < 1500 ? true : false;
+	$: mobile = $viewport.width < 500 ? true : false;
 
 	console.log(copy)
 
 
 	onMount(() => {
 		spriteMap = group(spriteData, d => d.id);
-		spriteMapBig = group(spriteDataBig, d => d.id);
-		spriteMapSpotify = group(spriteDataSpotify, d => d.id);
+		// spriteMapBig = group(spriteDataBig, d => d.id);
+		// spriteMapSpotify = group(spriteDataSpotify, d => d.id);
 		spriteMapVoters = group(spriteDataVoters, d => d.id);
 
 		sprites = true;
@@ -41,10 +41,10 @@
 </script>
 
 {#if sprites}
-	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {spriteMapBig} {copy}/>
-	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {spriteMapSpotify} {copy}/>
+	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile}/>
+	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
 
-	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {spriteMapBig} {copy}/>
+	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
 
 	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile}/>

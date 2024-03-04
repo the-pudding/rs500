@@ -12,6 +12,7 @@ export let vw;
 export let vh;
 export let spriteMap;
 export let spriteMapBig;
+export let mobile = false;
 
 let padding = 0;
 let size = 25;
@@ -31,6 +32,18 @@ let sceneSetToSub = ""
 
 $: stepValue = setStepValue(value);
 $: stepValue, setScene(stepValue);
+
+
+let getMaxSizeOfSquaresInRect = function(n,w,h) {
+    var sw, sh;
+    var pw = Math.ceil(Math.sqrt(n*w/h));
+    if (Math.floor(pw*h/w)*pw < n) sw = h/Math.ceil(pw*h/w);
+    else sw = w/pw;
+    var ph = Math.ceil(Math.sqrt(n*h/w));
+    if (Math.floor(ph*w/h)*ph < n) sh = w/Math.ceil(w*ph/h);
+    else sh = h/ph;
+    return Math.max(sw,sh);
+}
 
 function setStepValue(){    
     if(+value > -1){
@@ -61,6 +74,12 @@ let counterTextGroup = {
     1:"Billboard #2-100",
     2:"#101+",
     3:"Never charted"
+}
+
+let counterTextGroupMobile = {
+    0:"Billboard #1",
+    1:"#2-200",
+    2:"Never charted"
 }
 
 let secondScene = [
@@ -127,12 +146,36 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,col){
         rowSize = 10;
     }
     else if (col.direction == "stacked"){
+
+        let bigCardsNeeded = 400;
+        let availableWidth = (vw-20)*.65;
+        let availableHeight = vh - 100;
+        let maxSquare = 75;
+        let squareSize = Math.floor(Math.min(availableWidth, availableHeight) / Math.sqrt(bigCardsNeeded));
+        squareSize = Math.min(maxSquare,squareSize);
+        const squareDimension = getMaxSizeOfSquaresInRect(bigCardsNeeded,availableWidth, availableHeight);
+    
+        squareSize = Math.min(squareDimension,maxSquare);
+        let sizeMobile = squareSize;
+        let rowSizeMobile = Math.floor(availableWidth/squareSize);
+
         if(col.rank == "top100"){
             rowSize = 3;
+            if(vw < 1100){
+                size = sizeMobile
+                // console.log(vw,(vw*.25) - 20,sizeMobile,((vw*.25) - 20)/sizeMobile);
+                rowSize = Math.floor(((vw*.35) - 20)/sizeMobile);
+            }
         }
         else {
             rowSize = 12;
+            if(vw < 1100){
+                rowSize = rowSizeMobile;
+                size = sizeMobile
+            }
         }
+
+
         
     }
     else {
@@ -169,7 +212,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,col){
 
         let grouped = groups(temp, d => {
             let rank = +d["Peak Billboard Position"];
-            if(vw < 600){
+            if(vw < 1100){
                 if(rank == 1){
                     return 0
                 }
@@ -214,6 +257,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,col){
             d[1].forEach((j,i) => {
                 j["count"] = i
                 j["rowSize"] = rowSize
+                j["size"] = size;
                 j["groupCount"] = groupAmounts.indexOf(e)
                 j["groupCounts"] = groupLengths
                 j["groupLength"] = groupLength;
@@ -248,6 +292,11 @@ function getColOffset(col,count,vw,sceneSetTo){
             else if (col.direction == "stacked"){
                 if(col.rank == "bottom400"){
                     top = 7*size;
+
+                    if(vw < 1100){
+                        left = vw*.35;
+                        top = 0;
+                    }
                 }
             }
             else {
@@ -262,8 +311,8 @@ function getColOffset(col,count,vw,sceneSetTo){
 
 </script>
 
-<section>
-    <div class="center-col">
+<section class:mobile class="{vw < 1100 ? 'vert-stacked' : ''}">
+    <div class="center-col" style="margin-top:0px;">
         {#each copy.popone as text, i}
             <p class="center">
                 {@html text.value}
@@ -282,9 +331,9 @@ function getColOffset(col,count,vw,sceneSetTo){
                 style="transform:translate({getColOffset(col,i,vw,sceneSetTo)});"
             >
                 {#each filterData(col.year,col.layout,sceneSetTo,sceneSetToSub,col) as album, albumCount (album["Album ID"])}
-                    {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
-                    {@const spriteData = album.pos[2] > 50 ? spriteMapBig.get(`${album["Album ID"]}`)[0] : spriteMap.get(`${album["Album ID"]}`)[0]}
-                    {@const spriteBase = album.pos[2] > 50 ? 192 : 96}
+                    {@const filePath = album.pos[2] > 200 ? "full" : "256"}
+                    {@const spriteData = spriteMap.get(`${album["Album ID"]}`)[0]}
+                    {@const spriteBase = 96}
                     {@const spriteAdjust = spriteBase/album.pos[2]}
                     {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                     {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
@@ -306,6 +355,8 @@ function getColOffset(col,count,vw,sceneSetTo){
                     {/if}
 
 
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <div
                         class="img-wrapper {album[`${col.year} Rank`]} {+album["rank"] > 100 ? "low-rank": ''}"
                         on:click={() => clickEvent(album)}
@@ -314,16 +365,32 @@ function getColOffset(col,count,vw,sceneSetTo){
 
                         {#if layoutCounts[col.layout].indexOf(+album.count) > -1}
                             <div class="counter counter-big"
-                                style="width:{Math.max((Math.ceil(album.groupLength/album.rowSize)+1)*size,3*size)}px"
+                                style="
+                                        width:{vw < 1100 && i == 0 ? vw*.3 : Math.max((Math.ceil(album.groupLength/album.rowSize)+1)*album.size,3*album.size)}px;
+                                        left:{i == 0 ? '' : ''}px;
+                                    "
                             >
-                                <!-- {#if i == 0} -->
+                                {#if vw > 1099}
                                     <strong>{counterTextGroup[+album.groupCount]}:</strong>
-                                <!-- {/if} -->
-                                {Math.floor(album.groupLength/baseline*100)}%{+album.groupCount == 0 && i == 0 ? " of albums" : ''}
+                                {:else}
+                                    {counterTextGroupMobile[+album.groupCount]}
+                                {/if}
+
+                                {#if !mobile}
+                                    {Math.floor(album.groupLength/baseline*100)}%{+album.groupCount == 0 && i == 0 ? " of albums" : ''}
+                                {/if}
                             </div>
                             {#if +album.groupCount == 0}
-                                <p style="width:{400}px;" class="year-label">
-                                    {@html yearLabelText[i]} Albums by Rolling Stone
+                                <p style="
+                                        width:{i == 0 ? mobile ? vw*.35 : 900 : vw*.7}px;
+                                        left:{i == 0 ? '' : ''}px;
+                                    "
+                                    class="year-label"
+                                >
+                                    {@html yearLabelText[i]} Albums
+                                    {#if vw > 1099}
+                                        in the <span class='year2020title'>2020 Ranking</span>
+                                    {/if}
                                 </p>
                             {/if}
                         {/if}
@@ -335,7 +402,7 @@ function getColOffset(col,count,vw,sceneSetTo){
                             />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
-                                background-image:url(assets/spritesheet_{album.pos[2] > 50 ? "192" : "96"}.jpg);
+                                background-image:url(assets/spritesheet_96.jpg);
                                 background-size:{size};
                                 background-position:{pos};
                             "
@@ -382,6 +449,17 @@ function getColOffset(col,count,vw,sceneSetTo){
         width: 100px;
         top: -50px;
     }
+
+    .vert-stacked .year-label {
+        top: -18px;
+    }
+
+    .mobile .year-label {
+        font-size: 16px;
+    }
+
+
+
     .button {
         position: absolute;
     }
@@ -410,6 +488,10 @@ function getColOffset(col,count,vw,sceneSetTo){
 
     .second .year-bottom400 {
         opacity: .2;
+    }
+
+    .vert-stacked .counter {
+        font-size: 14px;
     }
 
     .steps {
