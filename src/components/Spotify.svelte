@@ -1,6 +1,5 @@
 <script>
 
-import data from "$data/albums.csv"
 import { getGridPosition } from '$actions/getGridPosition.js';
 import {fade, scale, fly} from 'svelte/transition';
 import { group, sum } from "d3";
@@ -13,6 +12,8 @@ export let copy;
 export let spriteMap;
 export let mobile = false;
 export let noMotion = false;
+export let data;
+export let dataMap;
 
 let stepValue = "first";
 let value;
@@ -412,16 +413,19 @@ function getColOffset(col,count,vw){
                                     opacity:{visibility};
                                     filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                 "
-                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
-                                background-image:url(assets/spritesheet_{album.pos[2] > 100 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
-                                background-size:{size};
-                                filter:{visibility < 1 ? 'grayscale(.8)' : ''};
-                                opacity:{visibility};
-                                background-position:{pos};
-                            "
+                                    background-image:url(assets/spritesheet_{album.pos[2] > 100 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
+                                    background-size:{size};
+                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    opacity:{visibility};
+                                    background-position:{pos};
+                                "
+                                role="img"
+                                aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                             </div>
                         {/if}
@@ -458,7 +462,7 @@ function getColOffset(col,count,vw){
                                 style="
                                 "
                             >
-                                <img loading="lazy" width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="" />
+                                <img loading="lazy" width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="{dataMap.get(Annotations[scene][i])[0]["Album"]}" />
                             </div>
                         {/if}
 
@@ -469,7 +473,7 @@ function getColOffset(col,count,vw){
                                 style="
                                 "
                             >
-                                <img loading="lazy" width="100%" height="100%" data={Annotations["second3"][0]} src="assets/album_art_resized/256/{Annotations["second3"][0]}.jpg" alt="" />
+                                <img loading="lazy" width="100%" height="100%" data={Annotations["second3"][0]} src="assets/album_art_resized/256/{Annotations["second3"][0]}.jpg" alt="{dataMap.get("NOS124")[0]["Album"]}" />
                             </div>
                         {/if}
 

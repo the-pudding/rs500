@@ -398,7 +398,8 @@ function getColOffset(col,count,vw,sceneSetTo){
                         {#if album.pos[2] > 100}
                             <img loading="lazy" style="
                                 "
-                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
@@ -406,6 +407,8 @@ function getColOffset(col,count,vw,sceneSetTo){
                                 background-size:{size};
                                 background-position:{pos};
                             "
+                            role="img"
+                            aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                             </div>
                         {/if}

@@ -796,6 +796,8 @@ function clickEvent(voter,type){
                     background-color:{spriteData.x == 0 ? "black" : ''};
                     background-position:{pos};
                     "
+                    role="img"
+                    aria-label="image of {voter["Voter"]}"
                 >
                 </div>
             </div>
@@ -873,6 +875,8 @@ function clickEvent(voter,type){
                     background-color:{spriteData.x == 0 ? "black" : ''};
                     background-position:{pos};
                     "
+                    role="img"
+                    aria-label="image of {voter["Voter"]}"
                 >
                 </div>
             </div>
@@ -1024,6 +1028,8 @@ function clickEvent(voter,type){
                                 background-color:{spriteData.x == 0 ? "#666666" : ''};
                                 background-position:{pos};
                                 "
+                                role="img"
+                                aria-label="image of {voter["Voter"]}"
                             >
                             </div>
                                 
@@ -1118,6 +1124,8 @@ function clickEvent(voter,type){
                                 opacity:{visibility};
                                 background-position:{pos};
                                 "
+                                role="img"
+                                aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                         </div>
 

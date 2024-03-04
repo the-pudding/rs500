@@ -1,5 +1,4 @@
 <script>
-import data from "$data/albums.csv"
 import { onMount, setContext, getContext } from "svelte";
 
 import { getGridPosition } from '$actions/getGridPosition.js';
@@ -19,6 +18,8 @@ export let spriteMap;
 export let copy;
 export let mobile = false;
 export let noMotion = false;
+export let data;
+export let dataMap;
 
 let stepValue = "fill";
 let value;
@@ -543,7 +544,8 @@ function getDelay(direction){
                                         opacity:{visibility};
                                         filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                     "
-                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg" alt=""
+                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                    alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 />
                             {:else}
                                 <div class="img-sprite" style="
@@ -553,6 +555,8 @@ function getDelay(direction){
                                     filter:{visibility < 1 ? 'grayscale(.8)' : ''};
                                     background-position:{pos};
                                 "
+                                    role="img"
+                                    aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 >
                                 </div>
                             {/if}
@@ -568,7 +572,9 @@ function getDelay(direction){
                                     display:{["fourth"].indexOf(sceneSetTo) > -1 && +col.year == 2020 ? 'none' : ''};
                                 "
                             >
-                                <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg" alt="" />
+                                <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg"
+                                    alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                                />
                             </div>
                         {/each}
                     {/if}
@@ -620,10 +626,9 @@ function getDelay(direction){
                                     style="
                                     "
                                 >
-                                    <img loading="lazy" width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][count]}.jpg" alt="" />
+                                    <img loading="lazy" width="100%" height="100%" src="assets/album_art_resized/256/{Annotations[scene][count]}.jpg" alt="{dataMap.get(Annotations[scene][count])[0]["Album"]}" />
                                 </div>
                             {/if}
-
                         {/each}
                         {#if scene == "first"}    
                                 {#each Annotations[scene] as album}
@@ -633,7 +638,7 @@ function getDelay(direction){
                                         style="
                                         "
                                     >        
-                                        <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album}.jpg" alt="" />
+                                        <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album}.jpg" alt="{dataMap.get(album)[0]["Album"]}" />
                                     </div>
                                 {/each}
 

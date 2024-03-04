@@ -12,6 +12,7 @@
 	import scrollY from "$stores/scrollY.js";
 	import { group } from "d3";
 	import reducedMotion from "$stores/mq.js";
+	import data from "$data/albums.csv"
 
 	import spriteData from "$data/sprite-data_96.csv"
 	// import spriteDataBig from "$data/sprite-data_192.csv"
@@ -24,6 +25,7 @@
 	// let spriteMapSpotify;
 	let spriteMapVoters;
 	let sprites = false;
+	let dataMap;
 	const copy = getContext("copy");
 
 	$: mobile = $viewport.width < 500 ? true : false;
@@ -36,6 +38,8 @@
 			noMotion = true;
 		}
 		spriteMap = group(spriteData, d => d.id);
+		dataMap = group(data, d => d["Album ID"]);
+
 		// spriteMapBig = group(spriteDataBig, d => d.id);
 		// spriteMapSpotify = group(spriteDataSpotify, d => d.id);
 		spriteMapVoters = group(spriteDataVoters, d => d.id);
@@ -49,8 +53,8 @@
 
 {#if sprites}
 <div>
-	<Intro vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
-	<Spotify vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Intro {data} {dataMap} vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Spotify {data} {dataMap} vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
 
 	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
