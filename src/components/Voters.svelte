@@ -7,6 +7,7 @@ import { getGridPosition } from '$actions/getGridPosition.js';
 import {fade, fly} from 'svelte/transition';
 import { group, groupSort,groups } from "d3";
 import Scrolly from "$components/helpers/Scrolly.svelte";
+	import { Rows } from "lucide-svelte";
 
 export let vw;
 export let vh;
@@ -399,15 +400,21 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
             let availableWidth = ((vw - 100) - (25*(colCount - 1)))/colCount;
             let availableHeight = vh/2-50;
 
-            if(vertStack && sceneSetTo == "fourth"){
+            if(vertStack && ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1){
                 availableHeight = ((vh - 50) - (25*(colCount - 1)))/colCount
                 availableWidth = vw/2 - 100;
             }
 
-            if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
+            if(sceneSetTo == "sixth" && sceneSetToSub !== "" && !vertStack){
                 availableWidth = (vw-100)/2;
                 availableHeight = vh - 50;
             }
+
+            if(sceneSetTo == "sixth" && sceneSetToSub !== "" && vertStack){
+                availableWidth = vw-100;
+                availableHeight = vh - 50;
+            }
+            
 
             let maxSquare = 300;
         
@@ -420,7 +427,7 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
 
             size = squareSize;
             rowSize = Math.floor(availableWidth/size);
-            if(vertStack && sceneSetTo == "fourth"){
+            if(vertStack && ["fourth","fifth","sixth"].indexOf(sceneSetTo) > -1){
                 rowSize = Math.floor(availableHeight/size);
             }
 
@@ -555,21 +562,33 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
                 
             }
 
-            // if(sceneSetTo == "fifth" && col.year == "2020" && col.dataset == "voters"){
-            //     d.pos[1] = d.pos[1] * -1;
-            // }
-
             if(sceneSetTo == "fifth" && sceneSetToSub == "" && col.year == "2020"){
-                d.pos[1] = d.pos[1] * -1 - d.pos[2];
+                if(vertStack){
+                    d.pos[0] = d.pos[0] * -1 - d.pos[2];
+                }
+                else {
+                    d.pos[1] = d.pos[1] * -1 - d.pos[2];
+                }
+                
             }
 
-
             if(sceneSetTo == "fifth" && col.dataset == "albums"){
-                d.pos[1] = d.pos[1] * -1 - d.pos[2];
+                if(vertStack){
+                    d.pos[0] = d.pos[0] * -1 - d.pos[2];
+                }
+                else {
+                    d.pos[1] = d.pos[1] * -1 - d.pos[2];
+                }
+                
             }
 
             if(["sixth"].indexOf(sceneSetTo) > -1 && col.dataset == "albums"){
-                d.pos[1] = d.pos[1] * -1;
+                if(vertStack){
+                    d.pos[0] = d.pos[0] * -1 - d.pos[2];
+                }
+                else {
+                    d.pos[1] = d.pos[1] * -1;
+                }
             }
         });
 
@@ -584,8 +603,14 @@ function getColOffset(col,count,vw,sceneSetTo){
         top = vh/2;
 
         if(sceneSetTo == "sixth" && sceneSetToSub !== ""){
-            top = vh - 100;
-            left = (vw - 600)/2;
+            if(vertStack){
+                top = 0//(vh - 600)/2;
+                left = (vw - 50);
+            } else {
+                top = vh - 100;
+                left = (vw - 600)/2;
+            }
+            
         }
 
         if(sceneSetTo == "fourth" || sceneSetTo == "fifth"){
@@ -594,17 +619,26 @@ function getColOffset(col,count,vw,sceneSetTo){
             }
             left = 100;
             if(vertStack){
-                top = 50
+                top = 30;
                 left = vw/2
-                if(col.year == 2020){
+                if(col.year == 2020 && col.dataset == "voters" && sceneSetToSub !== "3"){
+                    left = left - 50;
+                }
+                if(col.dataset == "albums"){
                     left = left - 50;
                 }
             }
-
         }
 
         if(sceneSetTo == "sixth"){
-            left = 100;
+            if(vertStack && sceneSetToSub == ""){
+                top = 30;
+                left = vw/2
+                left = left - 50;
+            }
+            else if(!vertStack) {
+                left = 100;
+            }
         }
     }
 
@@ -710,6 +744,7 @@ function clickEvent(voter,type){
 <section class:mobile class="" style="">
     <div class="voter-grid year-wrapper" style="height:{vh}px;">
 
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         {#each filterData(2003,"fill-voters",null,"","voters",{year:2003,layout:"large",dataset:"voters"}) as voter, j (+voter["ID"])}
 
             {@const filePath = "100"}
@@ -735,6 +770,8 @@ function clickEvent(voter,type){
                 </div>
             {/if}
 
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <div
                 class="img-wrapper {voter.ID}"
                 on:click={() => clickEvent(voter,"voter")}
@@ -865,8 +902,8 @@ function clickEvent(voter,type){
                         style="
                             --vh:{vh}px;
                             transform:translate(
-                                {vertStack && sceneSetTo == "fourth" ? gridMobileLeft : gridDesktopLeft}px,
-                                {vertStack && sceneSetTo == "fourth" ? '0' : gridDesktopTop}px
+                                {vertStack && ["fourth","fifth"].indexOf(sceneSetTo) > -1 ? gridMobileLeft : gridDesktopLeft}px,
+                                {vertStack && ["fourth","fifth"].indexOf(sceneSetTo) > -1 ? '0' : gridDesktopTop}px
                             );
                         "
                     >
@@ -923,14 +960,17 @@ function clickEvent(voter,type){
                                     {#key sceneSetToSub}
                                         <div class="count-{count} counter counter-big teen-{voter["Teenage Decade"]}"
                                             transition:fly={{duration:1000, y:50}}
-                                            style="display:{count == 0 ? 'none' : ''};
-                                            width:{Math.min(10,+voter["groupLength"])*voter["size"]}px;"
+                                            style="
+                                                display:{count == 0 ? 'none' : ''};
+                                                width:{vertStack ? '' : Math.min(10,+voter["groupLength"])*voter["size"]}px;
+                                                transform:{vertStack ? `translate(${voter.pos[2]}px,0px)` : ''};
+                                            "
                                         >
                                             {#if voter["groupCount"] == 0}
                                                 {#if sceneSetToSub == "3"}
                                                     Teen pre-1960s
                                                 {:else if sceneSetTo == "fifth"}
-                                                    Teen in pre-1960s
+                                                    {@html vertStack ? '&rsquo;40s to &rsquo;60s Teen' : 'Teen pre-1960s'}
                                                 {:else}
                                                     Ages 60+
                                                 {/if}
@@ -939,7 +979,8 @@ function clickEvent(voter,type){
                                                     Teen in {voter["Teenage Decade"]}
                                                 {:else if sceneSetTo == "fifth"}
                                                     <!-- Born in {voter["Birthyear"].slice(0,3)}0s -->
-                                                    Teen in {voter["Teenage Decade"]}
+                                                    {@html vertStack ? `&rsquo;${voter["Teenage Decade"].slice(2,4)}s Teen` : `Teen in ${voter["Teenage Decade"]}`}
+                                                    
                                                 {:else}
                                                     Age {Math.round(voter["Age at Vote"]/10)*10}s
                                                     <!-- Born in {voter["Birthyear"].slice(0,3)}0s -->
@@ -983,11 +1024,10 @@ function clickEvent(voter,type){
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                         {@const filePath = "100"}
                         {@const spriteData = getSpriteData(album,"album")}
-                        {@const spriteBase = 100}
+                        {@const spriteBase = 96}
                         {@const spriteAdjust = spriteBase/album.pos[2]}
                         {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
                         {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
-
 
                         {#if highlighted == album["Album ID"]}
                             <div 
@@ -1017,28 +1057,28 @@ function clickEvent(voter,type){
                                 {#if +album.count == 0}            
 
                                         {#if Math.floor(+album["Release Year"] / 10) * 10 == 1990}
-                                        <div class="shading"
-                                            style="width:{album.rowSize*album.pos[2] + 10}px; height:{(Math.ceil(album.groupLength/album.rowSize))*album.pos[2]*2}px"
-                                        >
-                                        </div>
+                                            <div class="shading"
+                                                style="width:{vertStack ? (Math.ceil(album.groupLength/album.rowSize))*album.pos[2]*2 : album.rowSize*album.pos[2] + 10}px; height:{vertStack ? album.rowSize*album.pos[2] + 10 : (Math.ceil(album.groupLength/album.rowSize))*album.pos[2]*2}px"
+                                            >
+                                            </div>
                                         {/if}
 
                                         <div class="counter counter-big scene-{sceneSetToSub}" 
                                             transition:fly={{duration:1000, y:50}}
                                             data-scene={sceneSetToSub}
                                             style="
-                                                width:{Math.min(10,+album["groupLength"])*album["size"]}px;
-s                                            "
+                                                width:{vertStack ? '' : Math.min(10,+album["groupLength"])*album["size"]}px;
+                                                transform:{vertStack ? `translate(${album.pos[2]}px,0px)` : ''};
+                                            "
                                         >
                                             {#if +album.groupCount !== 0}
-                                                {Math.floor(+album["Release Year"]/10)}0s
+                                                {@html vertStack ? `&rsquo;${JSON.stringify(Math.floor(+album["Release Year"]/10)).slice(2,4)}` : Math.floor(+album["Release Year"]/10)}0s
                                             {:else}
                                                 {#if sceneSetTo == "sixth"}
-                                                    1950s
+                                                    {@html vertStack ? '&rsquo;50s' : '1950s'}
                                                 {:else}
                                                     pre-1960s
                                                 {/if}
-                                                
                                             {/if}
                                         </div>
                                 {/if}
@@ -1090,9 +1130,9 @@ s                                            "
                      class:active
                      style="
                         margin-top: {i == 0 ? -vh/2 : ''}px;
-                        padding-top: {i == 0 ? '0' : ''}px;
+                        padding-top: {i == 0 ? '0' : vertStack ? vh*.25 : '0'}px;
                         min-height: {vh*.75}px;
-                        padding-bottom: {mobile ? vh : ''}px;
+                        padding-bottom: {vertStack ? vh*.75 : ''}px;
                     "
                 >
 
@@ -1160,22 +1200,31 @@ s                                            "
     pointer-events: all;
 }
 
-.fourth .counter {
+.vertStack .fourth .counter, .vertStack .fifth .counter, .vertStack .sixth .counter {
     transform: translate(0,100%);
 }
 
-.fourth- .year-2020 .img-wrapper img, .fourth- .year-2020 .img-wrapper .year-label {
+.vertStack .fourth- .year-2020 .img-wrapper img, .fourth- .year-2020 .img-wrapper .year-label
+.vertStack .fifth- .year-2020 .img-wrapper img, .fifth- .year-2020 .img-wrapper .year-label {
     opacity: .2;
     transition: opacity .5s;
 }
 
-.fourth .year-2020 .counter {
+.vertStack .fourth .year-2020 .counter,
+.vertStack .fifth .year-2020 .counter,
+.vertStack .fifth .year-albums .counter,
+.vertStack .sixth .year-albums .counter {
     transform: translate(0,100%);
     top: 15px;
+    width: 50px;
 }
 
-.fourth .year-2003 .counter {
+.vertStack .fourth .year-2003 .counter, .vertStack .fifth .year-2003 .counter {
     display: none;
+}
+
+.vertStack .fifth .year-albums .counter {
+    display: block;
 }
 
 .fifth .counter, .sixth .counter, .fourth .counter {
@@ -1246,7 +1295,6 @@ s                                            "
 
 .img-wrapper {
     position: absolute;
-    /* transition: transform .5s; */
     transition: transform .5s calc(var(--delay) * calc(1s * 0.005));
     transform: translate3d(0,0,0);
 }
@@ -1257,12 +1305,10 @@ s                                            "
     transform:translate(0,-1000px);
 }
 
-.fourth .vertStack .counter-big {
-    max-width: 45px;
+.vertStack .fourth  .counter-big, .vertStack .fifth .counter-big, .vertStack .sixth .counter-big {
     font-size: 14px;
-    /* transform: translate(-50%,0); */
-    left: 100%;
     right: auto;
+    line-height: 1.2;
     text-align: center;
 }
 
@@ -1275,7 +1321,7 @@ s                                            "
 }
 
 .third .year-label, .second .year-label {
-    top: -20px;
+    top: -25px;
     font-size: 22px;
 }
 
@@ -1326,16 +1372,16 @@ s                                            "
     transform:translate(0,-100%);
 }
 
-.fourth .vertStack .grid {
+.vertStack .grid {
     width: 1px;
     left: 0;
     height: var(--vh);
 }
 
-.fourth .vertStack .grid .year-label {
+.vertStack .fourth .grid .year-label, .vertStack .fifth .grid .year-label {
     width: 150px;
     text-align: left;
-    transform:translate(0%,-100%);   
+    transform:translate(-100%,-100%);   
 }
 
 .mobile .year-label {
@@ -1354,13 +1400,27 @@ s                                            "
     transform: translate(0,0%);
 }
 
+.vertStack .shading {
+    background: linear-gradient(90deg, var(--color-bg) 20%, #727272 100%);
+    top: -5px;
+    left: auto;
+    right: 0;
+    bottom: auto;
+    transform: translate(0%,0%);
+}
+
 .sixth .shading {
     display: none;
 }
 
-.fourth .vertStack .grid-1 .year-label {
+.vertStack .fourth .grid-1 .year-label, .vertStack .fifth .grid-1 .year-label {
     transform:translate(-100%,-100%);
     text-align: right;
+}
+
+.vertStack .fourth .grid-0 .year-label, .vertStack .fifth .grid-0 .year-label {
+    transform:translate(0,-100%);
+    text-align: left;
 }
 
 .grid .year-label span {

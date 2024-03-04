@@ -255,7 +255,7 @@ function filterData(year,layout,sceneSetTo,scrollY){
 
 let Annotations = {
     "first":["6QaVfG1pHYl1z15ZxkvVDW"],
-    "fourth":["1BZoqf8Zje5nGdwZhOjAtD"],
+    // "fourth":["1BZoqf8Zje5nGdwZhOjAtD"],
     "sixth2":["20r762YmB5HeofjMCiPMLv","7ycBtnsMtyVbbwTfJwRjSP","7dK54iZuOxXFarGhXwEXfF","3mH6qwIy9crq0I9YQbOuDf"],
     "sixth3":["5G5UwqPsxDKpxJLX4xsyuh","5Dgqy4bBg09Rdw7CQM545s","4LrLP7DM1KBj8r2Sc098JA"]
 }
@@ -303,13 +303,13 @@ function setScene(sceneCount){
         cols = fourthScene;
         sceneSetTo = sceneCount;
         sceneSetToSub = ""
-        toAnnotate = Annotations["fourth"]
+        // toAnnotate = Annotations["fourth"]
     }
     if(sceneCount == "fourth2"){
         cols = fourthScene;
         sceneSetTo = "fourth";
         sceneSetToSub = "2";
-        toAnnotate = Annotations["fourth"]
+        // toAnnotate = Annotations["fourth"]
 
     }
     if(sceneCount == "fifth"){
@@ -618,7 +618,7 @@ function getDelay(direction){
                             {/if}
 
                         {/each}
-                        {#if scene == "fourth" || scene == "first"}    
+                        {#if scene == "first"}    
                                 {#each Annotations[scene] as album}
                                     <div
                                         in:scale

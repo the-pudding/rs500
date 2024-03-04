@@ -106,13 +106,19 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             topPadding = 0;
 
             if(album.sceneSub !== "" && album.scene == "sixth"){
-                leftPadding = (rowSize*size*(6 - (+album.sceneSub)) + 20*5)*-1
+                if(vw < 1100){
+                    console.log(rowSize*size)
+                    topPadding = (rowSize*size*(6-album.sceneSub) + 25*(6 - +album.sceneSub))*-1 + 30
+                    // topPadding = (rowSize*size*(6 - (+album.sceneSub))+ 20*5)*-1
+                }
+                else {
+                    leftPadding = (rowSize*size*(6 - (+album.sceneSub)) + 20*5)*-1
+                }
             }
         }
         else {
-            
             leftPadding = 10;
-            topPadding = 50;
+            topPadding = 60;
             if(vw > 600){
                 leftPadding = (vw-600)/2;
             }
@@ -122,7 +128,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             if(orientation == "horz") {
 
 
-                if(album.scene == "fourth" && vw < 1100) {
+                if(["fourth","fifth","sixth"].indexOf(album.scene) > -1 && vw < 1100) {
                     totalOffset = rowSize + totalOffset
                     topOffset = (totalOffset*size) + album.groupCount*25;
                 }
@@ -130,17 +136,6 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
                     totalOffset = rowSize + totalOffset
                     leftOffset = (totalOffset*size) + album.groupCount*20;
                 }
-
-
-                
-                // if(vw > 600 && album.scene !== "fourth"){
-                //     totalOffset = rowSize + totalOffset
-                //     leftOffset = (totalOffset*size) + album.groupCount*20;
-                // }
-                // else if(album.scene == "fourth" && ) {
-                //     totalOffset = rowSize + totalOffset
-                //     topOffset = (totalOffset*size) + album.groupCount*25;
-                // }
             }
             else {
                 totalOffset = Math.ceil(d/rowSize) + totalOffset
@@ -151,10 +146,12 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
         let top = (Math.floor((album.count)/rowSize))*size + topPadding + topOffset;
         let left = ((album.count) % rowSize)*size + leftPadding + leftOffset;
 
-        if(vw < 1100 && album.scene == "fourth"){
-            top = ((album.count) % rowSize)*size + topOffset;
+        if(vw < 1100 && ["fourth","fifth","sixth"].indexOf(album.scene) > -1){
+            top = ((album.count) % rowSize)*size + topOffset + topPadding;
             left = (Math.floor((album.count)/rowSize))*size + leftPadding;
         }
+
+        // console.log(topOffset,Math.floor(+album["Release Year"] / 10) * 10)
 
 
         return [left,top,size];
