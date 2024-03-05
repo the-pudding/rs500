@@ -354,12 +354,13 @@ function getColOffset(col,count,vw,sceneSetTo){
                         </div>
                     {/if}
 
-
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <div
                         class="img-wrapper {album[`${col.year} Rank`]} {+album["rank"] > 100 ? "low-rank": ''}"
                         on:click={() => clickEvent(album)}
+                        role="button"
+                        tabindex=0
+                        on:keydown={() => clickEvent(album)}
+
                         style="transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
 
@@ -408,6 +409,7 @@ function getColOffset(col,count,vw,sceneSetTo){
                                 background-position:{pos};
                             "
                             role="img"
+                            aria-details="Ranked #{album.rank} in {col.year}"
                             aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                             </div>

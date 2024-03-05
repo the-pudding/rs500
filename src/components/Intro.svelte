@@ -478,7 +478,7 @@ function getDelay(direction){
     >   
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:getDelay("in"), y:getFly()}} out:fly={{delay:getDelay("out"), y:getFly()}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw,sceneSetTo)});"> 
-                <div class="img-grid">
+                <div class="img-grid" style="will-change: transform;">
                     {#each filterData(col.year,col.layout,sceneSetTo,sceneSetTo == "fill" ? scrollY : '') as album, i (album["Album ID"])}
                         {@const visibility = getVisibility(col,album,sceneSetTo,sceneSetToSub)}
                         {@const filePath = album.pos[2] > 100 ? album.pos[2] > 200 ? "full" : "256" : "256"}
@@ -506,8 +506,6 @@ function getDelay(direction){
                             </div>
                         {/if}
 
-                        <!-- svelte-ignore a11y-no-static-element-interactions -->
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
 
                         <div
                             class="{album["2020 Rank"]} album-id-{album["Album ID"]} img-wrapper {album[`${col.year} Rank`]}"
@@ -518,6 +516,9 @@ function getDelay(direction){
                                 width:{album.pos[2]}px;
                                 height:{album.pos[2]}px;
                             "
+                            role="button"
+                            tabindex=0
+                            on:keydown={() => clickEvent(album)}
                             on:click={() => clickEvent(album)}
                         >
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
@@ -541,21 +542,23 @@ function getDelay(direction){
 
                             {#if album.pos[2] > 100}
                                 <img loading="lazy" style="
-                                        opacity:{visibility};
-                                        filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                        opacity:{mobile ? '1' : visibility};
+                                        filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     "
+                                    aria-details="Ranked #{album.rank} in {col.year}"
                                     year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
                                     alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 />
                             {:else}
                                 <div class="img-sprite" style="
-                                    opacity:{visibility};
                                     background-image:url(assets/spritesheet_{album.pos[2] > 100 ? "192" : "96"}.jpg);
                                     background-size:{size};
-                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    opacity:{mobile ? visibility : visibility};
+                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     background-position:{pos};
                                 "
                                     role="img"
+                                    aria-details="Ranked #{album.rank} in {col.year}"
                                     aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 >
                                 </div>
@@ -564,17 +567,31 @@ function getDelay(direction){
                     {/each}
                     {#if sceneSetTo !== "first"}
                         {#each filterData(col.year,col.layout,sceneSetTo).filter(d => toAnnotate.indexOf(d["Album ID"]) > -1) as album (album["Album ID"])}
+                            {@const spriteData = spriteMap.get(`${album["Album ID"]}`)[0]}
+                            {@const spriteBase = 96}
+                            {@const imageSize = mobile ? 35 : 50}
+                            {@const move = mobile ? 7 : 15}
+                            {@const spriteAdjust = spriteBase/imageSize}
+                            {@const pos = `-${Math.round(+spriteData.x / spriteAdjust)}px -${Math.round(+spriteData.y / spriteAdjust)}px`}
+                            {@const size = `${Math.round(+spriteData.width / spriteAdjust)}px ${Math.round(+spriteData.height / spriteAdjust)}px`}
+
                             <div
-                                in:scale
+                                in:fly={{y:50}}
                                 class="{album["2020 Rank"]} img-wrapper img-annotation"
                                 style="
-                                    transform:translate3D(calc({album.pos[0]}px - 15px),calc({album.pos[1]}px - 15px),0);
+                                    transform:translate3D(calc({album.pos[0]}px - {move}px),calc({album.pos[1]}px - {move}px),0);
                                     display:{["fourth"].indexOf(sceneSetTo) > -1 && +col.year == 2020 ? 'none' : ''};
+
+                                    background-image:url(assets/spritesheet_96.jpg);
+                                    background-size:{size};
+                                    width:{imageSize}px;
+                                    height:{imageSize}px;
+                                    background-position:{pos};
                                 "
                             >
-                                <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg"
+                                <!-- <img loading="lazy" year={album.year} width="100%" height="100%" src="assets/album_art_resized/256/{album["Album ID"]}.jpg"
                                     alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
-                                />
+                                /> -->
                             </div>
                         {/each}
                     {/if}
@@ -590,7 +607,7 @@ function getDelay(direction){
                 {@const padding = sizing[sceneSetTo].padding}
 
 
-                <div class="step {i == 0 ? "title-step" : ''}"
+                <div class="step step-{i} scenes-{scenes.length-1} {i == 0 ? "title-step" : ''}"
                      class:active
                      style="
                         margin-top: {i == 0 ? -vh : ''}px;
@@ -598,7 +615,7 @@ function getDelay(direction){
                         min-height: {vh*.75}px;
                         margin-bottom: {i == 0 ? vh/2 : ''}px;
                         padding-left: {i == 0 ? '0' : ''}px;
-                        padding-bottom: {mobile ? vh/2 : ''}px;
+                        padding-bottom: {mobile ? i == scenes.length - 1 ? vh : vh/2 : ''}px;
                     "
 
                 >
@@ -662,6 +679,7 @@ function getDelay(direction){
     margin-left:180px;
     width:540px;
     min-height:360px;
+    pointer-events: all;
 
 }
 
@@ -696,6 +714,11 @@ h3 {
     transition: opacity .5s;
 }
 
+.mobile .title-step {
+    opacity: 1;
+    transition: none;
+}
+
 .title-step.active {
     opacity: 1;
 }
@@ -713,21 +736,18 @@ h3 {
 
 .img-grid {
     position: relative;
-    /* width: 400px; */
-    /* height: 600px; */
 }
 
 .fill .img-wrapper {
     opacity: .7;
 }
 
-.img-wrapper {
-    position: absolute;
-    /* box-shadow: rgba(16, 26, 64, 0) 0px 0px 1px, rgba(16, 26, 64, 0.05) -1px 4px 3px, rgba(16, 26, 64, 0.05) -4px 11px 6px, rgba(16, 26, 64, 0.05) -7px 22px 10px, rgba(16, 26, 64, 0.05) -13px 38px 15px, rgba(16, 26, 64, 0.05) -19px 58px 21px; */
+.mobile .fill .img-wrapper {
+    opacity: 1;
 }
 
-.year {
-    transition: transform .5s;
+.img-wrapper {
+    position: absolute;
 }
 
 .noMotion .year {
@@ -737,6 +757,10 @@ h3 {
 .year-col .img-wrapper {
     transition: transform var(--duration) calc(var(--delay) * calc(1s * 0.005)), width .5s, height .5s;
     transition-timing-function: ease-in-out;
+}
+
+.mobile .year-col, .mobile .img-wrapper {
+    transition: transform 1s;
 }
 
 .noMotion .year-col .img-wrapper {
@@ -754,6 +778,11 @@ h3 {
     transition-timing-function: ease-in-out;
 }
 
+.mobile .year-full, .mobile .img-wrapper {
+    transition: transform 1s;
+}
+
+
 .noMotion .year-full .img-wrapper {
     transition: none;
 }
@@ -765,15 +794,10 @@ h3 {
     box-shadow: 0px 0px 42px black;
 }
 
-.fifth .img-annotation img {
+/* .fifth .img-annotation img {
     filter: brightness(0.5);
-}
+} */
 
-img {
-    transition: opacity 1s;
-    /* width: calc(100% - 10px); */
-    /* height: calc(100% - 10px); */
-}
 .buttons {
     position: absolute;
     z-index: 100000;
@@ -790,7 +814,6 @@ p a {
 .mobile .first .year-full .year-label {
     font-size: 16px;
 }
-
 
 @media (max-height: 900px) {
     .year-full .counter-big, .year-col .counter-big {

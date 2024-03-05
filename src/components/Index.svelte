@@ -28,6 +28,8 @@
 	let dataMap;
 	const copy = getContext("copy");
 
+	let viewportHeight;
+
 	$: mobile = $viewport.width < 500 ? true : false;
 	// $: reducedMotion = $reducedMotion ? true : false;
 	let noMotion = false;
@@ -45,6 +47,8 @@
 		spriteMapVoters = group(spriteDataVoters, d => d.id);
 
 		sprites = true;
+		viewportHeight = $viewport.height;
+		console.log(viewportHeight)
 	})
 
 </script>
@@ -53,13 +57,13 @@
 
 {#if sprites}
 <div>
-	<Intro {data} {dataMap} vw={$viewport.width} vh={$viewport.height}  scrollY={$scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
-	<Spotify {data} {dataMap} vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
 
-	<Popularity vw={$viewport.width} vh={$viewport.height} {spriteMap} {copy} {mobile}/>
+	<Popularity vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile}/>
 	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
 
-	<Voters vw={$viewport.width} vh={$viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
+	<Voters vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
 	<Footer />
 		
 </div>

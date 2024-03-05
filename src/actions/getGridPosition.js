@@ -112,7 +112,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
                     // topPadding = (rowSize*size*(6 - (+album.sceneSub))+ 20*5)*-1
                 }
                 else {
-                    leftPadding = (rowSize*size*(6 - (+album.sceneSub)) + 20*5)*-1
+                    leftPadding = (rowSize*size*(6 - (+album.sceneSub)) + 25*(6 - +album.sceneSub))*-1
                 }
             }
         }

@@ -12,7 +12,6 @@ import Scrolly from "$components/helpers/Scrolly.svelte";
 
 export let vw;
 export let vh;
-export let scrollY;
 export let copy;
 export let spriteMapVoters;
 export let spriteMapAlbums;
@@ -100,10 +99,10 @@ let counterTextGroup = {
 }
 
 let counterTextGender = {
-    0:"She/her",
-    2:"They/Non-binary",
+    0:"She/her, They/them",
+    2:"Groups",//"They/Non-binary",
     1:"He/Him",
-    3:"Groups"
+    //3:"Groups"
 }
 
 let firstScene = [
@@ -495,9 +494,9 @@ function filterData(year,layout,sceneSetTo,sceneSetToSub,dataset,col){
                 return 0;
             }
             else if(gender == "mixed gender group"){
-                return 3;
+                return 2;
             }
-            return 2;
+            return 0//2;
         });
  
         grouped = grouped.sort((a,b) => {
@@ -1064,11 +1063,12 @@ function clickEvent(voter,type){
                             </div>
                         {/if}
 
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <!-- svelte-ignore a11y-no-static-element-interactions -->
                         <div
                             class="img-wrapper" data-count={album.count} data-group={album.groupCount}
                             on:click={() => clickEvent(album,"album")}
+                            role="button"
+                            tabindex=0
+                            on:keydown={() => clickEvent(album)}    
                             style="--delay: {0}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                         >
 
@@ -1151,7 +1151,7 @@ function clickEvent(voter,type){
                      class:active
                      style="
                         margin-top: {i == 0 ? -vh/2 : ''}px;
-                        padding-top: {i == 0 ? '0' : vertStack ? vh*.25 : '0'}px;
+                        padding-top: {i == 0 ? '0' : vertStack ? vh*.25 : vh*.25}px;
                         min-height: {vh*.75}px;
                         padding-bottom: {vertStack ? vh*.75 : ''}px;
                     "

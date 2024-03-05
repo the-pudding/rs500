@@ -322,7 +322,7 @@ function getColOffset(col,count,vw){
     </div>
     <div 
         class="year-wrapper {sceneSetTo}"
-        style="height:{vh}px; overflow:hidden;"
+        style="height:{vh}px; overflow:hidden; will-change:transform;"
     >
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:1000, y:50}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw)}px,0px);"> 
@@ -352,18 +352,15 @@ function getColOffset(col,count,vw){
                         </div>
                     {/if}
 
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
                         class="img-wrapper {+album["rank"] > 100 ? "low-rank": ''}"
                         on:click={() => clickEvent(album)}
-                        in:fade={{delay:1000}} out:fade={{delay:0,duration:1000}}
+                        role="button"
+                        tabindex=0
+                        on:keydown={() => clickEvent(album)}
+                        in:fade={{delay: mobile ? 0 : 1000 }} out:fade={{delay:0,duration: mobile ? 0 : 1000}}
                         style="--delay: {j}; transform:translate3D({album.pos[0]}px,{album.pos[1]}px,0); width:{album.pos[2]}px; height:{album.pos[2]}px;"
                     >
-
-                        
-
-
                         {#if sceneSetTo == "first"}
                             {#if layoutCounts[col.layout].indexOf(+album.rank) > -1}
                                 <div class="counter {col.layout == "full" && +album.rank < 11 ? 'counter-big' : ''}"
@@ -399,7 +396,7 @@ function getColOffset(col,count,vw){
 
                             <div class="counter"
                                 style="
-                                    width:auto; opacity:{visibility};
+                                    width:auto; opacity:{mobile ? 1 : visibility};
                                     display:{visibility < 1 ? "none" : ''};
                                     color:{album.rankText > 0 ? "rgb(53, 185, 121)" : album.rankText == 0 ? "var(--color-fg)" : "rgb(217, 61, 66)"};
                                 "
@@ -411,19 +408,21 @@ function getColOffset(col,count,vw){
                         {#if album.pos[2] > 100}
                             <img loading="lazy" style="
                                     opacity:{visibility};
-                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
+                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                aria-details="Ranked #{album.rank} in {col.year}"
                                 alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
                                     background-image:url(assets/spritesheet_{album.pos[2] > 100 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
                                     background-size:{size};
-                                    filter:{visibility < 1 ? 'grayscale(.8)' : ''};
-                                    opacity:{visibility};
+                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
+                                    opacity:{mobile ? visibility : visibility};
                                     background-position:{pos};
                                 "
+                                aria-details="Ranked #{album.rank} in {col.year}"
                                 role="img"
                                 aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
@@ -448,6 +447,7 @@ function getColOffset(col,count,vw){
                         margin-top: {i == 0 ? -vh/2 : ''}px;
                         padding-top: {i == 0 ? '0' : ''}px;
                         min-height: {vh*.75}px;
+                        padding-bottom: {mobile ? i == scenes.length - 1 ? vh : vh/2 : ''}px;
                     "
                 >
                     {#each textStep[scene] as text, i}
@@ -462,7 +462,12 @@ function getColOffset(col,count,vw){
                                 style="
                                 "
                             >
-                                <img loading="lazy" width="100%" height="100%" data={Annotations[scene][i]} src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg" alt="{dataMap.get(Annotations[scene][i])[0]["Album"]}" />
+                                <img loading="lazy"
+                                    width="100%"
+                                    height="100%"
+                                    src="assets/album_art_resized/256/{Annotations[scene][i]}.jpg"
+                                    alt="{dataMap.get(Annotations[scene][i])[0]["Album"]}" 
+                                />
                             </div>
                         {/if}
 
@@ -510,6 +515,10 @@ function getColOffset(col,count,vw){
         transition-timing-function: ease-in-out;
     }
 
+    /* .mobile .img-wrapper {
+        transition: transform .1s;
+    } */
+
     .noMotion .img-wrapper {
         transition: none;
     }
@@ -520,6 +529,10 @@ function getColOffset(col,count,vw){
 
     .img-wrapper img, .img-wrapper .img-sprite {
         transition: opacity .5s;
+    }
+
+    .mobile .img-wrapper img, .mobile .img-wrapper .img-sprite {
+        transition: none;
     }
 
     .year-full .year-label {
