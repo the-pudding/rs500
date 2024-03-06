@@ -81,5 +81,6 @@
 		width: 100%;
 		height: 100vh;
 		opacity: 0.3;
+		pointer-events: none;
 	}
 </style>
