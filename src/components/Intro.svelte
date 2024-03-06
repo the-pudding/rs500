@@ -879,6 +879,7 @@ p a {
 }
 
 .opener-album {
+    margin: 0 auto;
     /* filter: invert(28%) sepia(100%) hue-rotate(152deg) saturate(2.1); */
 }
 
