@@ -57,6 +57,9 @@
 
 {#if sprites}
 <div>
+
+	
+
 	<Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
 	<Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
 
@@ -65,6 +68,20 @@
 
 	<Voters vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
 	<Footer />
-		
+	<div class="noise-overlay">
+
+	</div>
 </div>
 {/if}
+
+<style>
+	.noise-overlay {
+		position: fixed;
+		background: url(assets/noise-light.png);
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100vh;
+		opacity: 0.3;
+	}
+</style>

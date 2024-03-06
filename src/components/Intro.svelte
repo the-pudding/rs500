@@ -1,10 +1,12 @@
 <script>
 import { onMount, setContext, getContext } from "svelte";
-
+	
 import { getGridPosition } from '$actions/getGridPosition.js';
 // import { tweened } from 'svelte/motion';
 import {fade, fly, scale} from 'svelte/transition';
+import Risograph from '$components/Risograph.svelte'
 // import { flip } from 'svelte/animate';
+import sticker from "$svg/logo-sticker.svg";
 
 import { cubicOut } from 'svelte/easing';
 import { setResponse } from "@sveltejs/kit/node";
@@ -26,13 +28,18 @@ let value;
 let highlighted = null;
 let highlightTimeout;
 
+
+
+
+
+
 $: stepValue = value ? scenes[value] : stepValue == scenes[scenes.length - 1] ? stepValue : "fill" ;
 $: stepValue, setScene(stepValue);
 
 $: console.log(stepValue)
 
 let textStep = {
-    "fill":"",
+    // "fill":"",
     "first":copy.introfirst,
     "second":copy.introsecond,
     "third":copy.introthird,
@@ -50,7 +57,7 @@ console.log(textStep)
 
 let scenes = Object.keys(textStep);
 
-let sceneSetTo = "fill"
+let sceneSetTo = "first"
 let sceneSetToSub = ""
 let toAnnotate = [];
 
@@ -87,7 +94,8 @@ let layoutCounts = {
 let fillScene = [
     {
         year:2003,
-        layout: "fill"
+        layout:"full"
+        // layout: "fill"
     }
 ]
 
@@ -212,9 +220,12 @@ function filterData(year,layout,sceneSetTo,scrollY){
             .filter(d => d[`2020 Rank`] !== "")
     }
     else if (sceneSetTo == "fill"){
-        
+        //newdesign
+        let cutOff = 501;
+        // let cutOff = 200;
+
         temp = temp
-            .filter(d => d[`${year} Rank`] !== "" && +d[`${year} Rank`] < 200)
+            .filter(d => d[`${year} Rank`] !== "" && +d[`${year} Rank`] < cutOff)
 
         rowSize = Math.ceil(vw / size);
 
@@ -226,8 +237,8 @@ function filterData(year,layout,sceneSetTo,scrollY){
         let avail = screenspace/((size)*(size));
         // console.log("counts:",avail,sceneSetTo)
 
-
-        temp = temp.slice(0,avail);
+        // new design
+        // temp = temp.slice(0,avail);
     }
     else {
         temp = temp
@@ -469,13 +480,39 @@ function getDelay(direction){
     }
     return 100;
 }
+
+
+
+
+
+
 </script>
+
+<section class="opener" style="background:#E2E1CB; position:relative; display:block; font-family:Arial, Helvetica; text-transform:uppercase; font-weight:bold;">
+
+    <div class="logo">
+        <a href="https://pudding.cool" aria-label="The Pudding" target="_self"
+            >{@html sticker}</a
+        >
+    </div>
+
+    <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:.4; left:0; background-image:url(assets/asfalt-dark.png);"></div>
+    <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:.6; mix-blend-mode:difference; left:0; background-image:url(assets/noise-light.png);"></div>
+
+    <div style="width:518px; margin: 0 auto; padding-top:200px;">
+        <h1 style="font-weight:600; opacity:.8; letter-spacing:-3px; mix-blend-mode:difference;">{@html copy.headings[0].title}</h1>
+        <p style="mix-blend-mode:difference;">{@html copy.headings[0].byline}</p>
+    </div>
+    
+    <img class="opener-album" style="opacity:.5;pointer-events:none;margin-top: -250px;" src="assets/img2.png" alt="">
+    <Risograph />
+</section>
 
 <section class:mobile class:noMotion>
     <div
         class="year-wrapper {sceneSetTo}"
         style="height:{vh}px; overflow:hidden;"
-    >   
+    >
         {#each cols as col, i (col.year)}
             <div in:fly={{delay:getDelay("in"), y:getFly()}} out:fly={{delay:getDelay("out"), y:getFly()}} class="year year-{col.year} year-{col.layout}" style="transform:translate({getColOffset(col,i,vw,sceneSetTo)});"> 
                 <div class="img-grid" style="will-change: transform;">
@@ -610,16 +647,16 @@ function getDelay(direction){
                 <div class="step step-{i} scenes-{scenes.length-1} {i == 0 ? "title-step" : ''}"
                      class:active
                      style="
-                        margin-top: {i == 0 ? -vh : ''}px;
+                        margin-top: {i == 0 ? -vh/2 : ''}px;
                         padding-top: {i == 0 ? '0' : vh*.2}px;
                         min-height: {vh*.75}px;
                         margin-bottom: {i == 0 ? vh/2 : ''}px;
-                        padding-left: {i == 0 ? '0' : ''}px;
+                        padding-left: {i == 0 ? '' : ''}px;
                         padding-bottom: {mobile ? i == scenes.length - 1 ? vh : vh/2 : ''}px;
                     "
 
                 >
-                    {#if i == 0}
+                    <!-- {#if i == 10000000}
                         <div class="title"
                             style="
                                 --vw: {vw}px;
@@ -628,7 +665,7 @@ function getDelay(direction){
                             <h1>{@html copy.headings[0].title}</h1>
                             <p>{@html copy.headings[0].byline}</p>
                         </div>
-                    {:else}
+                    {:else} -->
                         {#each textStep[scene] as text, i}
                             {@const count = scene == "sixth3" ? i : i -1}
 
@@ -660,7 +697,7 @@ function getDelay(direction){
                                 {/each}
 
                             {/if}
-                    {/if}
+                    <!-- {/if} -->
                     
                 </div>
             {/each}
@@ -669,7 +706,6 @@ function getDelay(direction){
 </section>
 
 <style>
-
 
 
 .title {
@@ -738,9 +774,11 @@ h3 {
     position: relative;
 }
 
-.fill .img-wrapper {
-    opacity: .7;
-}
+
+/* new design */
+/* .fill .img-wrapper { */
+    /* opacity: .7; */
+/* } */
 
 .mobile .fill .img-wrapper {
     opacity: 1;
@@ -840,6 +878,27 @@ p a {
     }
 }
 
+.opener-album {
+    /* filter: invert(28%) sepia(100%) hue-rotate(152deg) saturate(2.1); */
+}
+
+.opener {
+    /* background: rgb(255 202 241); */
+}
+
+.logo a {
+    border: none;
+    text-decoration: none;
+}
+
+.logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-7deg);
+    width: 300px;
+}
+
 
 @media (max-width: 900px) {
     .title-step {
@@ -852,6 +911,10 @@ p a {
         margin-top: 180px;
     }
 }
+
+
+
+
 
 
 
