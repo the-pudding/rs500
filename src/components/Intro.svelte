@@ -577,7 +577,7 @@ function getDelay(direction){
                                 <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label"><span class='year2020title'>2020</span> Ranking</p>
                             {/if}
 
-                            {#if album.pos[2] > 100}
+                            {#if album.pos[2] > 250}
                                 <img loading="lazy" style="
                                         opacity:{mobile ? '1' : visibility};
                                         filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};

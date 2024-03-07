@@ -225,7 +225,7 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
     
             }
             else {
-                mid = (vh-topPadding-gapTwo*(10)-bottomPadding)/10;
+                mid = Math.min((vh-topPadding-gapTwo*(10)-bottomPadding)/10,90);
             }
             
             let left = leftPadding
