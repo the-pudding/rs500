@@ -25,7 +25,7 @@ let rowSize = 10;
 let toAnnotate = [];
 
 let Annotations = {
-    "third2":["NOS120","NOS116"],
+    "third2":["NOS116"],
     "second3":["NOS124"]
 }
 let highlighted = null;
@@ -273,7 +273,7 @@ function getVisibility(col,album,sceneSetTo,sceneSetToSub){
     }
     if(sceneSetTo == "third"){
         if(sceneSetToSub == "2"){
-            if(album["Album ID"]=="NOS120" || album["Album ID"] == "NOS116"){
+            if(album["Album ID"] == "NOS116"){
                 return 1;
             }
             return .2;
@@ -389,6 +389,14 @@ function getColOffset(col,count,vw){
                             </p>
                         {/if}
 
+                        {#if sceneSetTo == "second"}
+                            {#if j == 0}
+                                <p class="year-label" style="width:{album.rowSize * album.pos[2]}px;">Albums Ranked in <span class="year2003title">2003</span>, Unranked in <span class="year2020title">2020</span></p>
+                            {/if}
+
+                        {/if}
+
+
                         {#if sceneSetTo == "third"}
                             {#if j == 0}
                                 <p class="year-label" style="width:{album.rowSize * album.pos[2]}px;">Ranking Changes (Albums not on Spotify)</p>
@@ -398,10 +406,11 @@ function getColOffset(col,count,vw){
                                 style="
                                     width:auto; opacity:{mobile ? 1 : visibility};
                                     display:{visibility < 1 ? "none" : ''};
+                                    font-size:{album.rankText == 0 ? "12px": ''};
                                     color:{album.rankText > 0 ? "rgb(53, 185, 121)" : album.rankText == 0 ? "var(--color-fg)" : "rgb(217, 61, 66)"};
                                 "
                             >
-                                {+album.rankText > 0 ? "+".concat(JSON.stringify(album.rankText)) : album.rankText == 0 ? "n/a" : album.rankText}
+                                {+album.rankText > 0 ? "+".concat(JSON.stringify(album.rankText)) : album.rankText == 0 ? "Unranked" : album.rankText}
                             </div>
                         {/if}
 
@@ -544,8 +553,12 @@ function getColOffset(col,count,vw){
         font-size: 16px;
     }
 
-    .third .year-label {
+    .third .year-label, .second .year-label {
         transform: translate(0,calc(-100% - 5px));
+    }
+
+    .mobile .second .year-label {
+        transform: translate(5px,calc(-100% - 5px));
     }
 
     .mobile .year-label {

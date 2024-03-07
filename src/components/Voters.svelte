@@ -1148,6 +1148,7 @@ function clickEvent(voter,type){
                 {@const active = value === i}
 
                 <div class="step"
+                    data-scene={scene}
                      class:active
                      style="
                         margin-top: {i == 0 ? -vh/2 : ''}px;
@@ -1164,6 +1165,32 @@ function clickEvent(voter,type){
                         </div>
                     {/each}
 
+                    {#if scene == "second"}
+                        <div class="text-wrapper">
+                            <p class="text-fg" style="margin-bottom:30px;">
+                                <span>
+                                    <details><summary>Wayne Coyne&rsquo;s Ballot</summary>#1 Debut, Bjork, #2 White Album, Beatles, #3 Soundtrack, The Wizard of Oz, #4 Donovan's Greatest Hits, Donovan, #5 Bitches Brew, Miles Davis, #6 In the Court of the Crimson King, King Crimson, #7 Elephant, White Stripes, #8 Dark Side of the Moon, Pink Floyd, #9 Sea Change, Beck, #10 Physical Graffiti, Led Zeppelin</details>
+                                    <details><summary>Billie Joe Armstrong&rsquo;s Ballot</summary>#1 Revolver, Beatles, #2 Rise and Fall of Ziggy Stardust, David Bowie, #3 Beggars Banquet, The Rolling Stones, #4 London Calling, The Clash, #5 The Doors, The Doors, #6 Bringing it all Back Home, Bob Dylan, #7 Never Mind the Bollocks, The Sex Pistols, #8 Nevermind, Nirvana, #9 Rocket to Russia, Ramones, #10 Tim, The Replacements</details>
+                                    <details><summary>Moby&rsquo;s Ballot</summary>#1 What's Going On, Marvin Gaye, #2 London Calling, The Clash, #3 Closer, Joy Division, #4 Roxy Music, Roxy Music, #5 Marquee Moon, Television, #6 Bryter Layer, Nick Drake, #7 Low, David Bowie, #8 Freedom of Choice, Devo, #9 The Man-Machine, Kraftwerk, #10 Heaven Up Here, Echo and the Bunnymen</details>
+                                    <details><summary>James Hetfield&rsquo;s Ballot</summary>#1 Led Zeppelin, Led Zeppelin, #2 Black Sabbath, Black Sabbath, #3 Welcome to my Nighmare, Alice Cooper, #4 Pet Sounds, Beach Boys, #5 Rocks, Aerosmith, #6 Ace of Spades, Motorhead, #7 Van Halen, Van Halen, #8 (pronounced Leh-Nerd Skin-Nerd), Lynyrd Skynyrd, #9 Strangers in the Night, UFO, #10 White Light, White Heat, White Trash, Social Distortion</details>
+                                    <details><summary>Flea&rsquo;s Ballot</summary>#1 London Calling, The Clash, #2 A Love Supreme, John Coltrane, #3 Catch a Fire, Bob Marley, #4 Trout Mask Replica, Captain Beefheart, #5 Are you Experienced, Jimi Hendrix, #6 One Nation under a groove, Funkadelic, #7 Blue, Joni Mitchell, #8 After the Gold Rush, Neil Young, #9 Songs in the Key of Life, Stevie Wonder, #10 Horses, Patti Smith</details>
+                                    <details><summary>Britney Spears&rsquo;s Ballot</summary>#1 Thriller, Michael Jackson, #2 Rhythm Nation 1814, Janey Jackson, #3 Bad, Michael Jackson, #4 Like a Prayer, Madonna, #5 Off the Wall, Michael Jackson, #6 Whitney Houston, Whitney Houston, #7 The Dock of the Bay, Otis Redding, #8 Purple Rain, Prince, #9 Sign o the Times, Prince, #10 CrazySexyCool, TLC</details>   
+
+
+                                </span>
+                            </p>
+                            <!-- <p class="text-bg" style="margin-bottom:30px;"><span>
+                                <details><summary>Wayne Coyne&rsquo;s Ballot</summary>#1 Debut, Bjork, #2 White Album, Beatles, #3 Soundtrack, The Wizard of Oz, #4 Donovan's Greatest Hits, Donovan, #5 Bitches Brew, Miles Davis, #6 In the Court of the Crimson King, King Crimson, #7 Elephant, White Stripes, #8 Dark Side of the Moon, Pink Floyd, #9 Sea Change, Beck, #10 Physical Graffiti, Led Zeppelin</details>
+                                <details><summary>Billie Joe Armstrong&rsquo;s Ballot</summary>#1 Revolver, Beatles, #2 Rise and Fall of Ziggy Stardust, David Bowie, #3 Beggars Banquet, The Rolling Stones, #4 London Calling, The Clash, #5 The Doors, The Doors, #6 Bringing it all Back Home, Bob Dylan, #7 Never Mind the Bollocks, The Sex Pistols, #8 Nevermind, Nirvana, #9 Rocket to Russia, Ramones, #10 Tim, The Replacements</details>
+                                <details><summary>Moby&rsquo;s Ballot</summary>#1 What's Going On, Marvin Gaye, #2 London Calling, The Clash, #3 Closer, Joy Division, #4 Roxy Music, Roxy Music, #5 Marquee Moon, Television, #6 Bryter Layer, Nick Drake, #7 Low, David Bowie, #8 Freedom of Choice, Devo, #9 The Man-Machine, Kraftwerk, #10 Heaven Up Here, Echo and the Bunnymen</details>
+                                <details><summary>James Hetfield&rsquo;s Ballot</summary>#1 Led Zeppelin, Led Zeppelin, #2 Black Sabbath, Black Sabbath, #3 Welcome to my Nighmare, Alice Cooper, #4 Pet Sounds, Beach Boys, #5 Rocks, Aerosmith, #6 Ace of Spades, Motorhead, #7 Van Halen, Van Halen, #8 (pronounced Leh-Nerd Skin-Nerd), Lynyrd Skynyrd, #9 Strangers in the Night, UFO, #10 White Light, White Heat, White Trash, Social Distortion</details>
+                                <details><summary>Flea&rsquo;s Ballot</summary>#1 London Calling, The Clash, #2 A Love Supreme, John Coltrane, #3 Catch a Fire, Bob Marley, #4 Trout Mask Replica, Captain Beefheart, #5 Are you Experienced, Jimi Hendrix, #6 One Nation under a groove, Funkadelic, #7 Blue, Joni Mitchell, #8 After the Gold Rush, Neil Young, #9 Songs in the Key of Life, Stevie Wonder, #10 Horses, Patti Smith</details>
+                                <details><summary>Britney Spears&rsquo;s Ballot</summary>#1 Thriller, Michael Jackson, #2 Rhythm Nation 1814, Janey Jackson, #3 Bad, Michael Jackson, #4 Like a Prayer, Madonna, #5 Off the Wall, Michael Jackson, #6 Whitney Houston, Whitney Houston, #7 The Dock of the Bay, Otis Redding, #8 Purple Rain, Prince, #9 Sign o the Times, Prince, #10 CrazySexyCool, TLC</details>   
+                            </span>
+                            </p> -->
+                        </div>
+                    {/if}
+
                 </div>
             {/each}
         </Scrolly>
@@ -1179,6 +1206,25 @@ function clickEvent(voter,type){
 </div>
 
 <style>
+
+details {
+    font-size: 14px;
+    background-color: rgba(25,25,25,.93);
+    padding-bottom: 7px;
+    padding-left: 7px;
+    padding-top: 5px;
+    margin-top: -1px;
+    /* box-shadow: 15px 0 var(--color-bg), -15px 0 var(--color-bg); */
+}
+
+details::selection, summary::selection {
+  color: black;
+  background: white;
+}
+
+summary {
+    color: #ccc;
+}
 
 .missing-image {
     background-color: black;

@@ -159,6 +159,11 @@
 	font-size: 36px;
 }
 
+.spacer {
+	height: 30px;
+    display: block;
+}
+
 .img-wrapper .img-sprite {
 	cursor: pointer;
 }
