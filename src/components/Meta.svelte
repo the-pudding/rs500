@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>{title}</title>
+	<title>What Makes an Album the Greatest of All Time?</title>
 	<meta name="description" content='Examining 30 years of Rolling Stone’s “Greatest Albums of All Time” Rankings' />
 	<meta name="author" content="Matt Daniels, Chris Dalla Riva" />
 	<meta name="news_keywords" content="music,rolling stone,data,ranking,greatest of all time" />
