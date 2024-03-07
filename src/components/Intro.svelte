@@ -488,7 +488,7 @@ function getDelay(direction){
 
 </script>
 
-<section class="opener" style="width:{vw}px; height:{mobile ? '' : ''}px;">
+<section class="opener" style="width:100%; height:{mobile ? '' : ''}px;">
 
     <div class="logo">
         <a href="https://pudding.cool" aria-label="The Pudding" target="_self"
@@ -577,7 +577,7 @@ function getDelay(direction){
                                 <p in:fly={{delay:1000, duration:500, y: 50}} class="year-label"><span class='year2020title'>2020</span> Ranking</p>
                             {/if}
 
-                            {#if album.pos[2] > 250}
+                            {#if album.pos[2] > 140}
                                 <img loading="lazy" style="
                                         opacity:{mobile ? '1' : visibility};
                                         filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
@@ -922,7 +922,7 @@ p a {
     top: 0;
     left: 0;
     transform: rotate(-7deg);
-    width: 300px;
+    width: 230px;
 }
 
 

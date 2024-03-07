@@ -1,4 +1,3 @@
-import { MoveRight } from "lucide-svelte";
 
 let big = 150;
 let small = 15;
@@ -284,6 +283,12 @@ export const getGridPosition = (gridType,rank,album,vw,vh,size,padding,rowSize,d
             if(vh < 900){
                 let left = leftPadding + (((rank-1) % 10)*mid)
                 let top = Math.floor((rank-1)/10)*mid + topPadding
+                return [left,top,mid]
+            }
+            if(vw < 600){
+                mid = big/3;
+                let top = (Math.floor((rank-2)/3)*mid + Math.floor((rank-2)/3)*gapTwo) + topPadding;
+                let left = (((rank-2) % 3)*mid + big) + ((rank-2) % 3)*gapTwo + gapTwo + leftPadding;
                 return [left,top,mid]
             }
 
