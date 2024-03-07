@@ -74,6 +74,10 @@
     transform: translate(0,-100%);
 }
 
+.year-label span {
+	letter-spacing: -1px;
+}
+
 .chart-hed {
 	font-size: 36px;
 	width: 600px;
@@ -155,8 +159,13 @@
 	font-size: 36px;
 }
 
+.img-wrapper .img-sprite {
+	cursor: pointer;
+}
+
 .img-wrapper img {
 	border-radius: 3px;
+	cursor: pointer;
 }
 
 .year {
@@ -219,9 +228,18 @@
 	text-transform: uppercase;
     font-weight: 600;
     letter-spacing: -2px;
-    font-size: 45px;
+    font-size: 40px;
     line-height: 1;
     color: white;
+}
+
+.center-col .big {
+	font-size: 64px;
+	text-align: ;
+}
+
+.mobile .center-col .big {
+	font-size: 48px;
 }
 
 .emphasis {

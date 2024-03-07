@@ -410,7 +410,7 @@ function getColOffset(col,count,vw){
                                     opacity:{visibility};
                                     filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                 "
-                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
                                 aria-details="Ranked #{album.rank} in {col.year}"
                                 alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             />

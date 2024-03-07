@@ -488,7 +488,7 @@ function getDelay(direction){
 
 </script>
 
-<section class="opener" style="background:#E2E1CB; position:relative; display:block; font-family:Arial, Helvetica; text-transform:uppercase; font-weight:bold;">
+<section class="opener" style="width:{vw}px; height:{mobile ? '' : ''}px;">
 
     <div class="logo">
         <a href="https://pudding.cool" aria-label="The Pudding" target="_self"
@@ -497,15 +497,15 @@ function getDelay(direction){
     </div>
 
     <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:.4; left:0; background-image:url(assets/asfalt-dark.png);"></div>
-    <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:.6; mix-blend-mode:difference; left:0; background-image:url(assets/noise-light.png);"></div>
+    <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:1; left:0; background-image:url(assets/noise-light.png);"></div>
 
-    <div style="width:518px; margin: 0 auto; padding-top:200px;">
+    <div class="opener-text" style="width:calc(100% - 30px);">
         <h1 style="font-weight:600; opacity:.8; letter-spacing:-3px; mix-blend-mode:difference;">{@html copy.headings[0].title}</h1>
-        <p style="mix-blend-mode:difference;">{@html copy.headings[0].byline}</p>
+        <p style="mix-blend-mode:difference;opacity:.8; color:#dddddd;">{@html copy.headings[0].byline}</p>
     </div>
     
-    <img class="opener-album" style="opacity:.5;pointer-events:none;margin-top: -250px;" src="assets/img2.png" alt="">
-    <Risograph />
+    <img class="opener-album" style="" src="assets/img3.png" alt="">
+    <Risograph {vh}/>
 </section>
 
 <section class:mobile class:noMotion>
@@ -583,7 +583,7 @@ function getDelay(direction){
                                         filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     "
                                     aria-details="Ranked #{album.rank} in {col.year}"
-                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/{filePath}/{album['Album ID']}.jpg"
+                                    year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
                                     alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 />
                             {:else}
@@ -880,11 +880,37 @@ p a {
 
 .opener-album {
     margin: 0 auto;
-    filter: invert(28%) sepia(100%) hue-rotate(152deg) saturate(2.1);
+    /* height: auto; */
+    opacity:.7;
+    pointer-events:none;
+    /* width: 100%; */
+    max-width: 1280px;
+    padding-top: 110px;
+    object-fit: none;
+    object-position: top center;
+    height: 1600px;
+    width: 100%;
+
+    /* filter: invert(28%) sepia(100%) hue-rotate(152deg) saturate(2.1); */
 }
 
+.opener-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    max-width:518px; margin: 0 auto; padding-top:200px;
+}
 .opener {
-    /* background: rgb(255 202 241); */
+    background:#E2E1CB;
+    position:relative;
+    display:block;
+    font-family:Arial, Helvetica;
+    text-transform:uppercase;
+    font-weight:bold;
+    overflow: hidden;
+    width: 100vw;
 }
 
 .logo a {
@@ -894,6 +920,7 @@ p a {
 
 .logo {
     position: absolute;
+    z-index: 1000000000000;
     top: 0;
     left: 0;
     transform: rotate(-7deg);
@@ -913,6 +940,18 @@ p a {
     }
 }
 
+@media (max-width: 600px) {
+    .opener-text h1 {
+        font-size: 40px;
+    }
+
+    .opener-text {
+        padding-top: 180px;
+    }
+    .logo {
+        width: 250px;
+    }
+}
 
 
 

@@ -1,7 +1,7 @@
 <script>
 
 
-
+export let vh;
 let el;
 /**
  * Convert an angle to degrees.
@@ -220,7 +220,7 @@ function generateRisograph() {
     // document.querySelector('button').addEventListener('click', generateRisograph);
 </script>
 
-<div class="opener-wrapper">
+<div class="opener-wrapper" style="height:{vh*.5}px;">
     <div class="noise"></div>
     <div class="bottom-grad"></div>
     <div class="opener">
@@ -240,11 +240,13 @@ function generateRisograph() {
         width: 100%;
         position: absolute;
         height: 100%;
+        display: none;
         opacity: 0.3;
+        z-index: 100000000000;
     }
 
     .bottom-grad {
-        background: linear-gradient(0deg, #1b1b1b 0%, rgba(255,255,255,0) 100%);
+        background: linear-gradient(0deg, rgba(25,25,25,.72) 0%, rgba(255,255,255,0) 100%);
         width: 100%;
         height: 50%;
         z-index: 1000000;
