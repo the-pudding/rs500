@@ -927,10 +927,10 @@ p a {
 
 
 @media (max-width: 900px) {
-    .title-step {
+    /* .title-step {
         width: 100%;
         max-width: none;
-    }
+    } */
     .title {
         width: calc(var(--vw) - 100);
         margin-left: 90px;
