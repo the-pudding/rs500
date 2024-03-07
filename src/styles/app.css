@@ -163,6 +163,10 @@
 	cursor: pointer;
 }
 
+.opener a {
+	color: #000;
+}
+
 .img-wrapper img {
 	border-radius: 3px;
 	cursor: pointer;

@@ -409,8 +409,7 @@ function getColOffset(col,count,vw,sceneSetTo){
                                 background-position:{pos};
                             "
                             role="img"
-                            aria-details="Ranked #{album.rank} in {col.year}"
-                            aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                            aria-label="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                             </div>
                         {/if}

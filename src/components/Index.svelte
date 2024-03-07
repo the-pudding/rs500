@@ -59,11 +59,11 @@
 <div>
 
 
-	<Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
-	<Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
+	<!-- <Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/> -->
+	<!-- <Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/> -->
 
-	<Popularity vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile}/>
-	<!-- <HipHop vw={$viewport.width} vh={$viewport.height}/> -->
+	<!-- <Popularity vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile}/> -->
+	
 
 	<Voters vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
 	<Footer />
@@ -79,7 +79,7 @@
 		top: 0;
 		left: 0;
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		opacity: 0.3;
 		pointer-events: none;
 	}

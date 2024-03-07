@@ -500,11 +500,11 @@ function getDelay(direction){
     <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:1; left:0; background-image:url(assets/noise-light.png);"></div>
 
     <div class="opener-text" style="width:calc(100% - 30px);">
-        <h1 style="font-weight:600; opacity:.8; letter-spacing:-3px; mix-blend-mode:difference;">{@html copy.headings[0].title}</h1>
-        <p style="mix-blend-mode:difference;opacity:.8; color:#dddddd;">{@html copy.headings[0].byline}</p>
+        <h1 style="font-weight:600; opacity:.8;color:#000; letter-spacing:-3px;">{@html copy.headings[0].title}</h1>
+        <p style="opacity:.8; color:#000; letter-spacing:-1px;">{@html copy.headings[0].byline}</p>
     </div>
     
-    <img class="opener-album" style="" src="assets/img3.png" alt="">
+    <img class="opener-album" style="" src="assets/img3.png" alt="series of cover art from the rolling stone 500 greatest albums of all time">
     <Risograph {vh}/>
 </section>
 
@@ -582,9 +582,8 @@ function getDelay(direction){
                                         opacity:{mobile ? '1' : visibility};
                                         filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     "
-                                    aria-details="Ranked #{album.rank} in {col.year}"
                                     year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
-                                    alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                                    alt="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 />
                             {:else}
                                 <div class="img-sprite" style="
@@ -595,8 +594,7 @@ function getDelay(direction){
                                     background-position:{pos};
                                 "
                                     role="img"
-                                    aria-details="Ranked #{album.rank} in {col.year}"
-                                    aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                                    aria-label="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
                                 >
                                 </div>
                             {/if}

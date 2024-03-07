@@ -411,8 +411,7 @@ function getColOffset(col,count,vw){
                                     filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
-                                aria-details="Ranked #{album.rank} in {col.year}"
-                                alt="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                                alt="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             />
                         {:else}
                             <div class="img-sprite {album["Album Genre"]}" style="
@@ -422,9 +421,8 @@ function getColOffset(col,count,vw){
                                     opacity:{mobile ? visibility : visibility};
                                     background-position:{pos};
                                 "
-                                aria-details="Ranked #{album.rank} in {col.year}"
                                 role="img"
-                                aria-label="Cover art for {album["Clean Name"]}'s {album["Album"]}"
+                                aria-label="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
                             >
                             </div>
                         {/if}

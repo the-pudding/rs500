@@ -1015,9 +1015,9 @@ function clickEvent(voter,type){
 
                             {#if ["second","third"].indexOf(sceneSetTo) > -1 && +voter.count == 0}
                                 <div class="counter counter-big"
-                                    style="width:{(580/2)}px;"
+                                    style="width:{(580/2)}px; letter-spacing: -1px;"
                                 >
-                                    {counterTextGender[+voter.groupCount]}, {Math.round(+voter.groupLength/voterCountGender[col.year]*1000)/10}%
+                                    {counterTextGender[+voter.groupCount]}, {Math.round(+voter.groupLength/voterCountGender[col.year]*1000/10)}%
                                 </div>
                             {/if}
 
