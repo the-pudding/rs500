@@ -59,10 +59,10 @@
 <div>
 
 
-	<!-- <Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/> -->
-	<!-- <Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/> -->
+	<Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
+	<Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>
 
-	<!-- <Popularity vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile}/> -->
+	<Popularity vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile}/>
 	
 
 	<Voters vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMapVoters} spriteMapAlbums={spriteMap} scrollY={$scrollY} {copy} {mobile} {noMotion}/>
