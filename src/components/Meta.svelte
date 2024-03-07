@@ -1,7 +1,7 @@
 <script>
 	export let title = "What Makes an Album the Greatest of All Time?";
 	export let description = "Description TK";
-	export let url = "https://pudding.cool/2024/03/greatest-music/";
+	export let url = "https://pudding.cool/2024/03/greatest-music";
 	export let keywords = "";
 	export let preloadFont = [];
 </script>
