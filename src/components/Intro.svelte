@@ -492,8 +492,9 @@ function getDelay(direction){
 
     <div class="logo">
         <a href="https://pudding.cool" aria-label="The Pudding" target="_self"
-            >{@html sticker}</a
         >
+            <img src="assets/logo.png" alt="The Pudding logo mark">
+        </a>
     </div>
 
     <div style="pointer-events:none;z-index:1000000;height:100%; width:100%; position:absolute; top:0; opacity:.4; left:0; background-image:url(assets/asfalt-dark.png);"></div>

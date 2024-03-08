@@ -1205,7 +1205,34 @@ function clickEvent(voter,type){
     {/each}
 </div>
 
+<div class:mobile class="center-col method" style="">
+    <h3 class="center">Methods</h3>
+    {#each copy.methods as text, i}
+        <p class="center">
+            {@html text.value}
+        </p>
+    {/each}
+</div>
+
 <style>
+
+.method h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.method p {
+    font-size: 15px;
+}
+
+.mobile .method h3 {
+    font-size: 14px;
+}
+
+
+.mobile .method p {
+    font-size: 12px;
+}
 
 details {
     font-size: 14px;
@@ -1214,6 +1241,7 @@ details {
     padding-left: 7px;
     padding-top: 5px;
     margin-top: -1px;
+    pointer-events: all;
     /* box-shadow: 15px 0 var(--color-bg), -15px 0 var(--color-bg); */
 }
 
@@ -1223,7 +1251,7 @@ details::selection, summary::selection {
 }
 
 summary {
-    color: #ccc;
+    color: #969696;
 }
 
 .missing-image {
