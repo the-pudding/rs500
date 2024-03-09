@@ -227,12 +227,10 @@
 }
 
 .step p {
-    margin: 0;
 	font-size: 18px;
 }
 
-.big {
-	font-size: 28px;
+.span-big .text-inner {
 	color: #ddd;
 	text-transform: uppercase;
     font-weight: 600;
@@ -242,12 +240,7 @@
     color: white;
 }
 
-.center-col .big {
-	font-size: 64px;
-	text-align: ;
-}
-
-.mobile .center-col .big {
+.mobile .center-col .span-big .text-inner {
 	font-size: 48px;
 }
 
@@ -296,9 +289,11 @@
 }
 
 
-
-
 .text-wrapper span {
+	font: inherit;
+}
+
+.text-fg .text-inner, .text-bg .text-inner {
 	padding: 14px 0 11px 0;
 	box-shadow: 15px 0 rgba(255,255,255,0), -15px 0 rgba(255,255,255,0);
 	-webkit-box-decoration-break: clone;
@@ -391,7 +386,14 @@
     color: #92beed;
 }
 
-.text-bg span {
+p.text-bg, p.text-fg {
+	margin: 0 auto;
+	margin-bottom: 30px;
+	font-size: 1.125rem;
+    line-height: 1.38;
+}
+
+.text-bg .text-inner {
 	color: var(--color-bg);
 	background-color: var(--color-bg);
 	box-shadow: 15px 0 var(--color-bg), -15px 0 var(--color-bg);
@@ -401,6 +403,11 @@
 	color: var(--color-bg);
 	background-color: var(--color-bg);
 }
+
+#content .text-wrapper .text-bg a {
+	color: var(--color-bg);
+}
+
 
 .highlighted-click {
     font-size: 12px;

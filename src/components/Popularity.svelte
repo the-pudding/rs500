@@ -314,8 +314,8 @@ function getColOffset(col,count,vw,sceneSetTo){
 <section class:mobile class="{vw < 1100 ? 'vert-stacked' : ''}">
     <div class="center-col" style="margin-top:0px;">
         {#each copy.popone as text, i}
-            <p class="center">
-                {@html text.value}
+            <p class="center {text.value.match(/class=big/) ? "span-big" : ''}">
+                <span class="text-inner">{@html text.value}</span>
             </p>
         {/each}
     </div>
@@ -418,6 +418,7 @@ function getColOffset(col,count,vw,sceneSetTo){
             </div>
         {/each}
     </div>
+    
     <div class="steps">
         <Scrolly bind:value>    
             {#each scenes as scene, i}
@@ -435,8 +436,8 @@ function getColOffset(col,count,vw,sceneSetTo){
                 >
                     {#each textStep[scene] as text, i}
                         <div class="text-wrapper">
-                            <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
-                            <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style="margin-bottom:20px;"><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style="margin-bottom:20px;"><span class="text-inner">{@html text.value}</span></p>
                         </div>
                     {/each}
                     

@@ -315,8 +315,8 @@ function getColOffset(col,count,vw){
 <section class:mobile class:noMotion>
     <div class="center-col">
         {#each copy.spotifyone as text, i}
-            <p class="center">
-                {@html text.value}
+            <p class="center {text.value.match(/class=big/) ? "span-big" : ''}">
+                <span class="text-inner">{@html text.value}</span>
             </p>
         {/each}
     </div>
@@ -417,7 +417,6 @@ function getColOffset(col,count,vw){
                         {#if album.pos[2] > 100}
                             <img loading="lazy" style="
                                     opacity:{visibility};
-                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                 "
                                 year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
                                 alt="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
@@ -426,7 +425,6 @@ function getColOffset(col,count,vw){
                             <div class="img-sprite {album["Album Genre"]}" style="
                                     background-image:url(assets/spritesheet_{album.pos[2] > 100 ? sceneSetTo !== "first" ? "150" : "192" : "96"}.jpg);
                                     background-size:{size};
-                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     opacity:{mobile ? visibility : visibility};
                                     background-position:{pos};
                                 "
@@ -459,8 +457,8 @@ function getColOffset(col,count,vw){
                 >
                     {#each textStep[scene] as text, i}
                         <div class="text-wrapper">
-                            <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
-                            <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style=""><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style=""><span class="text-inner">{@html text.value}</span></p>
                         </div>
                         {#if scene == "third2"}
                             <div

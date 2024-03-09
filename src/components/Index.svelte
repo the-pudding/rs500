@@ -26,6 +26,8 @@
 	let spriteMapVoters;
 	let sprites = false;
 	let dataMap;
+
+	let isSafari = false;
 	const copy = getContext("copy");
 
 	let viewportHeight;
@@ -39,6 +41,8 @@
 		if($reducedMotion.reducedMotion){
 			noMotion = true;
 		}
+
+
 		spriteMap = group(spriteData, d => d.id);
 		dataMap = group(data, d => d["Album ID"]);
 
@@ -57,7 +61,6 @@
 
 {#if sprites}
 <div>
-
 
 	<Intro {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height}  scrollY={mobile ? 0 : $scrollY} {spriteMap} {copy} {mobile} {noMotion}/>
 	<Spotify {data} {dataMap} vw={$viewport.width} vh={mobile ? viewportHeight : $viewport.height} {spriteMap} {copy} {mobile} {noMotion}/>

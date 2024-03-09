@@ -581,7 +581,6 @@ function getDelay(direction){
                             {#if album.pos[2] > 140}
                                 <img loading="lazy" style="
                                         opacity:{mobile ? '1' : visibility};
-                                        filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     "
                                     year={album.year} width="100%" height="100%" src="assets/album_art_resized/full/{album['Album ID']}.jpg"
                                     alt="Ranked #{album.rank} in {col.year}, Cover art for {album["Clean Name"]}'s {album["Album"]}"
@@ -591,7 +590,6 @@ function getDelay(direction){
                                     background-image:url(assets/spritesheet_{album.pos[2] > 100 ? "192" : "96"}.jpg);
                                     background-size:{size};
                                     opacity:{mobile ? visibility : visibility};
-                                    filter:{visibility < 1 && !mobile ? 'grayscale(.8)' : ''};
                                     background-position:{pos};
                                 "
                                     role="img"
@@ -669,8 +667,8 @@ function getDelay(direction){
                             {@const count = scene == "sixth3" ? i : i -1}
 
                             <div class="text-wrapper">
-                                <p class="text-fg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
-                                <p class="text-bg" style="margin-bottom:20px;"><span>{@html text.value}</span></p>
+                                <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style=""><span class="text-inner">{@html text.value}</span></p>
+                                <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style=""><span class="text-inner">{@html text.value}</span></p>
                             </div>
                             {#if (scene == "sixth2" && i > 0) || scene == "sixth3"}
                                 <div
