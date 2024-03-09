@@ -284,7 +284,12 @@
 	top: 0;
 	left: 0;
 	opacity: .95;
+	left: 50%;
+    transform: translate(-50%, 0);
+	width: 100%;
 }
+
+
 
 .redText {
 	color: rgb(217, 61, 66);
@@ -390,6 +395,11 @@
 	color: var(--color-bg);
 	background-color: var(--color-bg);
 	box-shadow: 15px 0 var(--color-bg), -15px 0 var(--color-bg);
+}
+
+#content .text-wrapper .text-bg span {
+	color: var(--color-bg);
+	background-color: var(--color-bg);
 }
 
 .highlighted-click {
