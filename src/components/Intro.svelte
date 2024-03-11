@@ -667,8 +667,13 @@ function getDelay(direction){
                             {@const count = scene == "sixth3" ? i : i -1}
 
                             <div class="text-wrapper">
-                                <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style=""><span class="text-inner">{@html text.value}</span></p>
-                                <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style=""><span class="text-inner">{@html text.value}</span></p>
+                                <p style="height:100%;" class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}">
+                                    <span class="text-inner">{@html text.value}</span>
+                                </p>
+                                <p style="height:100%; position:absolute; top:0; left:0;" class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true">
+                                    <span class="text-inner">{@html text.value}</span>
+                                </p>
+
                             </div>
                             {#if (scene == "sixth2" && i > 0) || scene == "sixth3"}
                                 <div

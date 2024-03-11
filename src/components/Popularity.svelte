@@ -436,8 +436,8 @@ function getColOffset(col,count,vw,sceneSetTo){
                 >
                     {#each textStep[scene] as text, i}
                         <div class="text-wrapper">
-                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style="margin-bottom:20px;"><span class="text-inner">{@html text.value}</span></p>
-                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style="margin-bottom:20px;"><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style="margin-bottom:20px; height:100%;"><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style="margin-bottom:20px; height:100%;"><span class="text-inner">{@html text.value}</span></p>
                         </div>
                     {/each}
                     

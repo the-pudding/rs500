@@ -457,8 +457,8 @@ function getColOffset(col,count,vw){
                 >
                     {#each textStep[scene] as text, i}
                         <div class="text-wrapper">
-                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style=""><span class="text-inner">{@html text.value}</span></p>
-                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style=""><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-fg {text.value.match(/class=big/) ? "span-big" : ''}" style="height:100%;"><span class="text-inner">{@html text.value}</span></p>
+                            <p class="text-bg {text.value.match(/class=big/) ? "span-big" : ''}" aria-hidden="true" style="height:100%;"><span class="text-inner">{@html text.value}</span></p>
                         </div>
                         {#if scene == "third2"}
                             <div
