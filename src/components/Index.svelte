@@ -32,7 +32,7 @@
 
 	let viewportHeight;
 
-	$: mobile = $viewport.width < 500 ? true : false;
+	$: mobile = $viewport.width < 550 ? true : false;
 	// $: reducedMotion = $reducedMotion ? true : false;
 	let noMotion = false;
 

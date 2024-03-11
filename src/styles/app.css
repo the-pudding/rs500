@@ -391,6 +391,11 @@ p.text-bg, p.text-fg {
 	margin-bottom: 30px;
 	font-size: 1.125rem;
     line-height: 1.38;
+	letter-spacing: 0px;
+	-ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 .text-bg .text-inner {
@@ -402,6 +407,19 @@ p.text-bg, p.text-fg {
 #content .text-wrapper .text-bg span {
 	color: var(--color-bg);
 	background-color: var(--color-bg);
+	letter-spacing: 0px;
+	-ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+#content .text-wrapper .text-fg span {
+	letter-spacing: 0px;
+	-ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 #content .text-wrapper .text-bg a {
